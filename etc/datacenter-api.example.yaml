@@ -8,7 +8,7 @@ Auth:
   AccessExpire: 86400
 CacheRedis:
 - Host: 127.0.0.1:6379
-  Pass: 
+  Pass: admin
   Type: node    
 UserRpc:
   Etcd:
