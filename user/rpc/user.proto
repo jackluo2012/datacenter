@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package user;
+
+message Request {
+  string ping = 1;
+}
+
+//注册请求
+message RegisterReq {
+	string mobile=1;
+	string password=2;
+	string smscode=3;
+}
+
+//登陆请求
+message LoginReq {
+	string mobile=1;
+	int64  type=2;
+	string password=3;
+}
+
+//返回用户信息
+message UserReply {
+	int64 auid=1;
+	int64 uid=2;
+	int64 beid=3;
+	int64 ptyid=4;
+	string username=5;
+	string mobile=6;
+	string nickname=7;
+	string openid=8;
+	string avator=9;
+	JwtToken jwttoken=10;
+}
+
+//返回用户信息
+message UserReq {	
+	int64 auid=1;
+	int64 uid=2;
+	int64 beid=3;
+	int64 ptyid=4;
+}
+
+
+message JwtToken {
+	string accessToken=1;
+	int64 accessExpire=2;
+	int64 refreshAfter=3;
+}
+//请求的api
+message AppConfigReq {
+  int64 beid=1;
+  int64 ptyid=2;
+  string code=3;
+}
+
+//返回用户的信息
+message AppUserResp {
+  int64 auid=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  string nickname=4;
+  string avator=5;
+  string openid=6;
+  string province=7;
+  string city=8;
+  string country=9;
+  int64 sex=10; 
+  string unionid=11;
+}
+
+message AppUserLoginResp {
+  int64 auid=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  string nickname=4;
+  string avator=5;
+  string openid=6;
+  string province=7;
+  string city=8;
+  string country=9;
+  string sex=10;
+  JwtToken jwttoken=11;
+}
+
+
+//返回的值
+message AppConfigResp {
+  int64 id=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  string appid=4;
+  string appsecret=5;
+  string title=6;
+}
+
+message Response {
+  string pong = 1;
+}
+
+service User {
+  rpc Ping(Request) returns(Response);
+  rpc Register(RegisterReq) returns(UserReply);
+  rpc Login(LoginReq) returns(UserReply);
+  rpc UserInfo(UserReq) returns (UserReply);
+  rpc SnsLogin(AppConfigReq) returns (AppUserResp);
+}

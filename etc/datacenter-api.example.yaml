@@ -1,0 +1,27 @@
+Name: datacenter-api
+Log:
+  Mode: console
+Host: 0.0.0.0
+Port: 8887
+Auth:
+  AccessSecret: ad87xxxxxxx5d54b7d
+  AccessExpire: 86400
+CacheRedis:
+- Host: 127.0.0.1:6379
+  Pass: 
+  Type: node    
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
+CommonRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: common.rpc
+VotesRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: votes.rpc        

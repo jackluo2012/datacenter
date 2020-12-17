@@ -1,0 +1,60 @@
+info(
+	title: "user api"// TODO: add title
+	desc: "用户系统"// TODO: add description
+	author: "jackluo"
+	email: "net.webjoy@gmail.com"
+)
+//注册请求
+type RegisterReq struct {
+	// TODO: add members here and delete this comment
+	Username string `json:"username"`
+	Mobile   string `json:"mobile"` //基本一个手机号码就完事
+	Password string `json:"password"`
+	Smscode	string `json:"smscode"` //短信码
+}
+//登陆请求
+type LoginReq struct{
+	Username string `json:"username"`
+	Mobile   string `json:"mobile"` 
+	Password string `json:"password"`
+	Smscode	string `json:"smscode"` //短信码
+}
+//返回用户信息
+type UserReply struct {
+	auid       int64  `json:"auid"`
+	Uid       int64  `json:"uid"`
+	Beid	  int64  `json:"beid"` //应用id
+	Ptyid	  int64  `json:"ptyid"` //对应平台
+	Username string `json:"username"`
+	Mobile   string `json:"mobile"`
+	Nickname string `json:"nickname"`
+	Openid string `json:"openid"`
+	Avator string `json:"avator"`
+	Gender   string `json:"gender"`
+	JwtToken
+}
+
+type JwtToken struct {
+	AccessToken  string `json:"accessToken,omitempty"`
+	AccessExpire int64  `json:"accessExpire,omitempty"`
+	RefreshAfter int64  `json:"refreshAfter,omitempty"`
+}
+
+service user-api {
+	@handler ping
+	post /user/ping ()
+	
+	@handler register
+	post /user/register (RegisterReq)
+	
+	@handler login
+	post /user/login (LoginReq) returns (UserReply)
+}
+@server(
+    jwt: Auth
+    middleware: Usercheck
+)
+service user-api {
+    @handler userInfo
+    get /user/info () returns (UserReply)
+}

@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package votes;
+
+message ActidReq{
+  int64 actid=1;
+  LimitReq limit=2;
+  string keyword=3;
+}
+message ActInfoReq{
+  int64 actid=1;
+}
+message LimitReq{
+  int64 offset=1;
+  int64 size=2;
+}
+
+message EnrollInfoReq{
+  int64 aeid=1;
+  int64 actid=2;
+}
+//报名 请求
+message EnrollReq {
+  int64 auid=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  int64 uid=4;
+  string name=5;
+  string address=6;
+  string images=7;
+  string descr=8;
+  int64 actid=9;
+}
+//报名返回
+message EnrollResp {
+  int64 auid=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  int64 uid=4;
+  string name=5;
+  string address=6;
+  repeated  string images=7;
+  string descr=8;
+  int64 votecount=9;
+  int64 viewcount=10;
+  int64 aeid=11;
+  int64 actid=12;
+}
+//返回列表
+message EnrollListResp{
+  repeated EnrollResp data=1;
+}
+
+//投票
+message VotesReq {
+  int64 auid=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  int64 uid=4;
+  int64 actid=5;
+  int64 aeid=6;
+  string ip=7;
+}
+//返回票数
+message VotesResp {
+  int64 auid=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  int64 uid=4;
+  int64 avid=5;
+  int64 aeid=6;
+  int64 votecount=7;
+  int64 viewcount=8;
+}
+//返回活动信息
+message ActInfoResp{
+  int64 actid=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  string title=4;
+  string descr=5;
+  int64 status=6;
+  int64 start_date=7;
+  int64 enroll_date=8;
+  int64 end_date=9;
+  int64 votecount=10;
+  int64 viewcount=11;
+  int64 type=12;
+  int64 num=13;
+  int64 enrollcount=14;
+}
+
+
+service Votes {
+  //获取作品信息
+  rpc GetEnrollInfo(EnrollInfoReq) returns(EnrollResp);
+  //获取 作品列表
+  rpc GetEnrollList(ActidReq) returns(EnrollListResp);
+  //获取 活动信息
+  rpc GetActivityInfo(ActInfoReq) returns(ActInfoResp);
+  //报名
+  rpc Enroll(EnrollReq) returns(EnrollResp);
+  //投票
+  rpc Votes(VotesReq) returns(VotesResp);
+  //增加活动的爆光量
+  rpc IncrActiviView(ActInfoReq) returns(ActInfoResp);
+}

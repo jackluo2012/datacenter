@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package common;
+
+
+message BaseAppReq{
+  int64 beid=1;
+}
+
+message BaseAppResp{
+  int64 beid=1;
+  string logo=2;
+  string sname=3;
+  int64 isclose=4;
+  string fullwebsite=5;
+}
+
+//请求的api
+message AppConfigReq {
+  int64 beid=1;
+  int64 ptyid=2;
+}
+
+//返回的值
+message AppConfigResp {
+  int64 id=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  string appid=4;
+  string appsecret=5;
+  string title=6;
+}
+
+service Common {
+  rpc GetAppConfig(AppConfigReq) returns(AppConfigResp);
+  rpc GetBaseApp(BaseAppReq) returns(BaseAppResp);
+}

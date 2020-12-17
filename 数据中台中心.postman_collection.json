@@ -1,0 +1,671 @@
+{
+	"info": {
+		"_postman_id": "48a25da8-8765-45b3-82d3-ea75047189ef",
+		"name": "数据中台中心",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "用户登陆",
+			"item": [
+				{
+					"name": "自动登陆",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "887f75c8-08e1-4b8b-b44b-70b37ae64f41",
+								"exec": [
+									"pm.test(\"自动登陆\", function () {",
+									"var jsonData = pm.response.json();",
+									"pm.globals.set(\"Authorization\", jsonData.data.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "ptyid",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "beid",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"type\":1,\n   \"password\":\"你的密码\",\n   \"mobile\":\"你的帐号\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/user/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "用户登陆",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"type\":1,\n   \"password\":\"你的密码\",\n   \"mobile\":\"你的帐号\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/user/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "用户注册",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"smscode\":\"1212\", //短信证码\n   \"password\":\"你的密码\", // 密码\n   \"mobile\":\"你的帐号\" //手机号\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/user/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "第三方登陆",
+			"item": [
+				{
+					"name": "微信登陆",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"beid\":1,\n   \"code\":\"微信返回的code\",\n   \"ptyid\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/user/wx/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"wx",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取微信登陆地址",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "beid",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "ptyid",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"beid\":1,\n   \"back_url\":\"/datacenter/votes/index.html\",\n   \"ptyid\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/common/snsinfo?backurl=/datacenter/votes/index.html",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"common",
+								"snsinfo"
+							],
+							"query": [
+								{
+									"key": "backurl",
+									"value": "/datacenter/votes/index.html"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "分享",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"beid\":1,\n   \"back_url\":\"/datacenter/votes/index.html\",\n   \"ptyid\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/common/wx/ticket",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"common",
+								"wx",
+								"ticket"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "投票活动",
+			"item": [
+				{
+					"name": "获取作品列表",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/votes/enroll/lists?actid=1&keyword=5",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"votes",
+								"enroll",
+								"lists"
+							],
+							"query": [
+								{
+									"key": "actid",
+									"value": "1"
+								},
+								{
+									"key": "keyword",
+									"value": "5"
+								},
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "活动报名",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "beid",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "ptyid",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "authorization",
+								"value": "{{Authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"actid\":1,\n   \"name\":\"报名名称\",\n   \"address\":\"地址\",\n   \"images\":[\"xxx\",\"xxxx\"],\n   \"descr\":\"这里是描述\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/votes/enroll",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"votes",
+								"enroll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "投票",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"actid\":1,\n   \"aeid\":5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/votes/vote",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"votes",
+								"vote"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取活动的信息",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/votes/activity/info?actid=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"votes",
+								"activity",
+								"info"
+							],
+							"query": [
+								{
+									"key": "actid",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "增加活动的爆光量",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/votes/activity/view?actid=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"votes",
+								"activity",
+								"view"
+							],
+							"query": [
+								{
+									"key": "actid",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取作品详情",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/votes/enroll/info?aeid=5&actid=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"votes",
+								"enroll",
+								"info"
+							],
+							"query": [
+								{
+									"key": "aeid",
+									"value": "5"
+								},
+								{
+									"key": "actid",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "七牛上传",
+			"item": [
+				{
+					"name": "七牛上传凭证",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"beid\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/common/qiuniu/token",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"common",
+								"qiuniu",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "设置线上token",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "beid",
+						"type": "text",
+						"value": "1"
+					},
+					{
+						"key": "ptyid",
+						"type": "text",
+						"value": "1"
+					},
+					{
+						"key": "authorization",
+						"type": "text",
+						"value": "{{Authorization}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/votes/activity/info?actid=1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"votes",
+						"activity",
+						"info"
+					],
+					"query": [
+						{
+							"key": "actid",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
