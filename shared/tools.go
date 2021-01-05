@@ -2,8 +2,10 @@ package shared
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -80,4 +82,13 @@ func ToLimitOffset(pageIn, pagesizeIn string) (offset int64, limit int64) {
 		limit = 10
 	}
 	return
+}
+
+func HttpPostForm(gourl string, form url.Values) ([]byte, error) {
+	resp, err := http.PostForm(gourl, form)
+	if err != nil {
+		return []byte{}, err
+	}
+	defer resp.Body.Close()
+	return ioutil.ReadAll(resp.Body)
 }

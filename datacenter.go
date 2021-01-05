@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"datacenter/internal/config"
 	"datacenter/internal/handler"
@@ -34,6 +35,24 @@ func dirhandler(patern, filedir string) http.HandlerFunc {
 	}
 }
 
+func staticFileHandler(engine *rest.Server) {
+	//这里注册
+	dirlevel := []string{":1", ":2", ":3", ":4", ":5", ":6", ":7", ":8"}
+	patern := "/static/"
+	dirpath := "./assets/"
+	for i := 1; i < len(dirlevel); i++ {
+		path := "/" + strings.Join(dirlevel[:i], "/")
+		//最后生成 /asset
+		engine.AddRoute(
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    path,
+				Handler: dirhandler(patern, dirpath),
+			})
+	}
+
+}
+
 func main() {
 	flag.Parse()
 
@@ -41,10 +60,11 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 
 	ctx := svc.NewServiceContext(c)
-	server := rest.MustNewServer(c.RestConf)
+	server := rest.MustNewServer(c.RestConf, rest.WithNotAllowedHandler(rest.CorsHandler()))
 	defer server.Stop()
 	server.Use(corsHandle)
-
+	//静太文件处理
+	staticFileHandler(server)
 	// 设置错误处理函数
 	httpx.SetErrorHandler(shared.ErrorHandler)
 
