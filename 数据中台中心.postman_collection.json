@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "48a25da8-8765-45b3-82d3-ea75047189ef",
+		"_postman_id": "404ed551-4d2c-4038-8d2f-a943cfde29da",
 		"name": "数据中台中心",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,7 +14,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "887f75c8-08e1-4b8b-b44b-70b37ae64f41",
 								"exec": [
 									"pm.test(\"自动登陆\", function () {",
 									"var jsonData = pm.response.json();",
@@ -115,8 +114,157 @@
 					},
 					"response": []
 				}
+			]
+		},
+		{
+			"name": "搜索",
+			"item": [
+				{
+					"name": "文章搜索",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"自动登陆\", function () {",
+									"var jsonData = pm.response.json();",
+									"pm.globals.set(\"Authorization\", jsonData.data.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "ptyid",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "beid",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"type\":1,\n   \"password\":\"你的密码\",\n   \"mobile\":\"你的帐号\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/search/article?keyword=冰冰&page=1&size=20",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"search",
+								"article"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "冰冰"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "初始化",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/search/articel/init",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"search",
+								"articel",
+								"init"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "保存文章",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{        \n    \"NewsId\": \"976426\",\n    \"NewsTitle\": \"听完范冰冰3年前这段土味RAP，我的表情和旁边的周立波一模一样\",\n    \"ImageUrl\":\"https://img2020.cnblogs.com/blog/203395/202012/203395-20201217094615171-335437652.jpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/search/articel/store",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"search",
+								"articel",
+								"store"
+							]
+						}
+					},
+					"response": []
+				}
 			],
-			"protocolProfileBehavior": {}
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
 		},
 		{
 			"name": "第三方登陆",
@@ -238,8 +386,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "投票活动",
@@ -560,8 +707,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "七牛上传",
@@ -610,8 +756,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "设置线上token",
@@ -666,6 +811,5 @@
 			},
 			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
