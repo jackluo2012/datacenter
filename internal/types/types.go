@@ -35,6 +35,12 @@ type Application struct {
 	Fullwebsite string `json:"fullwebsite"` // 全站名称
 }
 
+type ArticleReq struct {
+	NewsId    string `json:"NewsId"`
+	NewsTitle string `json:"NewsTitle"`
+	ImageUrl  string `json:"ImageUrl"`
+}
+
 type Beid struct {
 	Beid int64 `json:"beid"`
 }
@@ -93,6 +99,16 @@ type Request struct {
 
 type Response struct {
 	Message string `json:"message"`
+}
+
+type SearchReq struct {
+	Keyword string `json:"keyword"`
+	Page    string `json:"page"`
+	Size    string `json:"size"`
+}
+
+type SearchResp struct {
+	Data []ArticleReq `json:"data"`
 }
 
 type SnsReq struct {

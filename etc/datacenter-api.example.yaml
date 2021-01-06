@@ -24,4 +24,9 @@ VotesRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: votes.rpc        
+    Key: votes.rpc    
+SearchRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: search.rpc          

@@ -5,57 +5,15 @@ import (
 	"net/http"
 
 	common "datacenter/internal/handler/common"
+	search "datacenter/internal/handler/search"
 	user "datacenter/internal/handler/user"
 	votes "datacenter/internal/handler/votes"
 	"datacenter/internal/svc"
+
 	"github.com/tal-tech/go-zero/rest"
 )
 
-func dirhandler(patern, filedir string) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		handler := http.StripPrefix(patern, http.FileServer(http.Dir(filedir)))
-		handler.ServeHTTP(w, req)
-
-	}
-}
-
 func RegisterHandlers(engine *rest.Server, serverCtx *svc.ServiceContext) {
-	engine.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/MP_verify_NT04cqknJe0em3mT.txt",
-				Handler: common.VotesVerificationHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/common/appinfo",
-				Handler: common.AppInfoHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/common/snsinfo",
-				Handler: common.SnsInfoHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/common/wx/ticket",
-				Handler: common.WxTicketHandler(serverCtx),
-			},
-		},
-	)
-
-	engine.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/common/qiuniu/token",
-				Handler: common.QiuniuTokenHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-	)
-
 	engine.AddRoutes(
 		[]rest.Route{
 			{
@@ -141,6 +99,65 @@ func RegisterHandlers(engine *rest.Server, serverCtx *svc.ServiceContext) {
 				},
 			}...,
 		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	engine.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Admincheck},
+			[]rest.Route{
+				{
+					Method:  http.MethodGet,
+					Path:    "/search/article",
+					Handler: search.ArticleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/search/articel/init",
+					Handler: search.ArticleInitHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/search/articel/store",
+					Handler: search.ArticleStoreHandler(serverCtx),
+				},
+			}...,
+		),
+	)
+
+	engine.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/MP_verify_NT04cqknJe0em3mT.txt",
+				Handler: common.VotesVerificationHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/common/appinfo",
+				Handler: common.AppInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/common/snsinfo",
+				Handler: common.SnsInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/common/wx/ticket",
+				Handler: common.WxTicketHandler(serverCtx),
+			},
+		},
+	)
+
+	engine.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/common/qiuniu/token",
+				Handler: common.QiuniuTokenHandler(serverCtx),
+			},
+		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 }

@@ -5,6 +5,7 @@ import (
 	"datacenter/common/rpc/commonclient"
 	"datacenter/internal/config"
 	"datacenter/internal/middleware"
+	"datacenter/search/rpc/searchclient"
 	"datacenter/shared"
 	"datacenter/user/rpc/userclient"
 	"datacenter/votes/rpc/votesclient"
@@ -26,9 +27,11 @@ type ServiceContext struct {
 	GreetMiddleware1 rest.Middleware
 	GreetMiddleware2 rest.Middleware
 	Usercheck        rest.Middleware
+	Admincheck       rest.Middleware
 	UserRpc          userclient.User //用户
 	CommonRpc        commonclient.Common
 	VotesRpc         votesclient.Votes
+	SearchRpc        searchclient.Search
 	Cache            cache.Cache
 	RedisConn        *redis.Redis
 }
@@ -48,6 +51,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	ur := userclient.NewUser(zrpc.MustNewClient(c.UserRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	cr := commonclient.NewCommon(zrpc.MustNewClient(c.CommonRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	vr := votesclient.NewVotes(zrpc.MustNewClient(c.VotesRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
+	sr := searchclient.NewSearch(zrpc.MustNewClient(c.SearchRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	//缓存
 	ca := cache.NewCache(c.CacheRedis, syncx.NewSharedCalls(), cache.NewCacheStat("dc"), shared.ErrNotFound)
 	rcon := redis.NewRedis(c.CacheRedis[0].Host, c.CacheRedis[0].Type, c.CacheRedis[0].Pass)
@@ -56,9 +60,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		GreetMiddleware1: greetMiddleware1,
 		GreetMiddleware2: greetMiddleware2,
 		Usercheck:        middleware.NewUserCheckMiddleware().Handle,
+		Admincheck:       middleware.NewAdminCheckMiddleware().Handle,
 		UserRpc:          ur,
 		CommonRpc:        cr,
 		VotesRpc:         vr,
+		SearchRpc:        sr,
 		Cache:            ca,
 		RedisConn:        rcon,
 	}

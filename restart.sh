@@ -24,6 +24,16 @@ RpcServer(){
     kill -9 $(ps -ef|grep "${myserver}"|awk '{print $2}') >/dev/null 2>&1
     nohup ${mydir}/${myserver} -f ${mydir}${mycnf} &
 }
+RpcServerPlus(){
+    mydir=$1/$2/rpc
+    myserver=${2}-server
+    mycnf=/etc/${2}.yaml
+    cd ${mydir}
+    go build -o ${myserver} $mydir/$2.go
+    kill -9 $(ps -ef|grep "${myserver}"|awk '{print $2}') >/dev/null 2>&1
+    nohup ${mydir}/${myserver} -f ${mydir}${mycnf} &
+}
+
 StartServer(){
     mydir=$1
     myserver=$2
@@ -39,6 +49,8 @@ RpcServer ${commonPath} ${CommonRpc} ${configPath}
 RpcServer ${userPath} ${UserRpc} ${configPath}
 #投票服务
 RpcServer ${votesPath} ${VotesRpc} ${configPath}
+#搜索服务
+RpcServerPlus ${getewayPath} search
 #Api服务
 StartServer ${getewayPath} ${geteWayApi} ${geteWayCnf}
 

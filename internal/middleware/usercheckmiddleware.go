@@ -49,3 +49,12 @@ func (m *UserCheckMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		next(w, r)
 	}
 }
+
+/**
+ *  后台 接口更新
+ */
+func (m *UserCheckMiddleware) AdminHandle(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		next(w, r)
+	}
+}

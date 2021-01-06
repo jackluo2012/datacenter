@@ -1,0 +1,11 @@
+Name: search.rpc
+ListenOn: 127.0.0.1:8083
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: search.rpc
+Esconfig:
+  Urls:
+  - http://127.0.0.1:9200
+  User: elastic 
+  Password: 密码

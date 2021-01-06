@@ -16,6 +16,7 @@ type Config struct {
 	UserRpc   zrpc.RpcClientConf
 	CommonRpc zrpc.RpcClientConf
 	VotesRpc  zrpc.RpcClientConf
+	SearchRpc zrpc.RpcClientConf
 
 	CacheRedis cache.ClusterConf
 }

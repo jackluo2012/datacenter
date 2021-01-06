@@ -1,0 +1,5 @@
+./search-server
+
+rpc/etc/search.yaml
+rpc/nohnohup.out
+rpc/search-server

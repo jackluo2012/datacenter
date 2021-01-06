@@ -42,117 +42,6 @@ type WxShareResp struct {
 }
 
 @server(
-	group: common
-)
-service datacenter-api {
-	@doc(
-		summary: "获取站点的信息"
-	)
-	@handler votesVerification
-	get /MP_verify_NT04cqknJe0em3mT.txt (SnsReq) returns (SnsResp)
-	
-	@handler appInfo
-	get /common/appinfo (Beid) returns (Application)
-	@doc(
-		summary: "获取站点的社交属性信息"
-	)
-	@handler snsInfo
-	post /common/snsinfo (SnsReq) returns (SnsResp)
-	
-	//获取分享的
-	@handler wxTicket
-	post /common/wx/ticket (SnsReq) returns (WxShareResp)
-	
-}
-//上传需要登陆
-@server(
-	jwt: Auth
-	group: common
-)
-service datacenter-api {
-	@doc(
-		summary: "七牛上传凭证"
-	)
-	@handler qiuniuToken
-	post /common/qiuniu/token (Beid) returns (Token)
-}
-
-//注册请求
-type RegisterReq struct {
-	// TODO: add members here and delete this comment
-	Mobile   string `json:"mobile"` //基本一个手机号码就完事
-	Password string `json:"password"`
-	Smscode	string `json:"smscode"` //短信码
-}
-//登陆请求
-type LoginReq struct{
-	Mobile   string `json:"mobile"`
-	Type int64 `json:"type"`	//1.密码登陆，2.短信登陆
-	Password string `json:"password"`
-}
-//微信登陆
-type WxLoginReq struct {
-	Beid	  int64  `json:"beid"` //应用id
-	Code string `json:"code"` //微信登陆密钥
-	Ptyid	  int64  `json:"ptyid"` //对应平台
-}
-
-//返回用户信息
-type UserReply struct {
-	Auid       int64  `json:"auid"`
-	Uid       int64  `json:"uid"`
-	Beid	  int64  `json:"beid"` //应用id
-	Ptyid	  int64  `json:"ptyid"` //对应平台
-	Username string `json:"username"`
-	Mobile   string `json:"mobile"`
-	Nickname string `json:"nickname"`
-	Openid string `json:"openid"`
-	Avator string `json:"avator"`
-	JwtToken
-}
-//返回APPUser
-type AppUser struct{
-	Uid       int64  `json:"uid"`
-	Auid       int64  `json:"auid"`
-	Beid	  int64  `json:"beid"` //应用id
-	Ptyid	  int64  `json:"ptyid"` //对应平台
-	Nickname string `json:"nickname"`
-	Openid string `json:"openid"`
-	Avator string `json:"avator"`
-}
-
-type LoginAppUser struct{
-	Uid       int64  `json:"uid"`
-	Auid       int64  `json:"auid"`
-	Beid	  int64  `json:"beid"` //应用id
-	Ptyid	  int64  `json:"ptyid"` //对应平台
-	Nickname string `json:"nickname"`
-	Openid string `json:"openid"`
-	Avator string `json:"avator"`
-	JwtToken
-}
-
-type JwtToken struct {
-	AccessToken  string `json:"access_token,omitempty"`
-	AccessExpire int64  `json:"access_expire,omitempty"`
-	RefreshAfter int64  `json:"refresh_after,omitempty"`
-}
-
-type UserReq struct{
-	Auid       int64  `json:"auid"`
-	Uid       int64  `json:"uid"`
-	Beid	  int64  `json:"beid"` //应用id
-	Ptyid	  int64  `json:"ptyid"` //对应平台
-}
-
-type Request {
-	Name string `path:"name,options=you|me"`
-}
-type Response {
-	Message string `json:"message"`
-}
-
-@server(
 	group: user
 )
 service user-api {
@@ -277,4 +166,148 @@ service votes-api {
 	post /votes/vote (VoteReq) returns (VoteResp)
 	@handler enroll
 	post /votes/enroll (EnrollReq) returns (EnrollResp)
+}
+
+
+type SearchReq struct {
+	Keyword string `json:"keyword"`
+	Page string `json:"page"`
+	Size string `json:"size"`
+}
+type SearchResp struct {
+	Data []ArticleReq `json:"data"`
+}
+
+type ArticleReq struct{
+	NewsId string `json:"NewsId"`
+	NewsTitle string `json:"NewsTitle"`
+	ImageUrl string `json:"ImageUrl"`
+}
+
+
+@server(
+	group: search
+	middleware: Admincheck
+)
+service search-api {
+	@doc(
+		summary: "搜索"
+	)
+	@handler article
+	get /search/article (SearchReq) returns (SearchResp)
+	@handler articleInit
+	get /search/articel/init (SearchReq) returns (SearchResp)
+	@handler articleStore
+	post /search/articel/store (ArticleReq) returns (ArticleReq)
+}
+
+@server(
+	group: common
+)
+service datacenter-api {
+	@doc(
+		summary: "获取站点的信息"
+	)
+	@handler votesVerification
+	get /MP_verify_NT04cqknJe0em3mT.txt (SnsReq) returns (SnsResp)
+	
+	@handler appInfo
+	get /common/appinfo (Beid) returns (Application)
+	@doc(
+		summary: "获取站点的社交属性信息"
+	)
+	@handler snsInfo
+	post /common/snsinfo (SnsReq) returns (SnsResp)
+	
+	//获取分享的
+	@handler wxTicket
+	post /common/wx/ticket (SnsReq) returns (WxShareResp)
+	
+}
+//上传需要登陆
+@server(
+	jwt: Auth
+	group: common
+)
+service datacenter-api {
+	@doc(
+		summary: "七牛上传凭证"
+	)
+	@handler qiuniuToken
+	post /common/qiuniu/token (Beid) returns (Token)
+}
+
+//注册请求
+type RegisterReq struct {
+	// TODO: add members here and delete this comment
+	Mobile   string `json:"mobile"` //基本一个手机号码就完事
+	Password string `json:"password"`
+	Smscode	string `json:"smscode"` //短信码
+}
+//登陆请求
+type LoginReq struct{
+	Mobile   string `json:"mobile"`
+	Type int64 `json:"type"`	//1.密码登陆，2.短信登陆
+	Password string `json:"password"`
+}
+//微信登陆
+type WxLoginReq struct {
+	Beid	  int64  `json:"beid"` //应用id
+	Code string `json:"code"` //微信登陆密钥
+	Ptyid	  int64  `json:"ptyid"` //对应平台
+}
+
+//返回用户信息
+type UserReply struct {
+	Auid       int64  `json:"auid"`
+	Uid       int64  `json:"uid"`
+	Beid	  int64  `json:"beid"` //应用id
+	Ptyid	  int64  `json:"ptyid"` //对应平台
+	Username string `json:"username"`
+	Mobile   string `json:"mobile"`
+	Nickname string `json:"nickname"`
+	Openid string `json:"openid"`
+	Avator string `json:"avator"`
+	JwtToken
+}
+//返回APPUser
+type AppUser struct{
+	Uid       int64  `json:"uid"`
+	Auid       int64  `json:"auid"`
+	Beid	  int64  `json:"beid"` //应用id
+	Ptyid	  int64  `json:"ptyid"` //对应平台
+	Nickname string `json:"nickname"`
+	Openid string `json:"openid"`
+	Avator string `json:"avator"`
+}
+
+type LoginAppUser struct{
+	Uid       int64  `json:"uid"`
+	Auid       int64  `json:"auid"`
+	Beid	  int64  `json:"beid"` //应用id
+	Ptyid	  int64  `json:"ptyid"` //对应平台
+	Nickname string `json:"nickname"`
+	Openid string `json:"openid"`
+	Avator string `json:"avator"`
+	JwtToken
+}
+
+type JwtToken struct {
+	AccessToken  string `json:"access_token,omitempty"`
+	AccessExpire int64  `json:"access_expire,omitempty"`
+	RefreshAfter int64  `json:"refresh_after,omitempty"`
+}
+
+type UserReq struct{
+	Auid       int64  `json:"auid"`
+	Uid       int64  `json:"uid"`
+	Beid	  int64  `json:"beid"` //应用id
+	Ptyid	  int64  `json:"ptyid"` //对应平台
+}
+
+type Request {
+	Name string `path:"name,options=you|me"`
+}
+type Response {
+	Message string `json:"message"`
 }

@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package search;
+
+message LimitReq{
+  int64 offset=1;
+  int64 size=2;
+}
+message SearchReq{
+  string Keyword=1;
+  LimitReq Limit=2;
+}
+message ArticleResp{
+  repeated ArticleReq List=1;
+}
+message ArticleReq {
+  string NewsId = 1;
+  string NewsTitle = 2;
+  string ImageUrl = 3;
+}
+
+message Request{  
+  bool Once=1;
+}
+
+message Response{
+}
+
+service Search {
+  rpc ArticleInit(Request) returns(Response);
+  rpc ArticleStore(ArticleReq) returns(Response);
+  rpc ArticleSearch(SearchReq) returns(ArticleResp);
+}

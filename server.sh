@@ -38,3 +38,14 @@ rm -rf $(pwd)/etcd && mkdir -p $(pwd)/etcd && \
   --initial-cluster s1=http://0.0.0.0:2380 \
   --initial-cluster-token tkn \
   --initial-cluster-state new
+
+
+#### 启动elasticsearch 服务
+docker stop es
+docker rm es
+
+docker run -d --name es \
+	-p 9200:9200 -p 9300:9300 \
+	-e "discovery.type=single-node" \
+	-v $(pwd)/elasticsearch:/usr/share/elasticsearch/data \
+	spencezhou/elasticsearch:7.6.2
