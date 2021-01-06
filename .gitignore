@@ -7,3 +7,4 @@ user/api/etc/user-api.yaml
 mysql8
 redis
 etcd
+elasticsearch
