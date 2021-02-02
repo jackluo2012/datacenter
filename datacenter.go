@@ -8,6 +8,7 @@ import (
 
 	"datacenter/internal/config"
 	"datacenter/internal/handler"
+	"datacenter/internal/middleware"
 	"datacenter/internal/svc"
 	"datacenter/shared"
 
@@ -17,15 +18,6 @@ import (
 )
 
 var configFile = flag.String("f", "etc/datacenter-api.yaml", "the config file")
-
-func corsHandle(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE,PUT")
-		w.Header().Set("Access-Control-Allow-Headers", "content-type,authorization,cookies")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		next(w, r)
-	}
-}
 
 func dirhandler(patern, filedir string) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
@@ -60,9 +52,9 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 
 	ctx := svc.NewServiceContext(c)
-	server := rest.MustNewServer(c.RestConf, rest.WithNotAllowedHandler(rest.CorsHandler()))
+	server := rest.MustNewServer(c.RestConf, rest.WithNotAllowedHandler(middleware.NewCorsMiddleware().Handler()))
 	defer server.Stop()
-	server.Use(corsHandle)
+	server.Use(middleware.NewCorsMiddleware().Handle)
 	//静太文件处理
 	staticFileHandler(server)
 	// 设置错误处理函数
