@@ -17,6 +17,37 @@ func RegisterHandlers(engine *rest.Server, serverCtx *svc.ServiceContext) {
 	engine.AddRoutes(
 		[]rest.Route{
 			{
+				Method:  http.MethodGet,
+				Path:    "/common/appinfo",
+				Handler: common.AppInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/common/snsinfo",
+				Handler: common.SnsInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/common/wx/ticket",
+				Handler: common.WxTicketHandler(serverCtx),
+			},
+		},
+	)
+
+	engine.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/common/qiuniu/token",
+				Handler: common.QiuniuTokenHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	engine.AddRoutes(
+		[]rest.Route{
+			{
 				Method:  http.MethodPost,
 				Path:    "/user/ping",
 				Handler: user.PingHandler(serverCtx),
@@ -123,41 +154,5 @@ func RegisterHandlers(engine *rest.Server, serverCtx *svc.ServiceContext) {
 				},
 			}...,
 		),
-	)
-
-	engine.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/MP_verify_NT04cqknJe0em3mT.txt",
-				Handler: common.VotesVerificationHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/common/appinfo",
-				Handler: common.AppInfoHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/common/snsinfo",
-				Handler: common.SnsInfoHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/common/wx/ticket",
-				Handler: common.WxTicketHandler(serverCtx),
-			},
-		},
-	)
-
-	engine.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/common/qiuniu/token",
-				Handler: common.QiuniuTokenHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 }

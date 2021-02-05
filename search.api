@@ -1,0 +1,35 @@
+
+
+
+
+type SearchReq struct {
+	Keyword string `json:"keyword"`
+	Page string `json:"page"`
+	Size string `json:"size"`
+}
+type SearchResp struct {
+	Data []ArticleReq `json:"data"`
+}
+
+type ArticleReq struct{
+	NewsId string `json:"NewsId"`
+	NewsTitle string `json:"NewsTitle"`
+	ImageUrl string `json:"ImageUrl"`
+}
+
+
+@server(
+	group: search
+	middleware: Admincheck
+)
+service datacenter-api {
+	@doc(
+		summary: "搜索"
+	)
+	@handler article
+	get /search/article (SearchReq) returns (SearchResp)
+	@handler articleInit
+	get /search/articel/init (SearchReq) returns (SearchResp)
+	@handler articleStore
+	post /search/articel/store (ArticleReq) returns (ArticleReq)
+}

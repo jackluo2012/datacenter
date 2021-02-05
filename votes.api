@@ -1,0 +1,99 @@
+
+
+// 投票活动api
+
+
+type Actid struct {
+	Actid       int64  `json:"actid"` //活动id
+}
+
+type VoteReq struct {
+	Aeid       int64  `json:"aeid"` // 作品id
+	Actid
+}
+type VoteResp struct {
+	VoteReq
+	Votecount       int64  `json:"votecount"` //投票票数
+	Viewcount       int64  `json:"viewcount"` //浏览数
+}
+
+
+// 活动返回的参数
+
+type ActivityResp struct {
+	Actid       	int64  `json:"actid"`
+	Title       	string  `json:"title"` //活动名称
+	Descr       	string  `json:"descr"` //活动描述
+	StartDate       int64  `json:"start_date"` //活动时间
+	EnrollDate      int64  `json:"enroll_date"` //投票时间
+	EndDate       	int64  `json:"end_date"` //活动结束时间
+	Votecount       int64  `json:"votecount"` //当前活动的总票数
+	Viewcount       int64  `json:"viewcount"` //当前活动的总浏览数
+	Type			int64 `json:"type"` //投票方式
+	Num				int64 `json:"num"` //投票几票
+}
+//报名
+
+
+type EnrollReq struct {
+	Actid
+	Name       	string  `json:"name"` // 名称
+	Address       	string  `json:"address"` //地址
+	Images       	[]string  `json:"images"` //作品图片
+	Descr       	string  `json:"descr"` // 作品描述
+}
+// 作品返回
+
+type EnrollResp struct {
+	Actid
+	Aeid		int64 `json:"aeid"` // 作品id
+	Name       	string  `json:"name"` // 名称
+	Address       	string  `json:"address"` //地址
+	Images       	[]string  `json:"images"` //作品图片
+	Descr       	string  `json:"descr"` // 作品描述
+	Votecount       int64  `json:"votecount"` //当前活动的总票数
+	Viewcount       int64  `json:"viewcount"` //当前活动的总浏览数
+	
+}
+
+
+@server(
+	group: votes
+)
+service datacenter-api {
+	@doc(
+		summary: "获取活动的信息"
+	)
+	@handler activityInfo
+	get /votes/activity/info (Actid) returns (ActivityResp)
+	@doc(
+		summary: "活动访问+1"
+	)
+	@handler activityIcrView
+	get /votes/activity/view (Actid) returns (ActivityResp)
+	@doc(
+		summary: "获取报名的投票作品信息"
+	)
+	@handler enrollInfo
+	get /votes/enroll/info (VoteReq) returns (EnrollResp)
+	@doc(
+		summary: "获取报名的投票作品列表"
+	)
+	@handler enrollLists
+	get /votes/enroll/lists (Actid)	returns(EnrollResp)
+}
+
+@server(
+	jwt: Auth
+	group: votes
+	middleware: Usercheck
+)
+service datacenter-api {
+	@doc(
+		summary: "投票"
+	)
+	@handler vote
+	post /votes/vote (VoteReq) returns (VoteResp)
+	@handler enroll
+	post /votes/enroll (EnrollReq) returns (EnrollResp)
+}

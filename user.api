@@ -1,0 +1,105 @@
+
+//注册请求
+type RegisterReq struct {
+	// TODO: add members here and delete this comment
+	Mobile   string `json:"mobile"` //基本一个手机号码就完事
+	Password string `json:"password"`
+	Smscode	string `json:"smscode"` //短信码
+}
+//登陆请求
+type LoginReq struct{
+	Mobile   string `json:"mobile"`
+	Type int64 `json:"type"`	//1.密码登陆，2.短信登陆
+	Password string `json:"password"`
+}
+//微信登陆
+type WxLoginReq struct {
+	Beid	  int64  `json:"beid"` //应用id
+	Code string `json:"code"` //微信登陆密钥
+	Ptyid	  int64  `json:"ptyid"` //对应平台
+}
+
+//返回用户信息
+type UserReply struct {
+	Auid       int64  `json:"auid"`
+	Uid       int64  `json:"uid"`
+	Beid	  int64  `json:"beid"` //应用id
+	Ptyid	  int64  `json:"ptyid"` //对应平台
+	Username string `json:"username"`
+	Mobile   string `json:"mobile"`
+	Nickname string `json:"nickname"`
+	Openid string `json:"openid"`
+	Avator string `json:"avator"`
+	JwtToken
+}
+//返回APPUser
+type AppUser struct{
+	Uid       int64  `json:"uid"`
+	Auid       int64  `json:"auid"`
+	Beid	  int64  `json:"beid"` //应用id
+	Ptyid	  int64  `json:"ptyid"` //对应平台
+	Nickname string `json:"nickname"`
+	Openid string `json:"openid"`
+	Avator string `json:"avator"`
+}
+
+type LoginAppUser struct{
+	Uid       int64  `json:"uid"`
+	Auid       int64  `json:"auid"`
+	Beid	  int64  `json:"beid"` //应用id
+	Ptyid	  int64  `json:"ptyid"` //对应平台
+	Nickname string `json:"nickname"`
+	Openid string `json:"openid"`
+	Avator string `json:"avator"`
+	JwtToken
+}
+
+type JwtToken struct {
+	AccessToken  string `json:"access_token,omitempty"`
+	AccessExpire int64  `json:"access_expire,omitempty"`
+	RefreshAfter int64  `json:"refresh_after,omitempty"`
+}
+
+type UserReq struct{
+	Auid       int64  `json:"auid"`
+	Uid       int64  `json:"uid"`
+	Beid	  int64  `json:"beid"` //应用id
+	Ptyid	  int64  `json:"ptyid"` //对应平台
+}
+
+type Request {
+	Name string `path:"name,options=you|me"`
+}
+type Response {
+	Message string `json:"message"`
+}
+
+
+@server(
+	group: user
+)
+service datacenter-api {
+	@handler ping
+	post /user/ping ()
+	
+	@handler register
+	post /user/register (RegisterReq) returns (UserReply)
+	
+	@handler login
+	post /user/login (LoginReq) returns (UserReply)
+	
+	@handler wxlogin
+	post /user/wx/login (WxLoginReq) returns (LoginAppUser)
+	
+	@handler code2Session
+	get /user/wx/login () returns (LoginAppUser)
+}
+@server(
+	jwt: Auth
+	group: user
+	middleware: Usercheck
+)
+service datacenter-api {
+	@handler userInfo
+	get /user/dc/info (UserReq) returns (UserReply)
+}
