@@ -9,4 +9,6 @@ const (
 
 	//投票锁的 时长
 	VotesUidAuidLockExpire int = 1
+	//用户操作加锁
+	UidAuidLockExpire int = 2
 )

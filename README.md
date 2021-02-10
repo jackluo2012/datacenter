@@ -12,6 +12,13 @@
     - [x] 报名
     - [x] 报名列表
     - [x] 投票
+- [x] 抽奖问答
+    - [x] 活动信息
+    - [x] 问答列表
+    - [x] 提交答案 
+    - [x] 获取得分 
+    - [x] 抽奖
+    - [x] 填写中奖人信息    
 - [x] 搜索
     - [x] 基于elasticsearch
 
@@ -20,6 +27,7 @@
 - [ ] 微信支付宝支付
 
 ## 如何运行
+
 ### 先启动mysql redis etcd 服务
 ```shell
 sh server.sh
@@ -92,6 +100,7 @@ vi common/rpc/etc/rpc.yaml #公共配置
 vi common/rpc/etc/rpc.yaml #公共配置
 vi votes/rpc/etc/rpc.yaml #投票配置
 vi search/rpc/etc/search.yaml #搜索配置
+vi search/rpc/etc/questions.yaml #抽奖配置
 ```
 ### 然后启动 服务 ,应该我们要启动
 ```
@@ -104,6 +113,7 @@ appending output to nohup.out
 appending output to nohup.out
 appending output to nohup.out
 appending output to nohup.out 
+appending output to nohup.out 
 appending output to nohup.out    
 ```
 ### 可以分别查看是否启动成功
@@ -113,6 +123,7 @@ tail -F user/rpc/nohup.out #用户的rpc服务
 tail -F common/rpc/nohup.out #公共的
 tail -F votes/rpc/nohup.out #投票的
 tail -F search/rpc/nohup.out #搜索的
+tail -F questions/rpc/nohup.out #问答抽奖
 ```
 
 ### 在postman 导入数据 数据中台中心.postman_collection.json  就可以很愉快的玩耍了

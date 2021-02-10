@@ -5,6 +5,7 @@ import (
 	"datacenter/common/rpc/commonclient"
 	"datacenter/internal/config"
 	"datacenter/internal/middleware"
+	"datacenter/questions/rpc/questionsclient"
 	"datacenter/search/rpc/searchclient"
 	"datacenter/shared"
 	"datacenter/user/rpc/userclient"
@@ -28,10 +29,11 @@ type ServiceContext struct {
 	GreetMiddleware2 rest.Middleware
 	Usercheck        rest.Middleware
 	Admincheck       rest.Middleware
-	UserRpc          userclient.User //用户
-	CommonRpc        commonclient.Common
-	VotesRpc         votesclient.Votes
-	SearchRpc        searchclient.Search
+	UserRpc          userclient.User           //用户
+	CommonRpc        commonclient.Common       //公共
+	VotesRpc         votesclient.Votes         //投票
+	SearchRpc        searchclient.Search       //搜索
+	QuestionsRpc     questionsclient.Questions //问答抽奖
 	Cache            cache.Cache
 	RedisConn        *redis.Redis
 }
@@ -52,6 +54,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	cr := commonclient.NewCommon(zrpc.MustNewClient(c.CommonRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	vr := votesclient.NewVotes(zrpc.MustNewClient(c.VotesRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	sr := searchclient.NewSearch(zrpc.MustNewClient(c.SearchRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
+	qr := questionsclient.NewQuestions(zrpc.MustNewClient(c.QuestionsRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	//缓存
 	ca := cache.NewCache(c.CacheRedis, syncx.NewSharedCalls(), cache.NewCacheStat("dc"), shared.ErrNotFound)
 	rcon := redis.NewRedis(c.CacheRedis[0].Host, c.CacheRedis[0].Type, c.CacheRedis[0].Pass)
@@ -65,6 +68,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		CommonRpc:        cr,
 		VotesRpc:         vr,
 		SearchRpc:        sr,
+		QuestionsRpc:     qr,
 		Cache:            ca,
 		RedisConn:        rcon,
 	}

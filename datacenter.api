@@ -8,6 +8,7 @@ info(
 import "user.api"
 import "votes.api"
 import "search.api"
+import "questions.api"
 
 //获取 应用信息
 type Beid {

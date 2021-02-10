@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	common "datacenter/internal/handler/common"
+	questions "datacenter/internal/handler/questions"
 	search "datacenter/internal/handler/search"
 	user "datacenter/internal/handler/user"
 	votes "datacenter/internal/handler/votes"
@@ -154,5 +155,59 @@ func RegisterHandlers(engine *rest.Server, serverCtx *svc.ServiceContext) {
 				},
 			}...,
 		),
+	)
+
+	engine.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/questions/activities/info",
+				Handler: questions.ActivitiesInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/questions/award/info",
+				Handler: questions.AwardInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/questions/award/list",
+				Handler: questions.AwardListHandler(serverCtx),
+			},
+		},
+	)
+
+	engine.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Usercheck},
+			[]rest.Route{
+				{
+					Method:  http.MethodGet,
+					Path:    "/questions/lists",
+					Handler: questions.ListsHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/questions/change",
+					Handler: questions.ChangeHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/questions/grade",
+					Handler: questions.GradeHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/questions/lottery/turntable",
+					Handler: questions.TurntableHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/questions/lottery/convert",
+					Handler: questions.LotteryHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 }

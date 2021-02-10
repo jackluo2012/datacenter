@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "404ed551-4d2c-4038-8d2f-a943cfde29da",
+		"_postman_id": "43ca9f3b-6e67-4e0c-bbe7-916ed6d34442",
 		"name": "数据中台中心",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -40,34 +40,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n   \"type\":1,\n   \"password\":\"你的密码\",\n   \"mobile\":\"你的帐号\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/user/login",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"user",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "用户登陆",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n   \"type\":1,\n   \"password\":\"你的密码\",\n   \"mobile\":\"你的帐号\"\n}",
+							"raw": "{\n   \"type\":1,\n   \"password\":\"666666\",\n   \"mobile\":\"19988888888\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -702,6 +675,603 @@
 									"key": "actid",
 									"value": "1"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "问答抽奖",
+			"item": [
+				{
+					"name": "获取得分",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/questions/grade?actid=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"questions",
+								"grade"
+							],
+							"query": [
+								{
+									"key": "actid",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "提交答案",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"actid\":1,\n   \"answers\":\"A,B,C,D,C,B,A,C\",\n   \"score\":\"86\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/questions/change",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"questions",
+								"change"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "兑换奖品信息",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"username\":\"报名名称\",\n   \"phone\":\"13222222222\",\n   \"lotteryid\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/questions/lottery/convert",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"questions",
+								"lottery",
+								"convert"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "抽奖",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"actid\":1,\n   \"answerid\":6\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/questions/lottery/turntable",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"questions",
+								"lottery",
+								"turntable"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取问答抽奖活动的信息",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/questions/activities/info?actid=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"questions",
+								"activities",
+								"info"
+							],
+							"query": [
+								{
+									"key": "actid",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取问答抽奖奖品列表",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/questions/award/list?actid=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"questions",
+								"award",
+								"list"
+							],
+							"query": [
+								{
+									"key": "actid",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取问答抽奖问题列表 ",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/questions/lists?actid=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"questions",
+								"lists"
+							],
+							"query": [
+								{
+									"key": "actid",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "搜索",
+			"item": [
+				{
+					"name": "搜索文章",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "tanzi",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "dJReJJvEwVVse5jz",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/search/article?keyword=冰冰&size=1000",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"search",
+								"article"
+							],
+							"query": [
+								{
+									"key": "actid",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "keyword",
+									"value": "冰冰"
+								},
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "1000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "文章初始化",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "tanzi",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "dJReJJvEwVVse5jz",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/search/articel/init",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"search",
+								"articel",
+								"init"
+							],
+							"query": [
+								{
+									"key": "actid",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "存储文章",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "beid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "ptyid",
+								"type": "text",
+								"value": "1"
+							},
+							{
+								"key": "authorization",
+								"type": "text",
+								"value": "{{Authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"JumpUrl\": \"\",\n        \"ArticleFrom\": \"\",\n        \"Author\": \"米圆\",\n        \"NewsCategory\": \"明星\",\n        \"NewsTextTitle\": \"范冰冰冰冰-金星最毒的不是舌头\",\n        \"NewsContent\": \"<p>​在《狗魅金星》的纪录片里有这样一段故事。</p>\\n<p>2007年冬天，金星历时9年打造的舞台剧《中国制造-游园惊梦》即将在上海首演，她作为总编舞还一同承担着导演的职务。排练期间演员们通常12点多离开，金星常常会因为一些琐事要干到凌晨3点，想回家，来不及了，她就一个人睡在舞台上，从3点半睡到早上6点，然后睁开眼，继续干。</p>\\n<p>回忆起这段经历，金星说，“这就是剧场人的生活，但是我乐在其中。虽然我做了那么多其他的事情，但是我最钟爱的还是舞台。”</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204045 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-41.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204047 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-42.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204048 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-43.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204049 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-431.png!nrstatic\\\" ></p>\\n<p>“其他的事情”大概就是指做脱口秀、参加综艺、参加真人秀，最近这不金星就忙着对《追光吧哥哥》的舞台指指点点，各种翻白眼，各种放狠话......大众也正是从这些“其他事情”认识了金星，并给她下了个定义——“毒舌”。</p>\\n<p>尽管金星学跳舞出身不是什么鲜为人知的事，尽管她的微博简介从来都只写着“舞蹈家”，但这一层面的金星在大众认知里的存在感相对来说还是要弱很多很多。就像你从来不知道，金星在被问到，如何在几百万收入的电视节目邀约和几十万的舞台邀约之间做取舍，她毫不犹豫地选择了后者。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204051 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-44.jpg!nrstatic\\\" ></p>\\n<p>对她了解略深的或许还知道金星这些年参加了不少舞蹈类节目，除了坐在评委席对选手进行一番犀利而一针见血的点评，她偶尔也会亲自下场客串。最近一次上台应该是舞蹈节目里和自己战队的舞者合跳周深的《大鱼》，她穿着一席旗袍，打着一把油纸伞以现代舞的方式穿梭在各处，柔美又灵动，像一个讲故事的人，整场表演有了独特的“表达”与“意境”。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204056 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-48.gif!nrgif\\\" ></p>\\n<p>凤凰娱乐在2015年采访金星，问她，“你会不会担心‘毒舌女王’的头衔盖过舞蹈家？”，金星脸上大写的无所谓，“永远盖不过舞蹈的，如果你看过我跳舞的话，你就知道是盖不过的，没有那个舞蹈家金星，也没有今天的金星。”</p>\\n<p>是的，跳《大鱼》的金星53岁，而跳舞的金星，在她18岁那年，还是男儿身的时候就在舞蹈届成了名。</p>\\n<p>1985年，北京举行了第一届桃李杯舞蹈大赛，金星以中国舞+芭蕾跳了一曲《帕米尔牧歌》，整段表演行云流水，定点就像古树扎根在泥土里似的，非常稳。这段表演让金星获得了少年组的冠军。当时她还是全场，甚至全国第一个不穿芭蕾舞鞋就可以用脚趾尖跳舞的选手，不仅评委，中国舞蹈届都记住了这个独创出“男子足尖舞”的舞者。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204057 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-50.gif!nrgif\\\" ></p>\\n<p>舞蹈让金星大放异彩，却是来之不易。在金星的记忆里，她这辈子就闹过两次绝食都是因为舞蹈。</p>\\n<p>金星是家里唯一的男孩，她从小就喜欢跟小姑娘玩，喜欢唱歌跳舞。有一次她跟着院里的大孩子们去剧院看舞蹈表演，演员在台上灵动的身姿和舞步一下就吸引了她，伙伴们看完一场就走了，金星一个人趴在舞台边看了一场又一场。回到家，她就给妈妈说想去学舞，刚说出口就迎来怒斥。没法儿说服，她就闹绝食，把家里人逼得没路了，妈妈才撂下一句狠话，“我不管你了，你想做什么就去做吧，只要你自己不后悔。”</p>\\n<p>起初是自己在家里瞎练，天不亮就起床，像模像样地在家里压腿、劈叉、下腰。金星天资确实好，9岁那年就被挑选进了沈阳文工团。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204059 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-51.jpg!nrstatic\\\" ></p>\\n<p>10年间，金星多是跳中国舞，去了很多国家表演，也拿了很多奖。19岁那年她就成了首席，也有了正营级的军衔。原本日子安安稳稳，但到20岁那年，金星果断放弃了这里的一切。</p>\\n<p>“放弃”实则可以理解为“重新出发”。</p>\\n<p>金星其实一直想出国深造。那一年她听闻舞蹈家杨美琦在广东创办了国内第一个现代舞实验班，全国招20人，最后选一个人去美国留学。当时金星根本不了解什么是现代舞，但她很笃定，“我就是冲着那一个出国名额来的，我很自信，如果凭成绩，那个出国的人就是我。”她很兴奋，小跑着去找领导“批条子”，结果领导迟迟不肯放人，于是绝食这招又被金星利用了一回，吃了些苦头，幸在这招百试百灵。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204062 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-531.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204064 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-55.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204065 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-56.png!nrstatic\\\" ></p>\\n<p>不得不说这个决定很大胆，甚至说很任性，万一出国那个人不是自己呢。但后来金星说，“如果没有广州这一站的话，我不会有今天，我的人生不会有这么大的变化。”</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204067 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-57.jpg!nrstatic\\\" ></p>\\n<p>金星在国外跳现代舞的经历对许多国内网友来说大概最为陌生，甚至不曾了解一丝，但在金星的一生中，某种程度上，意味着“青春”与“辉煌”。</p>\\n<p>后现代舞代表人物艾尔文·尼古莱的得意门生默里·路易斯是金星在纽约的舞蹈老师。初到纽约时，老师就被金星的资质惊呆。旋转、软度、弹跳样样都令他们不可思议，金星在《半梦：金星自传》中回忆起当时令人发笑的对话，“他们说这是中国人培养出来的，这不是人。”</p>\\n<p>后来默里还让金星登台表演了他在57岁时创作出的经典舞剧《抖》，《抖》想传达的含义是一种人性的迷茫，金星的表演既不痛苦也不悲哀，只是通过舞姿和身体的颤抖讲述着一个普通人的无助，当时在台下的默里被金星的诠释感动到流了泪。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204068 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-04-58.png!nrstatic\\\" ></p>\\n<p>真正让金星在纽约成为一颗“星”的表演是《半梦》，这支舞是金星在1991年参加美国国际舞蹈节的编舞作品。</p>\\n<p>《半梦》让金星在舞蹈节上获得了最佳编舞大奖，并被美国舞蹈节聘为首席编舞，同时，也被意大利国家广播电视一台聘为电视台编舞，由此，金星便移居了欧洲。可以说，在国内舞蹈届，金星是现代舞的拓荒者，在国外舞蹈届，金星也有了一定的国际地位。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204069 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-00.jpg!nrstatic\\\" ></p>\\n<p>《半梦》的创作背景来自金星在美国经历的一个“噩梦”，因为一些原因她被同行诬陷入了狱，在狱中她便沉下心来构思新作品。金星在自传中这样解析《半梦》，“那是我对当时的社会、环境、生活、生命的思考。那盏聚光灯代表着拘留所里那个风扇......”她还说，谁也不知道我是在一种半梦半醒的状态中完成这支舞的。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204071 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-03.gif!nrgif\\\" ></p>\\n<p>《半梦》在B站上有73万的播放量，许多人就是从这则视频看到了金星的舞姿。没想到一向以毒舌示人的金星，跳起舞来，竟然这么优雅动人。她轻盈地在台上奔跑，每一个动作都能让人感受到一种生命力，网友说这是一种柔美与力量结合的柔韧感，仿佛舞者的每一块骨骼和肌肉都由自己任意掌控，对抗地心引力的同时充满了感情。伴着《梁祝》的音乐，她的舞动还有一丝感人。更有人感叹，金星真是生错了性别，她骨子里就是女人。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204073 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-04.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204074 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-05.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204075 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-06.png!nrstatic\\\" ></p>\\n<p>这段舞是金星最具代表性的经典，时隔28年，2019年，在上海大剧院举办的《上海金星舞蹈团20周年庆》演出上，金星再次亲自上台演绎了一曲《半梦》，这是她最后一次跳这支舞。网上没有现场视频，但在场的观众说虽然看得出金星没有年轻时那么灵活，腿也有一点点不稳，但不少人都看得泪流满面。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204077 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-07.jpg!nrstatic\\\" ></p>\\n<p>最后一次表演《半梦》的金星</p>\\n<p>外人看来，现代舞让金星获得了身份与荣誉，而于她自己来说，更重要的意义是找到了“自我”，“接触现代舞，我突然发现我可以通过它表达我自己想表达的，我可以选择我想跳的，这种自由的发挥，在我以前的舞蹈教育里从来没有过，这个真的让我豁然开朗。”</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204079 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-091.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204081 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-11.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204083 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-121.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204085 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-131.png!nrstatic\\\" ></p>\\n<p>金星曾在《迷魅金星》的采访中说现代舞让她找到自由</p>\\n<p>有舞蹈家说过，高级的现代舞表演不是让人看到炫技，而是可以令观众忽略一切技术上的东西，跟随着舞者的姿态进而体会她自由的表达与灵魂。而在金星的许多舞蹈中，就有这样的一种观感。有时候她不会拘泥于动作的高超或连贯，而是去表达内在的思想，她的每一个动作就是她的语言，每一段舞蹈都是在讲故事、讲人生、讲人性。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204087 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-15.gif!nrgif\\\" ><img class=\\\"alignnone size-full wp-image-3204090 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-19.gif!nrgif\\\" ><img class=\\\"alignnone size-full wp-image-3204094 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-22.gif!nrgif\\\" ><img class=\\\"alignnone size-full wp-image-3204097 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-25.gif!nrgif\\\" ></p>\\n<p>她始终推崇“自由表达”。正是因为这个理念，她才在1999年以个人名义在上海成立了金星舞蹈团，这是中国第一家私人现代舞蹈团体。提到自己的舞团，金星总是很自豪，不拿政府一分钱，自己投入，自己经营，在美国一票难求。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204099 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-27.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204102 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-28.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204103 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-29.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204105 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-301.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204107 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-31.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204109 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-33.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204110 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-34.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204112 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-35.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204114 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-361.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204116 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-371.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204118 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-39.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204120 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-40.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204121 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-41.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204123 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-42.png!nrstatic\\\" ></p>\\n<p>而金星舞蹈团并非一开始就是成功的。</p>\\n<p>舞团刚刚成立时，没有自己的排练厅，她就寻遍上海，在一个大型地下室租了个排练场地。她们排练场地隔壁也是一个舞蹈室，两家常常因为隔音效果不好，音乐混杂，跳错节奏，然后金星就买了个大喇叭，每天扯着嗓子指挥，一个星期不到她的嗓子就哑得说不出话。单独依靠演出维持运转生存压力非常大，成立初期舞团甚至有长达一年的时间没有任何演出机会，最困难的时候，金星把自己的房子都抵押了出去。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204125 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-43.jpg!nrstatic\\\" ></p>\\n<p>金星舞蹈团前几年属于“墙内开花，墙外香”，2010年，金星准备转战国内，这又遇到了经营问题，如何打开中国市场？金星这才想到了进军电视荧幕。有人说她就是想“圈钱”，金星从不回避这个话题，“我只是讲真话，毒舌是别人给我的，但我也不介意别人这样说，我很幸运还有这种能力打通不同的渠道，然后让别人发现，原来我背后还有舞蹈艺术、剧场艺术。”</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204126 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-45.png!nrstatic\\\" ></p>\\n<p>直到现在，金星从周一到周五都是在舞团上班的。早上两三个小时是她雷打不动的练功时间，下午是她编舞创作的时间。大概只在中午一两个小时的时间，她会留给电视节目的策划会。她会让电视节目剧组的人都到舞团来开会，不耽误她练舞。她录节目，基本会安排在周末，且不出上海，这一点，她也是为了保障家庭优先。</p>\\n<p>她说：“舞台才是我的根。”她知道自己的来路，不预设去处，但因为有托底的，也自信永远不会走偏。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204127 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-46.jpg!nrstatic\\\" ></p>\\n<p>艺术家，不是用作品感染人，就是把自己活成一件有感染力的作品，金星，两者兼具。</p>\\n<p>她人生最大的转折无疑是1995年那场“变性手术”，这场手术让金星实现了梦寐以求的愿望，但很少人知道手术过后，金星曾被医生判了这辈子都不可能再跳舞的死刑。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204129 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-47.jpg!nrstatic\\\" ></p>\\n<p>金星躺在手术台上</p>\\n<p>变性手术是成功的，只不过在漫长的手术过程中，因为护士粗心，金星的左腿被医疗器械压了16个小时，导致左腿的小腿肌肉到脚指尖神经全部坏死，医生告诉她不可能恢复原状，即使恢复过来，也会导致残疾 。</p>\\n<p>这对“舞蹈家”太致命了。金星的妈妈整日以泪洗面，但金星本人倒是冷静得有些可怕，“当时我相信不会的，我觉得好事多磨，我向上天要了这么大一份要求，我觉得老天可能往下再摁了一把，如果努努力坚持一下，我一定能恢复过来。”</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204130 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-49.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204131 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-50.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204133 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-52.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204134 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-53.png!nrstatic\\\" ></p>\\n<p>在医院接受康复治疗的那段日子，金星说是她一生中为数不多极致狼狈的时刻，那时候她从120斤暴瘦至96斤，整日里被电击治疗和康复训练搞得满脸汗珠、蓬头垢面。那时候她连走路都很艰难，坐完轮椅拄双拐杖，拄完双拐杖拄单拐杖，就这样一点一点让腿恢复知觉。</p>\\n<p>最后谁也没想到4个月之后，金星打破了“残废”的魔咒，一瘸一拐地出了院。连医生们都不敢相信。那时她被大家称为“医学奇迹”。</p>\\n<p>更“奇迹”的是，出院后仅半年时间，金星就拖着病腿在北京保利剧院演出了一台“红与黑”晚会。舞台上的金星，只有她自己和亲友知道那条左腿是冰凉的，发力全靠右腿在支撑。那场近乎拼掉一条命才换来的起舞让金星感叹，“我跟生活讨回了一份自由。”</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204135 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-54.jpg!nrstatic\\\" ></p>\\n<p>其实到现在金星的腿也有后遗症，而且随着年龄的增加，她上台的频率也少了很多，用她自己的话来讲，“我的演出看一场少一场。”</p>\\n<p>金星舞蹈团开巡演的时候，不上场的她偶尔也会在舞剧上演之前给观众们发发小福利，下面这段就是前几年的一段开场表演，很难相信，50岁的金星带着病腿跳舞时依然能如此赏心悦目，甚至富有一种特别的美感。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204138 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-05-56.gif!nrgif\\\" ></p>\\n<p>电视节目上也时常能看到她轻轻起舞的身影：没有那么多技术性动作，时间上没有舞剧那么充沛，舞蹈编排也不如舞剧那么精致。不了解的人总是在弹幕里吐槽这水平不过如此，只有了解金星了解舞蹈的人才知道，她的每一次起舞都是涅磐重生之后的绽放。</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204141 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-06-01.gif!nrgif\\\" ><img class=\\\"alignnone size-full wp-image-3204146 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-06-04.gif!nrgif\\\" ><img class=\\\"alignnone size-full wp-image-3204149 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-06-08.gif!nrgif\\\" ></p>\\n<p>很感慨，在大众的认知里，金星人生最大的事迹不是舞蹈得奖而是做变性手术，最深入人心的形象不是台上沉静的舞者而是锋利爽辣的毒舌金姐。如果不是有意去了解，金星在舞蹈上的造诣放娱乐圈就如她的一块背景板，很少有人留意，而实际上，舞台上的金星才是她的灵魂。</p>\\n<p>更唏嘘的是她最被人记得的部分还让她遭到了各样的非议与骂声。本以为很火辣直率的金姐会用一箭穿心的明台词怼得对方丝毫没有还击之力，而令我没想到的是她更愿意用一种平和的心态来看待，</p>\\n<p>她说自己实现了成为女人的愿望，舞蹈也没有抛弃她，还拥有了不敢奢望的爱情与孩子，</p>\\n<p>“上天给了我那么多自由和恩赐，就把别人评述的自由给别人吧。”</p>\\n<p><img class=\\\"alignnone size-full wp-image-3204150 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-06-10.png!nrstatic\\\" ><img class=\\\"alignnone size-full wp-image-3204151 lazy lazy\\\" original-src=\\\"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2020/12/2020-12-21_10-06-11.png!nrstatic\\\" ></p>\\n\",\n        \"QuizBackImg\": \"\",\n        \"ArticleType\": 1,\n        \"FromTitle\": \"谈资生产队\",\n        \"NewsId\": \"3204029\",\n        \"SortTime\": \"\",\n        \"ContentUrl\": \"https%3A%2F%2Fmobile2.itanzi.com%2Fapi2%2Fa%3FNewsId%3D3204029\",\n        \"NewsAdvImage\": \"http%3A%2F%2Ftanzi27niu.cdsb.mobi%2Fwps%2Fwp-content%2Fuploads%2F2020%2F12%2F2020-12-21_10-16-09.jpg\",\n        \"NewsStatus\": \"publish\",\n        \"NewsTextLead\": \"\",\n        \"NewsTitle\": \"金星最毒的不是舌头\",\n        \"NewsRefTitle\": \"\",\n        \"ImageUrl\": \"http%3A%2F%2Ftanzi27niu.cdsb.mobi%2Fwps%2Fwp-content%2Fuploads%2F2020%2F12%2F2020-12-21_10-16-09.jpg\",\n        \"NewsDate\": \"2020-12-21 15:25:36\",\n        \"NewsSubTitle\": \"“虽然我做了那么多其他的事情，但是我最钟爱的还是舞台”\",\n        \"ShowToolBar\": true,\n        \"AuthorUrl\": \"http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2018/09/2018-09-05_14-31-38.jpg!tx\",\n        \"AdImageUrl\": \"\",\n        \"AppUrl\": \"https%3A%2F%2Fmobile2.itanzi.com%2Fapi2%2Fapp%3FNewsId%3D3204029\",\n        \"AppSpUrl\": \"https%3A%2F%2Fmobile2.itanzi.com%2Fapi2%2Fspapp%3FNewsId%3D3204029\",\n        \"IsCollect\": false,\n        \"HasRead\": \"2.207万\",\n        \"CommentsNum\": \"3\",\n        \"PathPage\": null\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/search/articel/store",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"search",
+								"articel",
+								"store"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "用户信息",
+			"item": [
+				{
+					"name": "获取用户信息",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"smscode\":\"1212\",\n   \"password\":\"666666\",\n   \"mobile\":\"19988888881\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/user/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"register"
 							]
 						}
 					},

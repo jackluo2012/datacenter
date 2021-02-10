@@ -51,6 +51,8 @@ RpcServer ${userPath} ${UserRpc} ${configPath}
 RpcServer ${votesPath} ${VotesRpc} ${configPath}
 #搜索服务
 RpcServerPlus ${getewayPath} search
+#问答抽奖服务
+RpcServerPlus ${getewayPath} questions
 #Api服务
 StartServer ${getewayPath} ${geteWayApi} ${geteWayCnf}
 

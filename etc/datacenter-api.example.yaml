@@ -29,4 +29,9 @@ SearchRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: search.rpc          
+    Key: search.rpc
+QuestionsRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: questions.rpc                 

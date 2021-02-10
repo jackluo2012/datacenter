@@ -176,3 +176,25 @@ type ArticleReq struct {
 	NewsTitle string `json:"NewsTitle"`
 	ImageUrl  string `json:"ImageUrl"`
 }
+
+type AnswerReq struct {
+	ActivityId int64  `json:"actid"`
+	Answers    string `json:"answers"`
+	Score      string `json:"score"`
+}
+
+type QuestionsAwardReq struct {
+	ActivityId int64 `json:"actid"`
+	AnswerId   int64 `json:"answerid"`
+}
+
+type AnswerResp struct {
+	Answers string `json:"answers"`
+	Score   string `json:"score"`
+}
+
+type AwardConvertReq struct {
+	UserName  string `json:"username"`
+	Phone     string `json:"phone"`
+	LotteryId int64  `json:"lotteryid"`
+}

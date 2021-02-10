@@ -1,0 +1,77 @@
+// 问答 抽奖 开始
+@server(
+	group: questions
+)
+service datacenter-api {
+	@doc(
+		summary: "获取活动的信息"
+	)
+	@handler activitiesInfo
+	get /questions/activities/info (Actid) returns (ActivityResp)
+	@doc(
+		summary: "获取奖品信息"
+	)
+	@handler awardInfo
+	get /questions/award/info (Actid) returns (ActivityResp)
+
+	@handler awardList
+	get /questions/award/list (Actid) returns (ActivityResp)
+	
+}
+type AnswerReq struct {
+	ActivityId	int64 `json:"actid"` 
+	Answers	string `json:"answers"` 
+	Score	string `json:"score"`
+}
+type QuestionsAwardReq struct {
+	ActivityId	int64 `json:"actid"` 
+	AnswerId	int64 `json:"answerid"` 
+}
+type AnswerResp struct {
+	Answers	string `json:"answers"` 
+	Score	string `json:"score"`
+}
+type AwardConvertReq struct {
+	UserName	string `json:"username"` 
+	Phone		string `json:"phone"` 
+	LotteryId	int64 `json:"lotteryid"` 
+}
+
+
+@server(
+	jwt: Auth
+	group: questions
+	middleware: Usercheck
+)
+service datacenter-api {
+	@doc(
+		summary: "获取题目"
+	)
+	@handler lists
+	get /questions/lists (VoteReq) returns (AnswerResp)
+	@doc(
+		summary: "提交答案"
+	)
+	@handler change
+	post /questions/change (AnswerReq) returns (VoteResp)
+
+	@doc(
+		summary: "获取分数"
+	)
+	@handler grade
+	get /questions/grade (VoteReq) returns (VoteResp)
+
+	@doc(
+		summary: "开始转盘"
+	)
+	@handler turntable
+	post /questions/lottery/turntable (EnrollReq) returns (EnrollResp)
+	@doc(
+		summary: "填写中奖信息人"
+	)
+	@handler lottery
+	post /questions/lottery/convert (AwardConvertReq) returns (EnrollResp)
+}
+
+
+// 问答 抽奖 结束

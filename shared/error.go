@@ -13,6 +13,7 @@ var (
 	ErrNotFound               = errors.New("data not find")
 	ErrorUserNotFound         = errors.New("用户不存在")
 	ErrorNoRequiredParameters = errors.New("必要参数不能为空")
+	ErrorUserOperation        = errors.New("用户正在操作中，请稍后重试")
 )
 
 type (

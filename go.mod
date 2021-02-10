@@ -10,7 +10,7 @@ require (
 	github.com/medivhzhan/weapp/v2 v2.2.4 // indirect
 	github.com/olivere/elastic/v7 v7.0.22
 	github.com/qiniu/api.v7/v7 v7.7.0
-	github.com/tal-tech/go-zero v1.0.28
+	github.com/tal-tech/go-zero v1.1.4
 	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb // indirect
 	google.golang.org/grpc v1.29.1
 	google.golang.org/protobuf v1.25.0

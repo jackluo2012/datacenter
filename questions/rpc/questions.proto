@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package questions;
+
+message Request {
+  string ping = 1;
+}
+
+message Response {
+  string pong = 1;
+}
+message ActivitiesReq {
+  int64 actid=1;
+}
+
+//返回问答抽奖活动信息
+message ActInfoResp{
+  int64 id=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  string title=4;
+  string descr=5;
+  int64 status=6;
+  int64 start_date=7;
+  int64 end_date=8;
+  int64 get_score=9;
+  string header=10;
+  string des=11;
+  string image=12;
+  string rule=13;  
+}
+message AwardInfoResp{
+  int64 id=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  string title=4;
+  string des=5;
+  int64 number=6;
+  int64 start_probability=7;
+  int64 end_probability=8;
+  int64 ActivityId=9;
+  string header=10;
+  string image=11;  
+}
+message AwardListResp{
+  repeated AwardInfoResp data=1;
+}
+
+message questionsResp {
+  int64 id=1;
+  int64 beid=2;
+  int64 ptyid=3;
+  string Options=4;
+  string Corrent=5;
+  int64 Status=6;
+  string Question=7;
+  int64 ActivityId=8;  
+}
+message QuestionsListResp{
+  repeated questionsResp data=1;
+}
+//答案提交
+message QuestionsAnswerReq{    
+    int64 beid=1;
+    int64 ptyid=2;
+    int64 ActivityId=3;
+    int64 Uid=4;
+    string answers=5;
+    string score=6;
+    int64 Auid=7;
+}
+//问答返回
+message QuestionsAnswerResp{
+    int64 answer_id=1;
+    string score=2;    
+}
+//得分
+message GradeReq {
+  int64 actid=1;
+  int64 uid=2;
+  int64 Auid=3;
+}
+
+//抽奖
+message TurnTableReq{    
+    int64 beid=1;
+    int64 ptyid=2;
+    int64 ActivityId=3;
+    int64 Uid=4;
+    int64 Auid=5;
+    int64 answer_id=6;
+}
+
+//兑奖
+message ConvertReq{
+  int64 beid=1;
+  int64 ptyid=2;
+  int64 ActivityId=3;
+  int64 Uid=4;
+  int64 Auid=5;
+  int64 LotteryId=6;
+  string username=7;
+  string phone=8; 
+}
+message ConvertResp{
+  int64 Id=1;
+  int64 LotteryId=2;
+  int64 ActivityId=3;
+}
+
+service Questions {
+  //获取 问答抽奖活动信息
+  rpc GetActivitiesInfo(ActivitiesReq) returns(ActInfoResp);
+  //获取 问答奖品信息
+  rpc GetAwardInfo(ActivitiesReq) returns(AwardInfoResp);   
+  //获取 问答奖品列表
+  rpc GetAwardList(ActivitiesReq) returns(AwardListResp);
+  //获取 问题列表
+  rpc GetQuestionsList(ActivitiesReq) returns(QuestionsListResp); 
+  // 提交 答案   
+  rpc PostQuestionsChange(QuestionsAnswerReq) returns(QuestionsAnswerResp);   
+  //获取得分
+  rpc GetQuestionsGrade(GradeReq) returns(QuestionsAnswerResp); 
+  //抽奖
+  rpc PostTurnTable(TurnTableReq) returns (AwardInfoResp);
+
+  //填写中奖记录
+  rpc PostConvert(ConvertReq) returns (ConvertResp);
+}

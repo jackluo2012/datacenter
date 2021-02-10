@@ -3,6 +3,7 @@ package shared
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -91,4 +92,15 @@ func HttpPostForm(gourl string, form url.Values) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 	return ioutil.ReadAll(resp.Body)
+}
+
+// 得到一个随机数
+func RandInt(max int) int {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	if max < 1 {
+		return r.Int()
+	} else {
+		return r.Intn(max)
+	}
 }
