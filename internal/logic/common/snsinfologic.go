@@ -30,7 +30,7 @@ func NewSnsInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) SnsInfoLog
 func (l *SnsInfoLogic) SnsInfo(req types.SnsReq) (appConfigresp *common.AppConfigResp, err error) {
 
 	//检查 缓存中是否有数据
-	err = l.svcCtx.Cache.GetCache(model.GetCacheAppConfigIdPtyidPrefix(req.Beid.Beid, req.Ptyid), appConfigresp)
+	err = l.svcCtx.Cache.Get(model.GetCacheAppConfigIdPtyidPrefix(req.Beid.Beid, req.Ptyid), appConfigresp)
 	if err != nil && err == shared.ErrNotFound {
 		//直接请求 并返回
 		appConfigresp, err = l.svcCtx.CommonRpc.GetAppConfig(l.ctx, &common.AppConfigReq{
@@ -41,7 +41,7 @@ func (l *SnsInfoLogic) SnsInfo(req types.SnsReq) (appConfigresp *common.AppConfi
 			return
 		}
 		//缓存数据
-		err = l.svcCtx.Cache.SetCache(model.GetCacheAppConfigIdPtyidPrefix(req.Beid.Beid, req.Ptyid), appConfigresp)
+		err = l.svcCtx.Cache.Set(model.GetCacheAppConfigIdPtyidPrefix(req.Beid.Beid, req.Ptyid), appConfigresp)
 	}
 	return
 }

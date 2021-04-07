@@ -56,7 +56,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	sr := searchclient.NewSearch(zrpc.MustNewClient(c.SearchRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	qr := questionsclient.NewQuestions(zrpc.MustNewClient(c.QuestionsRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	//缓存
-	ca := cache.NewCache(c.CacheRedis, syncx.NewSharedCalls(), cache.NewCacheStat("dc"), shared.ErrNotFound)
+	ca := cache.New(c.CacheRedis, syncx.NewSharedCalls(), cache.NewStat("dc"), shared.ErrNotFound)
 	rcon := redis.NewRedis(c.CacheRedis[0].Host, c.CacheRedis[0].Type, c.CacheRedis[0].Pass)
 	return &ServiceContext{
 		Config:           c,

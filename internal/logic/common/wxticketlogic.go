@@ -46,8 +46,8 @@ func (l *WxTicketLogic) WxTicket(req types.SnsReq) (*types.WxShareResp, error) {
 	}
 	var ticketoken = ""
 	//如果有
-	l.svcCtx.Cache.GetCache("ticket_token",&ticketoken);
-	if(ticketoken==""){
+	l.svcCtx.Cache.Get("ticket_token", &ticketoken)
+	if ticketoken == "" {
 		//拿到微信操作的
 		accessTokenServer = core.NewDefaultAccessTokenServer(appconf.Appid, appconf.Appsecret, nil)
 		wechatClient = core.NewClient(accessTokenServer, nil)
@@ -58,7 +58,7 @@ func (l *WxTicketLogic) WxTicket(req types.SnsReq) (*types.WxShareResp, error) {
 		if err != nil {
 			return nil, err
 		}
-		l.svcCtx.Cache.SetCacheWithExpire("ticket_token",ticketoken,time.Duration(3600) * time.Second)
+		l.svcCtx.Cache.SetWithExpire("ticket_token", ticketoken, time.Duration(3600)*time.Second)
 	}
 
 	// jsapiTicket := "sM4AOVdWfPE4DxkXGEs8VMCPGGVi4C3VM0P37wVUCFvkVAy_90u5h9nbSlYy3-Sl-HhTdfl2fzFy1AOcHKP7qg"

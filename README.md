@@ -97,10 +97,9 @@ mysql > source sql.sql
 vi etc/datacenter-api.yaml #网关配置
 vi user/rpc/etc/rpc.yaml #用户信息配置
 vi common/rpc/etc/rpc.yaml #公共配置
-vi common/rpc/etc/rpc.yaml #公共配置
 vi votes/rpc/etc/rpc.yaml #投票配置
 vi search/rpc/etc/search.yaml #搜索配置
-vi search/rpc/etc/questions.yaml #抽奖配置
+vi questions/rpc/etc/questions.yaml #抽奖配置
 ```
 ### 然后启动 服务 ,应该我们要启动
 ```
