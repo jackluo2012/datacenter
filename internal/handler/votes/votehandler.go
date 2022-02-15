@@ -8,7 +8,7 @@ import (
 	"datacenter/internal/types"
 	"datacenter/shared"
 
-	"github.com/tal-tech/go-zero/rest/httpx"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func VoteHandler(ctx *svc.ServiceContext) http.HandlerFunc {

@@ -12,8 +12,8 @@ import (
 	"datacenter/votes/rpc/internal/svc"
 	"datacenter/votes/rpc/votes"
 
-	"github.com/tal-tech/go-zero/core/conf"
-	"github.com/tal-tech/go-zero/zrpc"
+	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
 )
 

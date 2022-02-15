@@ -10,7 +10,7 @@ import (
 
 	"datacenter/questions/rpc/questions"
 
-	"github.com/tal-tech/go-zero/zrpc"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type (

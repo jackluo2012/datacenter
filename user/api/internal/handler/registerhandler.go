@@ -7,7 +7,7 @@ import (
 	"datacenter/user/api/internal/svc"
 	"datacenter/user/api/internal/types"
 
-	"github.com/tal-tech/go-zero/rest/httpx"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func registerHandler(ctx *svc.ServiceContext) http.HandlerFunc {

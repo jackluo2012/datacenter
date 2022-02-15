@@ -8,7 +8,7 @@ import (
 	"datacenter/shared"
 	"datacenter/votes/rpc/votes"
 
-	"github.com/tal-tech/go-zero/rest/httpx"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func ActivityIcrViewHandler(ctx *svc.ServiceContext) http.HandlerFunc {

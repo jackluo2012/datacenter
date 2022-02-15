@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/tal-tech/go-zero/core/stores/cache"
-	"github.com/tal-tech/go-zero/core/stores/sqlc"
-	"github.com/tal-tech/go-zero/core/stores/sqlx"
-	"github.com/tal-tech/go-zero/core/stringx"
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/builderx"
+	"github.com/zeromicro/go-zero/core/stores/builder"
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"github.com/zeromicro/go-zero/core/stringx"
 )
 
 var (
-	appQuestionsFieldNames          = builderx.RawFieldNames(&AppQuestions{})
+	appQuestionsFieldNames          = builder.RawFieldNames(&AppQuestions{})
 	appQuestionsRows                = strings.Join(appQuestionsFieldNames, ",")
 	appQuestionsRowsExpectAutoSet   = strings.Join(stringx.Remove(appQuestionsFieldNames, "`id`", "`create_time`", "`update_time`"), ",")
 	appQuestionsRowsWithPlaceHolder = strings.Join(stringx.Remove(appQuestionsFieldNames, "`id`", "`create_time`", "`update_time`"), "=?,") + "=?"

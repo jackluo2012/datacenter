@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"datacenter/user/api/internal/svc"
-	"github.com/tal-tech/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type PingLogic struct {
