@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/tal-tech/go-zero/rest/httpx"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 type (

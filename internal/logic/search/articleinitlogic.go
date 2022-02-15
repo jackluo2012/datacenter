@@ -7,7 +7,7 @@ import (
 	"datacenter/internal/types"
 	"datacenter/search/rpc/search"
 
-	"github.com/tal-tech/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type ArticleInitLogic struct {

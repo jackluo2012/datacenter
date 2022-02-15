@@ -9,7 +9,7 @@ import (
 	"datacenter/search/rpc/searchclient"
 	"datacenter/shared"
 
-	"github.com/tal-tech/go-zero/rest/httpx"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func ArticleStoreHandler(ctx *svc.ServiceContext) http.HandlerFunc {

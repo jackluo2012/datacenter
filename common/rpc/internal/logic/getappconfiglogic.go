@@ -6,7 +6,7 @@ import (
 	"datacenter/common/rpc/common"
 	"datacenter/common/rpc/internal/svc"
 
-	"github.com/tal-tech/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type GetAppConfigLogic struct {

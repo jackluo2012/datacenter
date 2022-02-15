@@ -8,7 +8,7 @@ import (
 	"datacenter/shared"
 	"datacenter/votes/rpc/votesclient"
 
-	"github.com/tal-tech/go-zero/rest/httpx"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func EnrollListsHandler(ctx *svc.ServiceContext) http.HandlerFunc {

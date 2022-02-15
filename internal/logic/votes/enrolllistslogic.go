@@ -7,7 +7,7 @@ import (
 	"datacenter/votes/rpc/votes"
 	"datacenter/votes/rpc/votesclient"
 
-	"github.com/tal-tech/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type EnrollListsLogic struct {

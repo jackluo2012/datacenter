@@ -6,7 +6,7 @@ import (
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
 
-	"github.com/tal-tech/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type VotesVerificationLogic struct {

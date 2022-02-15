@@ -7,7 +7,7 @@ import (
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
 
-	"github.com/tal-tech/go-zero/rest/httpx"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func UserInfoHandler(ctx *svc.ServiceContext) http.HandlerFunc {

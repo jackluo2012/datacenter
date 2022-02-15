@@ -8,7 +8,7 @@ import (
 	"datacenter/questions/rpc/questionsclient"
 	"datacenter/shared"
 
-	"github.com/tal-tech/go-zero/rest/httpx"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func ListsHandler(ctx *svc.ServiceContext) http.HandlerFunc {

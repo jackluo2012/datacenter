@@ -7,15 +7,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tal-tech/go-zero/core/stores/cache"
-	"github.com/tal-tech/go-zero/core/stores/sqlc"
-	"github.com/tal-tech/go-zero/core/stores/sqlx"
-	"github.com/tal-tech/go-zero/core/stringx"
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/builderx"
+	"github.com/zeromicro/go-zero/core/stores/builder"
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"github.com/zeromicro/go-zero/core/stringx"
 )
 
 var (
-	appEnrollFieldNames          = builderx.FieldNames(&AppEnroll{})
+	appEnrollFieldNames          = builder.RawFieldNames(&AppEnroll{})
 	appEnrollRows                = strings.Join(appEnrollFieldNames, ",")
 	appEnrollRowsExpectAutoSet   = strings.Join(stringx.Remove(appEnrollFieldNames, "aeid", "create_time", "update_time"), ",")
 	appEnrollRowsWithPlaceHolder = strings.Join(stringx.Remove(appEnrollFieldNames, "aeid", "create_time", "update_time"), "=?,") + "=?"

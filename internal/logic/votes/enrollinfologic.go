@@ -6,7 +6,7 @@ import (
 	"datacenter/internal/svc"
 	"datacenter/votes/rpc/votes"
 
-	"github.com/tal-tech/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type EnrollInfoLogic struct {

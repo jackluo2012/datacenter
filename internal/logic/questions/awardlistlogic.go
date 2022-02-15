@@ -6,7 +6,7 @@ import (
 	"datacenter/internal/svc"
 	"datacenter/questions/rpc/questionsclient"
 
-	"github.com/tal-tech/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type AwardListLogic struct {

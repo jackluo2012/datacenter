@@ -5,7 +5,7 @@ import (
 
 	"datacenter/user/api/internal/logic"
 	"datacenter/user/api/internal/svc"
-	"github.com/tal-tech/go-zero/rest/httpx"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func pingHandler(ctx *svc.ServiceContext) http.HandlerFunc {
