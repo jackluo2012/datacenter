@@ -16,8 +16,8 @@ import (
 var (
 	baseMemberFieldNames          = builder.RawFieldNames(&BaseMember{})
 	baseMemberRows                = strings.Join(baseMemberFieldNames, ",")
-	baseMemberRowsExpectAutoSet   = strings.Join(stringx.Remove(baseMemberFieldNames, "id", "create_time", "update_time"), ",")
-	baseMemberRowsWithPlaceHolder = strings.Join(stringx.Remove(baseMemberFieldNames, "id", "create_time", "update_time"), "=?,") + "=?"
+	baseMemberRowsExpectAutoSet   = strings.Join(stringx.Remove(baseMemberFieldNames, "`id`", "`create_time`", "`update_time`"), ",")
+	baseMemberRowsWithPlaceHolder = strings.Join(stringx.Remove(baseMemberFieldNames, "`id`", "`create_time`", "`update_time`"), "=?,") + "=?"
 
 	cacheBaseMemberMobilePrefix = "cache#BaseMember#mobile#"
 	cacheBaseMemberIdPrefix     = "cache#BaseMember#id#"
