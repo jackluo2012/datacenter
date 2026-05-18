@@ -55,7 +55,7 @@ syslog查询、syslog实时查看、登录日志、审计日志
 前端：vue elementui vite 等常见技术    
 中间件：doris，mysql，redis，rabbitmq，minio，zookeeper。    
  
-有演示环境和方案PPT，需要加V:abcd19920605    
+有演示环境和方案PPT，需要加V:jackluo1989    
 
 # 以下为本开源项目正文
 
