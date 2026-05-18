@@ -50,12 +50,12 @@ syslog查询、syslog实时查看、登录日志、审计日志
 ### 14、主数据
 主数据模型管理、自动生成代码码段管理、主数据管理、主数据分发
 
-技术栈
-后端：Java springboot2.7 springcloud/alibaba mybatis plus hutool 等常见技术
-前端：vue elementui vite 等常见技术
-中间件：doris，mysql，redis，rabbitmq，minio，zookeeper。
-
-有演示环境和方案PPT，需要加V:abcd19920605
+技术栈    
+后端：Java springboot2.7 springcloud/alibaba mybatis plus hutool 等常见技术    
+前端：vue elementui vite 等常见技术    
+中间件：doris，mysql，redis，rabbitmq，minio，zookeeper。    
+ 
+有演示环境和方案PPT，需要加V:abcd19920605    
 
 # 以下为本开源项目正文
 
