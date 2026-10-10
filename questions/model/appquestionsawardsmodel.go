@@ -71,7 +71,7 @@ func (m *defaultAppQuestionsAwardsModel) Insert(data AppQuestionsAwards) (sql.Re
 	return ret, err
 }
 
-//获取所有的
+// 获取所有的
 func (m *defaultAppQuestionsAwardsModel) Find(id int64) ([]AppQuestionsAwards, error) {
 	//缓存 后面来加吧
 	var resp []AppQuestionsAwards

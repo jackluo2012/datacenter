@@ -7,7 +7,7 @@ import (
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

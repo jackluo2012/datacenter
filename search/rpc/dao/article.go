@@ -67,14 +67,14 @@ func NewArticelES(client *elastic.Client) (*ArticelES, error) {
 	if !exists {
 		_, err := articelEs.client.CreateIndex(articelEs.index).Body(articelEs.mapping).Do(context.Background())
 		if err != nil {
-			logx.Info("userEs init failed err is %s\n", err)
+			logx.Infof("userEs init failed err is %s\n", err)
 			return nil, err
 		}
 	}
 	return articelEs, nil
 }
 
-//索引
+// 索引
 func (aes *ArticelES) Index(art *searchclient.ArticleReq) (string, error) {
 	res, err := aes.client.Index().Index(aes.index).Id(art.NewsId).BodyJson(art).Do(context.Background())
 	if err != nil {

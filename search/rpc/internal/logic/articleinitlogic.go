@@ -13,8 +13,8 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-//数据初始化模板事例
-//一些数据结构
+// 数据初始化模板事例
+// 一些数据结构
 type PageData struct {
 	ResultMsg string
 	Data      Data
@@ -43,7 +43,7 @@ func NewArticleInitLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Artic
 	}
 }
 
-//这个是个递归
+// 这个是个递归
 func (l *ArticleInitLogic) ArticleRecursion(gourl string, form url.Values, once bool) error {
 	body, err := shared.HttpPostForm(gourl, form)
 	if err != nil {

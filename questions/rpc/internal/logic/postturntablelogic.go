@@ -90,7 +90,7 @@ doDefault:
 	}, nil
 }
 
-//检查 奖品信息
+// 检查 奖品信息
 func (l *PostTurnTableLogic) prize(actid, prizeCode int64) (*model.AppQuestionsAwards, error) {
 	var prizeGift *model.AppQuestionsAwards
 

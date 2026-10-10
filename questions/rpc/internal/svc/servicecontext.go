@@ -20,7 +20,7 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	rconn := redis.NewRedis(c.CacheRedis[0].Host, c.CacheRedis[0].Type, c.CacheRedis[0].Pass)
+	rconn := redis.MustNewRedis(c.CacheRedis[0].RedisConf)
 	mconn := sqlx.NewMysql(c.Mysql.DataSource)
 	qam := model.NewAppQuestionsActivitiesModel(mconn, c.CacheRedis)
 	qawardsm := model.NewAppQuestionsAwardsModel(mconn, c.CacheRedis)

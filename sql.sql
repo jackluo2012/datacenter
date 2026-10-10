@@ -34,7 +34,7 @@ CREATE TABLE `app_config` (
   `updated_at` datetime(3) DEFAULT NULL,
   `deleted_at` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='中台APP社交属性表';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT COMMENT='中台APP社交属性表';
 
 -- ----------------------------
 -- Records of app_config
@@ -105,13 +105,13 @@ CREATE TABLE `app_votes` (
   `uid` bigint NOT NULL DEFAULT '0' COMMENT '中台表用户的id',
   `auid` bigint NOT NULL DEFAULT '0' COMMENT '中台表appuser的id',
   `actid` bigint NOT NULL DEFAULT '0' COMMENT '投票活动的id',
-  `ip` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '投票人IP',
+  `ip` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '投票人IP',
   `aeid` bigint unsigned NOT NULL COMMENT '投票的id',
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`avid`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='投票记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COMMENT='投票记录表';
 
 -- ----------------------------
 -- Table structure for app_votes_activity
@@ -138,7 +138,7 @@ CREATE TABLE `app_votes_activity` (
   `num` int DEFAULT NULL COMMENT '单位',
   `deleted_at` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`actid`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='投票活动表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='投票活动表';
 
 -- ----------------------------
 -- Records of app_votes_activity
@@ -164,7 +164,7 @@ CREATE TABLE `base_app` (
   `updated_at` datetime(3) DEFAULT NULL,
   `deleted_at` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='中台APP表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT COMMENT='中台APP表';
 
 -- ----------------------------
 -- Records of base_app
@@ -191,10 +191,10 @@ CREATE TABLE `base_member` (
   `deleted_at` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `mobile_index` (`mobile`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='中台用户表';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT COMMENT='中台用户表';
 
 
---- 加入问答抽奖
+-- 加入问答抽奖
 
 
 -- ----------------------------
@@ -206,15 +206,15 @@ CREATE TABLE `app_questions` (
   `beid` int NOT NULL DEFAULT '0' COMMENT '对应的平台',
   `ptyid` int NOT NULL COMMENT '平台id: 1.微信公众号，2.微信小程序，3.支付宝',
   `activity_id` int NOT NULL DEFAULT '0' COMMENT '活动的id',
-  `question` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '问题',
-  `options` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '选项',
-  `corrent` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'A' COMMENT '正确选项（ABCD）',
+  `question` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '问题',
+  `options` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '选项',
+  `corrent` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '正确选项（ABCD）',
   `status` int NOT NULL DEFAULT '0' COMMENT '状态（01）',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `questions_question_unique` (`question`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of app_questions
@@ -238,21 +238,21 @@ CREATE TABLE `app_questions_activities` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `beid` int NOT NULL DEFAULT '0' COMMENT '对应的平台',
   `ptyid` int NOT NULL COMMENT '平台id: 1.微信公众号，2.微信小程序，3.支付宝',
-  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '活动主题',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '活动主题',
   `start_date` int NOT NULL DEFAULT '0' COMMENT '投票活动开始时间',
   `end_date` int NOT NULL DEFAULT '0' COMMENT '投票活动结束时间',
   `get_score` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '及格分数',
-  `activity_week` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT '活动周期（可多选）,分隔',
-  `header` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT '分享标题',
-  `des` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT '分享文字',
-  `image` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '分享图片',
-  `rule` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '抽奖规则',
+  `activity_week` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '活动周期（可多选）,分隔',
+  `header` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '分享标题',
+  `des` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '分享文字',
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '分享图片',
+  `rule` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '抽奖规则',
   `status` tinyint NOT NULL DEFAULT '0' COMMENT '状态',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `activities_title_unique` (`title`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of app_questions_activities
@@ -273,15 +273,15 @@ CREATE TABLE `app_questions_answers` (
   `auid` bigint DEFAULT NULL,
   `test_id` int unsigned NOT NULL,
   `activity_id` int unsigned NOT NULL,
-  `answers` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '用户答题对错',
-  `score` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0.00' COMMENT '得分',
+  `answers` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户答题对错',
+  `score` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0.00' COMMENT '得分',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   KEY `answers_uid_foreign` (`uid`) USING BTREE,
   KEY `answers_test_id_foreign` (`test_id`) USING BTREE,
   KEY `answers_activity_id_foreign` (`activity_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Table structure for app_questions_awards
@@ -291,20 +291,20 @@ CREATE TABLE `app_questions_awards` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `beid` int NOT NULL DEFAULT '0' COMMENT '对应的平台',
   `ptyid` int NOT NULL COMMENT '平台id: 1.微信公众号，2.微信小程序，3.支付宝',
-  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '奖项名',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '奖项名',
   `activity_id` int unsigned NOT NULL,
   `start_probability` int NOT NULL DEFAULT '0' COMMENT '开始概率',
   `end_probability` int NOT NULL DEFAULT '0' COMMENT '结束概率',
   `number` int unsigned NOT NULL DEFAULT '0' COMMENT '中奖个数',
   `is_lottery` tinyint NOT NULL DEFAULT '0' COMMENT '是否属于中奖',
-  `header` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '分享标题',
-  `des` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '分享文本',
-  `image` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '分享图片',
+  `header` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '分享标题',
+  `des` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '分享文本',
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '分享图片',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `awards_title_unique` (`title`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of app_questions_awards
@@ -329,13 +329,13 @@ CREATE TABLE `app_questions_converts` (
   `uid` bigint NOT NULL DEFAULT '0' COMMENT '中台表用户的id',
   `auid` bigint NOT NULL DEFAULT '0' COMMENT '中台表用户的id',
   `lottery_id` int unsigned NOT NULL,
-  `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '获奖名',
-  `phone` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '手机号',
+  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '获奖名',
+  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '手机号',
   `status` int NOT NULL DEFAULT '0' COMMENT '处理（0/1）',
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Table structure for app_questions_lotteries
@@ -359,7 +359,7 @@ CREATE TABLE `app_questions_lotteries` (
   KEY `lotteries_activity_id_foreign` (`activity_id`) USING BTREE,
   KEY `lotteries_answer_id_foreign` (`answer_id`) USING BTREE,
   KEY `lotteries_award_id_foreign` (`award_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Table structure for app_questions_tests
@@ -369,14 +369,14 @@ CREATE TABLE `app_questions_tests` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `beid` int NOT NULL DEFAULT '0' COMMENT '对应的平台',
   `ptyid` int NOT NULL COMMENT '平台id: 1.微信公众号，2.微信小程序，3.支付宝',
-  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '题库类名',
-  `question_ids` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT '题库题编号',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '题库类名',
+  `question_ids` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '题库题编号',
   `status` int NOT NULL DEFAULT '0' COMMENT '状态（0/1）',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `tests_title_unique` (`title`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 
 

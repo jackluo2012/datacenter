@@ -144,7 +144,7 @@ func (m *defaultAppEnrollModel) IncrVotes(aeid int64) error {
 	return err
 }
 
-//浏览量 +1
+// 浏览量 +1
 func (m *defaultAppEnrollModel) IncrView(aeid int64) error {
 	appEnrollAeidKey := fmt.Sprintf("%s%v", cacheAppEnrollAeidPrefix, aeid)
 	_, err := m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {

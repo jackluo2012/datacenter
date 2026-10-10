@@ -40,7 +40,7 @@ func main() {
 	s.Start()
 }
 
-//拦截验证器
+// 拦截验证器
 func authInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 
 	if !limiter.Allow() {

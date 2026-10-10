@@ -1,17 +1,18 @@
+syntax = "v1"
 
 
 
 
-type SearchReq struct {
-	Keyword string `json:"keyword"`
-	Page string `json:"page"`
-	Size string `json:"size"`
+type SearchReq {
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page string `json:"page,optional" form:"page,optional"`
+	Size string `json:"size,optional" form:"size,optional"`
 }
-type SearchResp struct {
+type SearchResp {
 	Data []ArticleReq `json:"data"`
 }
 
-type ArticleReq struct{
+type ArticleReq {
 	NewsId string `json:"NewsId"`
 	NewsTitle string `json:"NewsTitle"`
 	ImageUrl string `json:"ImageUrl"`

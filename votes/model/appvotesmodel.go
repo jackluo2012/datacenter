@@ -80,7 +80,7 @@ func (m *defaultAppVotesModel) FindByDaysWithVotes(actid, uid, auid int64, date 
  * auid snsid
  */
 func (m *defaultAppVotesModel) FindByNumWithVotes(actid, uid, auid int64) (int64, error) {
-	query := fmt.Sprintf("select count(*) as count from %s where actid = ? AND uid = ? AND auid = ? limit 1", appVotesRows, m.table)
+	query := fmt.Sprintf("select count(*) as count from %s where actid = ? AND uid = ? AND auid = ? limit 1", m.table)
 	var count int64
 	err := m.conn.QueryRowPartial(&count, query, actid, uid, auid)
 	if err != nil {

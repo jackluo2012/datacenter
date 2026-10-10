@@ -1,3 +1,4 @@
+syntax = "v1"
 info(
 	title: "user api"// TODO: add title
 	desc: "用户系统"// TODO: add description
@@ -5,7 +6,7 @@ info(
 	email: "net.webjoy@gmail.com"
 )
 //注册请求
-type RegisterReq struct {
+type RegisterReq {
 	// TODO: add members here and delete this comment
 	Username string `json:"username"`
 	Mobile   string `json:"mobile"` //基本一个手机号码就完事
@@ -13,14 +14,14 @@ type RegisterReq struct {
 	Smscode	string `json:"smscode"` //短信码
 }
 //登陆请求
-type LoginReq struct{
+type LoginReq {
 	Username string `json:"username"`
 	Mobile   string `json:"mobile"` 
 	Password string `json:"password"`
 	Smscode	string `json:"smscode"` //短信码
 }
 //返回用户信息
-type UserReply struct {
+type UserReply {
 	auid       int64  `json:"auid"`
 	Uid       int64  `json:"uid"`
 	Beid	  int64  `json:"beid"` //应用id
@@ -34,7 +35,7 @@ type UserReply struct {
 	JwtToken
 }
 
-type JwtToken struct {
+type JwtToken {
 	AccessToken  string `json:"accessToken,omitempty"`
 	AccessExpire int64  `json:"accessExpire,omitempty"`
 	RefreshAfter int64  `json:"refreshAfter,omitempty"`

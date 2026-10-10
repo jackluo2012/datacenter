@@ -8,7 +8,7 @@ import (
 	"datacenter/user/api/internal/types"
 	"datacenter/user/model"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

@@ -57,7 +57,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	qr := questionsclient.NewQuestions(zrpc.MustNewClient(c.QuestionsRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	//缓存
 	ca := cache.New(c.CacheRedis, syncx.NewSingleFlight(), cache.NewStat("dc"), shared.ErrNotFound)
-	rcon := redis.NewRedis(c.CacheRedis[0].Host, c.CacheRedis[0].Type, c.CacheRedis[0].Pass)
+	rcon := redis.MustNewRedis(c.CacheRedis[0].RedisConf)
 	return &ServiceContext{
 		Config:           c,
 		GreetMiddleware1: greetMiddleware1,

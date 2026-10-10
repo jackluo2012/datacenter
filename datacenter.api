@@ -1,8 +1,10 @@
-info(
-	title: "中台系统"// TODO: add title
-	desc: "中台系统"// TODO: add description
+syntax = "v1"
+
+info (
+	title:  "中台系统" // TODO: add title
+	desc:   "中台系统" // TODO: add description
 	author: "jackluo"
-	email: "net.webjoy@gmail.com"
+	email:  "net.webjoy@gmail.com"
 )
 
 import "user.api"
@@ -12,30 +14,35 @@ import "questions.api"
 
 //获取 应用信息
 type Beid {
-	Beid int64 `json:"beid"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
 }
+
 type Token {
 	Token string `json:"token"`
 }
+
 type WxTicket {
 	Ticket string `json:"ticket"`
 }
+
 type Application {
-	Sname       string `json:"Sname"`       //名称
-	Logo        string `json:"logo"`        // login
-	Isclose     int64  `json:"isclose"`     //是否关闭
+	Sname       string `json:"Sname"` //名称
+	Logo        string `json:"logo"` // login
+	Isclose     int64  `json:"isclose"` //是否关闭
 	Fullwebsite string `json:"fullwebsite"` // 全站名称
 }
+
 type SnsReq {
 	Beid
-	Ptyid   int64  `json:"ptyid"`    //对应平台
+	Ptyid   int64  `json:"ptyid"` //对应平台
 	BackUrl string `json:"back_url"` //登陆返回的地址
 }
+
 type SnsResp {
 	Beid
-	Ptyid    int64  `json:"ptyid"`     //对应平台
-	Appid    string `json:"appid"`     //sns 平台的id
-	Title    string `json:"title"`     //名称
+	Ptyid    int64  `json:"ptyid"` //对应平台
+	Appid    string `json:"appid"` //sns 平台的id
+	Title    string `json:"title"` //名称
 	LoginUrl string `json:"login_url"` //微信登陆的地址
 }
 
@@ -46,36 +53,37 @@ type WxShareResp {
 	Signature string `json:"signature"`
 }
 
-@server(
+@server (
 	group: common
 )
 service datacenter-api {
-	@doc(
+	@doc (
 		summary: "获取站点的信息"
 	)
 	@handler appInfo
 	get /common/appinfo (Beid) returns (Application)
-	@doc(
+
+	@doc (
 		summary: "获取站点的社交属性信息"
 	)
 	@handler snsInfo
 	post /common/snsinfo (SnsReq) returns (SnsResp)
-	
+
 	//获取分享的
 	@handler wxTicket
 	post /common/wx/ticket (SnsReq) returns (WxShareResp)
-	
 }
 
 //上传需要登陆
-@server(
-	jwt: Auth
+@server (
+	jwt:   Auth
 	group: common
 )
 service datacenter-api {
-	@doc(
+	@doc (
 		summary: "七牛上传凭证"
 	)
 	@handler qiuniuToken
 	post /common/qiuniu/token (Beid) returns (Token)
 }
+

@@ -2,7 +2,7 @@ package shared
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math/rand"
 	"net"
 	"net/http"
@@ -91,7 +91,7 @@ func HttpPostForm(gourl string, form url.Values) ([]byte, error) {
 		return []byte{}, err
 	}
 	defer resp.Body.Close()
-	return ioutil.ReadAll(resp.Body)
+	return io.ReadAll(resp.Body)
 }
 
 // 得到一个随机数
