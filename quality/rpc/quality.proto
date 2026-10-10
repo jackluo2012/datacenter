@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package quality;
+
+option go_package = "./quality";
+
+message QualityRule {
+  int64  id           = 1;
+  string name         = 2;
+  string rule_type    = 3;  //row_count/not_null/unique/value_range/consistency/fluctuation
+  string target_table = 4;
+  string target_column = 5;
+  string params_json  = 6;
+  string threshold_json = 7;
+  int32  status       = 8;
+  string owner        = 9;
+  int64  beid         = 10;
+}
+message RuleReply { QualityRule rule = 1; }
+message RuleListReply {
+  repeated QualityRule list = 1;
+  int64 total = 2;
+}
+
+message CreateRuleReq {
+  string name           = 1;
+  string rule_type      = 2;
+  string target_table   = 3;
+  string target_column  = 4;
+  string params_json    = 5;
+  string threshold_json = 6;
+  string owner          = 7;
+  int64  beid           = 8;
+}
+message IdReq    { int64 id = 1; int64 beid = 2; }
+message RuleListReq {
+  int64  beid   = 1;
+  string rule_type = 2;
+  int64  page   = 3;
+  int64  size   = 4;
+}
+
+message CreateJobReq {
+  string name         = 1;
+  int64  datasource_id = 2;
+  string db_name      = 3;
+  string rule_ids     = 4;  //逗号分隔
+  string cron         = 5;
+  int64  beid         = 6;
+}
+message QualityJob {
+  int64  id             = 1;
+  string name           = 2;
+  int64  datasource_id  = 3;
+  string db_name        = 4;
+  string rule_ids       = 5;
+  string cron           = 6;
+  string last_status    = 7;
+  int64  last_run_at    = 8;
+  int64  beid           = 9;
+}
+message JobReply { QualityJob job = 1; }
+message JobListReply {
+  repeated QualityJob list = 1;
+  int64 total = 2;
+}
+message JobListReq { int64 beid = 1; int64 page = 2; int64 size = 3; }
+
+message QualityResult {
+  int64  id          = 1;
+  int64  job_id      = 2;
+  int64  rule_id     = 3;
+  string rule_type   = 4;
+  string check_value = 5;
+  bool   pass_flag   = 6;
+  string detail_json = 7;
+  int64  run_at      = 8;
+}
+message RunJobReply {
+  int64  job_id      = 1;
+  int64  total_rules = 2;
+  int64  passed      = 3;
+  string last_status = 4;  //success/failed/partial
+}
+message ResultListReply {
+  repeated QualityResult list = 1;
+  int64 total = 2;
+}
+message ResultListReq { int64 job_id = 1; int64 pass_filter = 2; int64 page = 3; int64 size = 4; }
+
+service Quality {
+  //创建规则
+  rpc CreateRule(CreateRuleReq) returns (RuleReply);
+  //删除规则
+  rpc DeleteRule(IdReq) returns (IdReq);
+  //规则列表
+  rpc ListRules(RuleListReq) returns (RuleListReply);
+  //创建任务
+  rpc CreateJob(CreateJobReq) returns (JobReply);
+  //任务列表
+  rpc ListJobs(JobListReq) returns (JobListReply);
+  //执行任务（同步跑完规则并落结果）
+  rpc RunJob(IdReq) returns (RunJobReply);
+  //结果列表
+  rpc ListResults(ResultListReq) returns (ResultListReply);
+}

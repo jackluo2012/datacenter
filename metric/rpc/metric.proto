@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package metric;
+
+option go_package = "./metric";
+
+message Metric {
+  int64  id             = 1;
+  string name_en        = 2;
+  string name_cn        = 3;
+  string metric_type    = 4;  //atom/derive
+  string biz_field      = 5;
+  string agg_type       = 6;
+  string expr           = 7;
+  string dimension_json = 8;
+  string comment        = 9;
+  string owner          = 10;
+  int32  status         = 11;
+  int64  beid           = 12;
+}
+message MetricReply { Metric metric = 1; }
+message MetricListReply {
+  repeated Metric list = 1;
+  int64 total = 2;
+}
+
+message CreateMetricReq {
+  string name_en        = 1;
+  string name_cn        = 2;
+  string metric_type    = 3;
+  string biz_field      = 4;
+  string agg_type       = 5;
+  string expr           = 6;
+  string dimension_json = 7;
+  string comment        = 8;
+  string owner          = 9;
+  int64  beid           = 10;
+}
+message UpdateMetricReq {
+  int64  id             = 1;
+  int64  beid           = 2;
+  string name_cn        = 3;
+  string expr           = 4;
+  string dimension_json = 5;
+  string comment        = 6;
+  int32  status         = 7;
+}
+message MetricListReq {
+  int64  beid        = 1;
+  string metric_type = 2;
+  string keyword     = 3;
+  int64  page        = 4;
+  int64  size        = 5;
+}
+message IdReq { int64 id = 1; int64 beid = 2; }
+
+message BindAtomReq {
+  int64 derive_metric_id = 1;
+  repeated int64 atom_metric_ids = 2;
+  int64  beid = 3;
+}
+message MetricListByIdsReq {
+  repeated int64 ids = 1;
+  int64  beid = 2;
+}
+
+service MetricSvc {
+  //创建指标
+  rpc CreateMetric(CreateMetricReq) returns (MetricReply);
+  //更新指标
+  rpc UpdateMetric(UpdateMetricReq) returns (IdReq);
+  //删除指标
+  rpc DeleteMetric(IdReq) returns (IdReq);
+  //指标详情
+  rpc GetMetric(IdReq) returns (MetricReply);
+  //指标列表
+  rpc ListMetrics(MetricListReq) returns (MetricListReply);
+  //按 id 批量取指标
+  rpc ListMetricsByIds(MetricListByIdsReq) returns (MetricListReply);
+  //派生指标绑定原子指标（幂等覆盖）
+  rpc BindAtoms(BindAtomReq) returns (IdReq);
+  //取派生指标引用的原子指标
+  rpc ListAtomsOfDerive(IdReq) returns (MetricListReply);
+}

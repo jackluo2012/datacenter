@@ -17,3 +17,6 @@ datasource/rpc/etc/datasource.yaml
 metadata/rpc/etc/metadata.yaml
 datasvc/rpc/etc/datasvc.yaml
 catalog/rpc/etc/catalog.yaml
+quality/rpc/etc/quality.yaml
+metric/rpc/etc/metric.yaml
+tag/rpc/etc/tag.yaml
