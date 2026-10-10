@@ -1,0 +1,34 @@
+syntax = "v1"
+
+//AI 问数（Phase 4：语义检索 + 可选 LLM，全程审计）
+type Candidate {
+	Type    string `json:"type,optional"`   //entity/metric
+	Id      int64  `json:"id,optional"`
+	Name    string `json:"name,optional"`
+	Detail  string `json:"detail,optional"`
+	Comment string `json:"comment,optional"`
+}
+
+type AskReq {
+	Question      string `json:"question"`
+	Beid          int64  `json:"beid,optional"`
+	MaxCandidates int32  `json:"max_candidates,optional"`
+}
+type AskResp {
+	Candidates   []Candidate `json:"candidates"`
+	LlmEnabled   bool        `json:"llm_enabled"`
+	GeneratedSql string      `json:"generated_sql,optional"`
+	Answer       string      `json:"answer"`
+	CostMs       int64       `json:"cost_ms"`
+}
+
+@server(
+	group: ai
+)
+service datacenter-api {
+	@doc(
+		summary: "AI 问数"
+	)
+	@handler ask
+	post /ai/ask (AskReq) returns (AskResp)
+}

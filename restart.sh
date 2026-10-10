@@ -65,6 +65,12 @@ RpcServerPlus ${getewayPath} quality
 RpcServerPlus ${getewayPath} metric
 #数据标签服务（Phase 2）
 RpcServerPlus ${getewayPath} tag
+#调度集成服务（Phase 3）
+RpcServerPlus ${getewayPath} job
+#SQL IDE 服务（Phase 3）
+RpcServerPlus ${getewayPath} ide
+#AI 问数服务（Phase 4）
+RpcServerPlus ${getewayPath} ai
 #问答抽奖服务
 RpcServerPlus ${getewayPath} questions
 #Api服务

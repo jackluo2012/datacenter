@@ -28,5 +28,10 @@ type Config struct {
 	MetricRpc     zrpc.RpcClientConf
 	TagRpc        zrpc.RpcClientConf
 
+	//Phase 3/4 数据中台服务
+	JobRpc zrpc.RpcClientConf
+	IdeRpc zrpc.RpcClientConf
+	AiRpc  zrpc.RpcClientConf
+
 	CacheRedis cache.ClusterConf
 }

@@ -1,0 +1,82 @@
+syntax = "v1"
+
+//SQL IDE（Phase 3）
+type Script {
+	Id           int64  `json:"id,optional"`
+	Name         string `json:"name,optional"`
+	SqlText      string `json:"sql_text,optional"`
+	Version      int32  `json:"version,optional"`
+	DatasourceId int64  `json:"datasource_id,optional"`
+	DbName       string `json:"db_name,optional"`
+	LastRunAt    int64  `json:"last_run_at,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type SaveScriptReq {
+	Id           int64  `json:"id,optional"`
+	Name         string `json:"name"`
+	SqlText      string `json:"sql_text"`
+	DatasourceId int64  `json:"datasource_id"`
+	DbName       string `json:"db_name,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type ScriptIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type ScriptListReq {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+type ScriptListResp {
+	List  []Script `json:"list"`
+	Total int64    `json:"total"`
+}
+
+type RunScriptReq {
+	Id      int64 `json:"id"`
+	Beid    int64 `json:"beid,optional"`
+	MaxRows int32 `json:"max_rows,optional"`
+}
+type RunScriptResp {
+	ColumnsJson string `json:"columns_json"`
+	RowsJson    string `json:"rows_json"`
+	RowCount    int64  `json:"row_count"`
+	CostMs      int64  `json:"cost_ms"`
+	Truncated   bool   `json:"truncated"`
+}
+
+@server(
+	group: ide
+)
+service datacenter-api {
+	@doc(
+		summary: "保存脚本"
+	)
+	@handler saveScript
+	post /ide/script/save (SaveScriptReq) returns (Script)
+	@doc(
+		summary: "脚本列表"
+	)
+	@handler scriptList
+	get /ide/script/list (ScriptListReq) returns (ScriptListResp)
+	@doc(
+		summary: "脚本详情"
+	)
+	@handler scriptInfo
+	get /ide/script/info (ScriptIdReq) returns (Script)
+	@doc(
+		summary: "删除脚本"
+	)
+	@handler deleteScript
+	post /ide/script/delete (ScriptIdReq)
+	@doc(
+		summary: "执行脚本（仅 SELECT，行数保护）"
+	)
+	@handler runScript
+	post /ide/script/run (RunScriptReq) returns (RunScriptResp)
+}

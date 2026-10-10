@@ -63,7 +63,7 @@ type (
 		FindOne(ctx context.Context, id, beid int64) (*Entity, error)
 		// FindOneByFqn 按 beid + 全限定名查询
 		FindOneByFqn(ctx context.Context, beid int64, fqn string) (*Entity, error)
-		// FindList 条件分页查询（entity_type/keyword/ds_id 均可选，keyword 对 fqn/name 模糊匹配）
+		// FindList 条件分页查询（entity_type/keyword/ds_id 均可选，keyword 对 fqn/name/comment 模糊匹配）
 		FindList(ctx context.Context, beid int64, entityType, keyword string, dsId, page, size int64) ([]*Entity, int64, error)
 		// FindFqnMap 批量查询 fqn -> id 映射（采集建边用）
 		FindFqnMap(ctx context.Context, session sqlx.Session, beid int64, fqns []string) (map[string]int64, error)
@@ -164,9 +164,10 @@ func (m *defaultEntityModel) FindList(ctx context.Context, beid int64, entityTyp
 		args = append(args, entityType)
 	}
 	if kw := strings.TrimSpace(keyword); kw != "" {
-		where += " and (fqn like ? or name like ?)"
+		// keyword 同时匹配 fqn/name/comment（中文场景按表注释检索，如"投票"命中 comment=投票记录表）
+		where += " and (fqn like ? or name like ? or comment like ?)"
 		like := "%" + escapeLike(kw) + "%"
-		args = append(args, like, like)
+		args = append(args, like, like, like)
 	}
 	if dsId > 0 {
 		where += " and ds_id = ?"

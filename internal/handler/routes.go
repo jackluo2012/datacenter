@@ -6,10 +6,13 @@ package handler
 import (
 	"net/http"
 
+	ai "datacenter/internal/handler/ai"
 	catalog "datacenter/internal/handler/catalog"
 	common "datacenter/internal/handler/common"
 	datasource "datacenter/internal/handler/datasource"
 	datasvc "datacenter/internal/handler/datasvc"
+	ide "datacenter/internal/handler/ide"
+	job "datacenter/internal/handler/job"
 	metadata "datacenter/internal/handler/metadata"
 	metric "datacenter/internal/handler/metric"
 	quality "datacenter/internal/handler/quality"
@@ -24,6 +27,17 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// AI 问数
+				Method:  http.MethodPost,
+				Path:    "/ai/ask",
+				Handler: ai.AskHandler(serverCtx),
+			},
+		},
+	)
+
 	server.AddRoutes(
 		[]rest.Route{
 			{
@@ -189,6 +203,88 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/datasvc/grant",
 				Handler: datasvc.GrantApiHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 删除脚本
+				Method:  http.MethodPost,
+				Path:    "/ide/script/delete",
+				Handler: ide.DeleteScriptHandler(serverCtx),
+			},
+			{
+				// 脚本详情
+				Method:  http.MethodGet,
+				Path:    "/ide/script/info",
+				Handler: ide.ScriptInfoHandler(serverCtx),
+			},
+			{
+				// 脚本列表
+				Method:  http.MethodGet,
+				Path:    "/ide/script/list",
+				Handler: ide.ScriptListHandler(serverCtx),
+			},
+			{
+				// 执行脚本（仅 SELECT，行数保护）
+				Method:  http.MethodPost,
+				Path:    "/ide/script/run",
+				Handler: ide.RunScriptHandler(serverCtx),
+			},
+			{
+				// 保存脚本
+				Method:  http.MethodPost,
+				Path:    "/ide/script/save",
+				Handler: ide.SaveScriptHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 调度器连接信息
+				Method:  http.MethodGet,
+				Path:    "/job/scheduler/info",
+				Handler: job.SchedulerInfoHandler(serverCtx),
+			},
+			{
+				// 创建同步任务
+				Method:  http.MethodPost,
+				Path:    "/job/task/create",
+				Handler: job.CreateSyncTaskHandler(serverCtx),
+			},
+			{
+				// 删除同步任务
+				Method:  http.MethodPost,
+				Path:    "/job/task/delete",
+				Handler: job.DeleteSyncTaskHandler(serverCtx),
+			},
+			{
+				// 部署到调度器
+				Method:  http.MethodPost,
+				Path:    "/job/task/deploy",
+				Handler: job.DeployTaskHandler(serverCtx),
+			},
+			{
+				// 同步任务列表
+				Method:  http.MethodGet,
+				Path:    "/job/task/list",
+				Handler: job.SyncTaskListHandler(serverCtx),
+			},
+			{
+				// 任务状态
+				Method:  http.MethodGet,
+				Path:    "/job/task/status",
+				Handler: job.TaskStatusHandler(serverCtx),
+			},
+			{
+				// 手动触发任务
+				Method:  http.MethodPost,
+				Path:    "/job/task/trigger",
+				Handler: job.TriggerTaskHandler(serverCtx),
 			},
 		},
 	)

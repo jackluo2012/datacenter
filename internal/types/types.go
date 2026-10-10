@@ -97,6 +97,20 @@ type ArticleReq struct {
 	ImageUrl  string `json:"ImageUrl"`
 }
 
+type AskReq struct {
+	Question      string `json:"question"`
+	Beid          int64  `json:"beid,optional"`
+	MaxCandidates int32  `json:"max_candidates,optional"`
+}
+
+type AskResp struct {
+	Candidates   []Candidate `json:"candidates"`
+	LlmEnabled   bool        `json:"llm_enabled"`
+	GeneratedSql string      `json:"generated_sql,optional"`
+	Answer       string      `json:"answer"`
+	CostMs       int64       `json:"cost_ms"`
+}
+
 type Asset struct {
 	Id             int64  `json:"id,optional"`
 	EntityId       int64  `json:"entity_id,optional"`
@@ -143,6 +157,14 @@ type BindAtomsReq struct {
 	DeriveMetricId int64   `json:"derive_metric_id"`
 	AtomMetricIds  []int64 `json:"atom_metric_ids"`
 	Beid           int64   `json:"beid,optional"`
+}
+
+type Candidate struct {
+	Type    string `json:"type,optional"` //entity/metric
+	Id      int64  `json:"id,optional"`
+	Name    string `json:"name,optional"`
+	Detail  string `json:"detail,optional"`
+	Comment string `json:"comment,optional"`
 }
 
 type CategoryListReq struct {
@@ -235,6 +257,16 @@ type CreateQualityRuleReq struct {
 	Beid          int64  `json:"beid,optional"`
 }
 
+type CreateSyncTaskReq struct {
+	Name        string `json:"name"`
+	SourceDsId  int64  `json:"source_ds_id"`
+	TargetDsId  int64  `json:"target_ds_id,optional"`
+	Mode        string `json:"mode,optional"`
+	MappingJson string `json:"mapping_json,optional"`
+	Cron        string `json:"cron,optional"`
+	Beid        int64  `json:"beid,optional"`
+}
+
 type CreateTagDefReq struct {
 	ObjectId    int64  `json:"object_id"`
 	TagKey      string `json:"tag_key"`
@@ -284,6 +316,12 @@ type DataSourceListReq struct {
 type DataSourceListResp struct {
 	List  []DataSourceInfo `json:"list"`
 	Total int64            `json:"total"`
+}
+
+type DeployResp struct {
+	Ok             bool   `json:"ok"`
+	DsWorkflowCode int32  `json:"ds_workflow_code,optional"`
+	Msg            string `json:"msg,optional"`
 }
 
 type DiffResp struct {
@@ -577,6 +615,64 @@ type RunJobResp struct {
 	LastStatus string `json:"last_status"`
 }
 
+type RunScriptReq struct {
+	Id      int64 `json:"id"`
+	Beid    int64 `json:"beid,optional"`
+	MaxRows int32 `json:"max_rows,optional"`
+}
+
+type RunScriptResp struct {
+	ColumnsJson string `json:"columns_json"`
+	RowsJson    string `json:"rows_json"`
+	RowCount    int64  `json:"row_count"`
+	CostMs      int64  `json:"cost_ms"`
+	Truncated   bool   `json:"truncated"`
+}
+
+type SaveScriptReq struct {
+	Id           int64  `json:"id,optional"`
+	Name         string `json:"name"`
+	SqlText      string `json:"sql_text"`
+	DatasourceId int64  `json:"datasource_id"`
+	DbName       string `json:"db_name,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type SchedulerInfoResp struct {
+	Configured bool   `json:"configured"`
+	Connected  bool   `json:"connected"`
+	BaseUrl    string `json:"base_url,optional"`
+	Msg        string `json:"msg,optional"`
+}
+
+type Script struct {
+	Id           int64  `json:"id,optional"`
+	Name         string `json:"name,optional"`
+	SqlText      string `json:"sql_text,optional"`
+	Version      int32  `json:"version,optional"`
+	DatasourceId int64  `json:"datasource_id,optional"`
+	DbName       string `json:"db_name,optional"`
+	LastRunAt    int64  `json:"last_run_at,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type ScriptIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type ScriptListReq struct {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+
+type ScriptListResp struct {
+	List  []Script `json:"list"`
+	Total int64    `json:"total"`
+}
+
 type SearchReq struct {
 	Keyword string `json:"keyword,optional" form:"keyword,optional"`
 	Page    string `json:"page,optional" form:"page,optional"`
@@ -599,6 +695,37 @@ type SnsResp struct {
 	Appid    string `json:"appid"`     //sns 平台的id
 	Title    string `json:"title"`     //名称
 	LoginUrl string `json:"login_url"` //微信登陆的地址
+}
+
+type SyncTask struct {
+	Id             int64  `json:"id,optional"`
+	Name           string `json:"name,optional"`
+	SourceDsId     int64  `json:"source_ds_id,optional"`
+	TargetDsId     int64  `json:"target_ds_id,optional"`
+	Mode           string `json:"mode,optional"`
+	MappingJson    string `json:"mapping_json,optional"`
+	Cron           string `json:"cron,optional"`
+	DsWorkflowCode int32  `json:"ds_workflow_code,optional"`
+	Status         string `json:"status,optional"`
+	LastRunAt      int64  `json:"last_run_at,optional"`
+	Beid           int64  `json:"beid,optional"`
+}
+
+type SyncTaskIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type SyncTaskListReq struct {
+	Beid   int64  `json:"beid,optional" form:"beid,optional"`
+	Status string `json:"status,optional" form:"status,optional"`
+	Page   int64  `json:"page,optional" form:"page,optional"`
+	Size   int64  `json:"size,optional" form:"size,optional"`
+}
+
+type SyncTaskListResp struct {
+	List  []SyncTask `json:"list"`
+	Total int64      `json:"total"`
 }
 
 type TagAssetReq struct {
@@ -683,6 +810,12 @@ type TaggingResp struct {
 	TagId      int64 `json:"tag_id"`
 }
 
+type TaskStatusResp struct {
+	Status       string `json:"status,optional"`
+	DsInstanceId int32  `json:"ds_instance_id,optional"`
+	Msg          string `json:"msg,optional"`
+}
+
 type TestConnResp struct {
 	Ok        bool   `json:"ok"`
 	LatencyMs int64  `json:"latency_ms"`
@@ -691,6 +824,12 @@ type TestConnResp struct {
 
 type Token struct {
 	Token string `json:"token"`
+}
+
+type TriggerResp struct {
+	Ok                  bool   `json:"ok"`
+	DsProcessInstanceId int32  `json:"ds_process_instance_id,optional"`
+	Msg                 string `json:"msg,optional"`
 }
 
 type UpdateApiReq struct {
