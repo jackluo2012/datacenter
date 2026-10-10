@@ -1,0 +1,151 @@
+syntax = "proto3";
+
+package sys;
+
+option go_package = "./sys";
+
+// ============ 用户管理 ============
+message SysUser {
+  int64  id        = 1;
+  string username  = 2;  //登录名
+  string nickname  = 3;
+  string mobile    = 4;
+  string email     = 5;
+  int32  status    = 6;  //1.启用 0.停用
+  string remark    = 7;
+  int64  created_at = 8;
+  repeated int64 role_ids = 9; //用户角色
+}
+message SysUserReply { SysUser user = 1; }
+message SysUserListReply { repeated SysUser list = 1; int64 total = 2; }
+
+message CreateSysUserReq {
+  string username = 1;
+  string password = 2;
+  string nickname = 3;
+  string mobile   = 4;
+  string email    = 5;
+  string remark   = 6;
+  repeated int64 role_ids = 7;
+  int64  beid     = 8;
+}
+message UpdateSysUserReq {
+  int64  id        = 1;
+  string nickname  = 2;
+  string mobile    = 3;
+  string email     = 4;
+  int32  status    = 5;
+  string remark    = 6;
+  string password  = 7;  //空=不改
+  repeated int64 role_ids = 8;
+  int64  beid      = 9;
+}
+message SysUserListReq {
+  int64  beid     = 1;
+  string keyword  = 2;  //username/nickname/mobile
+  int32  status   = 3;
+  int64  page     = 4;
+  int64  size     = 5;
+}
+message ResetPwdReq { int64 id = 1; string password = 2; int64 beid = 3; }
+
+// ============ 角色管理 ============
+message SysRole {
+  int64  id       = 1;
+  string role_key = 2;  //权限字符(如 admin/operator)
+  string role_name = 3;
+  int32  status   = 4;  //1.启用 0.停用
+  string remark   = 5;
+  int64  beid     = 6;
+  repeated int64 menu_ids = 7; //角色菜单
+}
+message SysRoleReply { SysRole role = 1; }
+message SysRoleListReply { repeated SysRole list = 1; int64 total = 2; }
+
+message SaveSysRoleReq {
+  int64  id        = 1;  //0 新建
+  string role_key  = 2;
+  string role_name = 3;
+  int32  status    = 4;
+  string remark    = 5;
+  repeated int64 menu_ids = 6;
+  int64  beid      = 7;
+}
+message SysRoleListReq { int64 beid = 1; string keyword = 2; int64 page = 3; int64 size = 4; }
+
+// ============ 菜单管理 ============
+message SysMenu {
+  int64  id        = 1;
+  int64  parent_id = 2;   //0 根
+  string name      = 3;   //菜单名
+  string path      = 4;   //前端路由路径(如 /datasource)
+  string component = 5;   //前端组件路径(如 datasource/DataSourceList)
+  int32  sort      = 6;
+  string icon      = 7;   //element 图标名
+  int32  menu_type = 8;   //1.目录 2.菜单 3.按钮
+  string perm      = 9;   //按钮权限标识(如 datasource:create)
+  int32  visible   = 10;  //1.显示 0.隐藏
+  int64  beid      = 11;
+  repeated SysMenu children = 12; //树形返回
+}
+message MenuReply { SysMenu menu = 1; }
+message MenuTreeReply { repeated SysMenu list = 1; }
+
+message SaveMenuReq {
+  int64  id        = 1;
+  int64  parent_id = 2;
+  string name      = 3;
+  string path      = 4;
+  string component = 5;
+  int32  sort      = 6;
+  string icon      = 7;
+  int32  menu_type = 8;
+  string perm      = 9;
+  int32  visible   = 10;
+  int64  beid      = 11;
+}
+
+// ============ 登录增强 ============
+message GetInfoReq { int64 uid = 1; int64 beid = 2; }
+message GetInfoReply {
+  int64  uid        = 1;
+  string username   = 2;
+  string nickname   = 3;
+  repeated string roles = 4;       //角色 key 集
+  repeated string perms = 5;       //按钮权限标识集
+  repeated SysMenu menus = 6;      //菜单树(目录+菜单，不含按钮)
+}
+message GetRoutersReq { int64 uid = 1; int64 beid = 2; }
+message RouterBranch {
+  string name     = 1;
+  string path     = 2;
+  string component = 3;
+  string icon     = 4;
+  repeated RouterBranch children = 5;
+}
+message GetRoutersReply { repeated RouterBranch routers = 1; }
+
+message IdReq { int64 id = 1; int64 beid = 2; }
+
+service Sys {
+  //用户
+  rpc CreateUser(CreateSysUserReq) returns (SysUserReply);
+  rpc UpdateUser(UpdateSysUserReq) returns (SysUserReply);
+  rpc DeleteUser(IdReq) returns (IdReq);
+  rpc ListUsers(SysUserListReq) returns (SysUserListReply);
+  rpc GetUser(IdReq) returns (SysUserReply);
+  rpc ResetPwd(ResetPwdReq) returns (IdReq);
+  //角色
+  rpc CreateRole(SaveSysRoleReq) returns (SysRoleReply);
+  rpc UpdateRole(SaveSysRoleReq) returns (SysRoleReply);
+  rpc DeleteRole(IdReq) returns (IdReq);
+  rpc ListRoles(SysRoleListReq) returns (SysRoleListReply);
+  rpc GetRole(IdReq) returns (SysRoleReply); //含 menu_ids
+  //菜单
+  rpc SaveMenu(SaveMenuReq) returns (MenuReply);
+  rpc DeleteMenu(IdReq) returns (IdReq);
+  rpc MenuTree(IdReq) returns (MenuTreeReply);       //全量菜单树(管理用)
+  //登录增强
+  rpc GetInfo(GetInfoReq) returns (GetInfoReply);     //用户信息+角色+权限+菜单树
+  rpc GetRouters(GetRoutersReq) returns (GetRoutersReply); //前端动态路由
+}
