@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package datasource;
+
+option go_package = "./datasource";
+
+//数据源
+message DataSourceInfo {
+  int64  id           = 1;   //数据源id
+  string name         = 2;   //名称
+  string type         = 3;   //类型: mysql/redis/es/http/kafka
+  string host         = 4;
+  int32  port         = 5;
+  string db_name      = 6;   //库名
+  string username     = 7;
+  string password_enc = 8;   //AES-GCM 加密后的密码
+  string params_json  = 9;   //扩展参数(json)
+  int32  status       = 10;  //1.启用 0.停用
+  string owner        = 11;  //负责人
+  int64  beid         = 12;  //平台id
+  int64  created_at   = 13;
+  int64  updated_at   = 14;
+}
+
+message DataSourceReply {
+  DataSourceInfo datasource = 1;
+  string dsn            = 2; //with_secret=true 时返回拼好的连接串
+}
+
+message OkReply      { bool ok = 1; }
+message IdReq        { int64 id = 1; int64 beid = 2; }
+message ListReq      { int64 beid = 1; string type = 2; int64 page = 3; int64 size = 4; }
+message DataSourceListReply {
+  repeated DataSourceInfo list = 1;
+  int64 total = 2;
+}
+
+message CreateDataSourceReq {
+  string name        = 1;
+  string type        = 2;
+  string host        = 3;
+  int32  port        = 4;
+  string db_name     = 5;
+  string username    = 6;
+  string password    = 7;  //明文入参，服务端加密存储
+  string params_json = 8;
+  string owner       = 9;
+  int64  beid        = 10;
+}
+
+message UpdateDataSourceReq {
+  int64  id           = 1;
+  int64  beid         = 2;
+  string name         = 3;
+  string type         = 4;
+  string host         = 5;
+  int32  port         = 6;
+  string db_name      = 7;
+  string username     = 8;
+  string password     = 9;  //为空则不更新密码
+  string params_json  = 10;
+  int32  status       = 11;
+  string owner        = 12;
+}
+
+message GetDataSourceReq {
+  int64 id           = 1;
+  int64 beid         = 2;
+  bool  with_secret  = 3; //true 时返回解密密码与 dsn（仅内部服务调用）
+}
+
+message TestConnReply {
+  bool   ok        = 1;
+  int64  latency_ms = 2;
+  string err_msg   = 3;
+}
+
+service DataSource {
+  //创建数据源
+  rpc CreateDataSource(CreateDataSourceReq) returns (DataSourceReply);
+  //更新数据源
+  rpc UpdateDataSource(UpdateDataSourceReq) returns (OkReply);
+  //删除数据源
+  rpc DeleteDataSource(IdReq) returns (OkReply);
+  //数据源详情
+  rpc GetDataSource(GetDataSourceReq) returns (DataSourceReply);
+  //数据源列表
+  rpc ListDataSources(ListReq) returns (DataSourceListReply);
+  //测试连接
+  rpc TestConnection(IdReq) returns (TestConnReply);
+}

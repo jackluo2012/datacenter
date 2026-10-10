@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package catalog;
+
+option go_package = "./catalog";
+
+message AssetCategory {
+  int64  id        = 1;
+  int64  parent_id = 2;
+  string name      = 3;
+  int64  beid      = 4;
+}
+message CategoryReply { AssetCategory category = 1; }
+message CategoryListReply { repeated AssetCategory list = 1; }
+
+message Asset {
+  int64  id            = 1;
+  int64  entity_id     = 2; //元数据实体id
+  int64  category_id   = 3;
+  string name          = 4; //冗余快照，避免跨服务联查
+  string entity_type   = 5;
+  string comment       = 6;
+  string classification = 7;
+  string asset_tags_json = 8;
+  string visibility    = 9;  //public/private
+  int64  beid          = 10;
+}
+message AssetReply { Asset asset = 1; }
+message AssetListReply {
+  repeated Asset list = 1;
+  int64 total = 2;
+}
+
+message TagAssetReq {
+  int64  entity_id      = 1;
+  int64  category_id    = 2;
+  string name           = 3;
+  string entity_type    = 4;
+  string comment        = 5;
+  string classification = 6;
+  string asset_tags_json = 7;
+  string visibility     = 8;
+  int64  beid           = 9;
+}
+message AssetListReq {
+  int64  beid        = 1;
+  int64  category_id = 2;
+  string keyword     = 3;
+  int64  page        = 4;
+  int64  size        = 5;
+}
+
+message AssetApply {
+  int64  id        = 1;
+  int64  asset_id  = 2;
+  string reason    = 3;
+  string applicant = 4;
+  string status    = 5; //pending/approved/rejected
+  string reviewer  = 6;
+  int64  beid      = 7;
+  int64  created_at = 8;
+}
+message ApplyReply { AssetApply apply = 1; }
+message ApplyListReply { repeated AssetApply list = 1; }
+
+message ApplyAssetReq {
+  int64  asset_id  = 1;
+  string reason    = 2;
+  string applicant = 3;
+  int64  beid      = 4;
+}
+message ReviewApplyReq {
+  int64  id       = 1;
+  bool   approve  = 2;
+  string reviewer = 3;
+  int64  beid     = 4;
+}
+message ApplyListReq {
+  int64  beid   = 1;
+  string status = 2;
+  int64  page   = 3;
+  int64  size   = 4;
+}
+
+service Catalog {
+  //创建目录分类
+  rpc CreateCategory(AssetCategory) returns (CategoryReply);
+  //分类树
+  rpc ListCategories(IdReq) returns (CategoryListReply);
+  //登记资产（元数据实体入目录）
+  rpc TagAsset(TagAssetReq) returns (AssetReply);
+  //资产列表
+  rpc ListAssets(AssetListReq) returns (AssetListReply);
+  //申请使用
+  rpc ApplyAsset(ApplyAssetReq) returns (ApplyReply);
+  //审批
+  rpc ReviewApply(ReviewApplyReq) returns (ApplyReply);
+  //申请列表
+  rpc ListApplies(ApplyListReq) returns (ApplyListReply);
+}
+
+message IdReq { int64 id = 1; int64 beid = 2; }
