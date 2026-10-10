@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"datacenter/standard/model"
 	"datacenter/standard/rpc/internal/svc"
 	"datacenter/standard/rpc/standard"
 
@@ -23,8 +24,16 @@ func NewDeleteWordRootLogic(ctx context.Context, svcCtx *svc.ServiceContext) *De
 	}
 }
 
+// 删除词根（幂等：词根不存在时不报错）
 func (l *DeleteWordRootLogic) DeleteWordRoot(in *standard.IdReq) (*standard.IdReq, error) {
-	// todo: add your logic here and delete this line
-
-	return &standard.IdReq{}, nil
+	if in.Beid <= 0 {
+		return nil, model.ErrBeidRequired
+	}
+	if in.Id <= 0 {
+		return nil, ErrIdRequired
+	}
+	if err := l.svcCtx.WordRootModel.Delete(l.ctx, in.Id, in.Beid); err != nil {
+		return nil, err
+	}
+	return &standard.IdReq{Id: in.Id, Beid: in.Beid}, nil
 }

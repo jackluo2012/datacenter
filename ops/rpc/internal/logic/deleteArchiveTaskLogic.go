@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"datacenter/ops/model"
 	"datacenter/ops/rpc/internal/svc"
 	"datacenter/ops/rpc/ops"
 
@@ -23,9 +24,16 @@ func NewDeleteArchiveTaskLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 	}
 }
 
-// 删除任务
+// 删除任务（按 id+beid 定位；历史执行日志不级联清理，供问题追溯）
 func (l *DeleteArchiveTaskLogic) DeleteArchiveTask(in *ops.IdReq) (*ops.IdReq, error) {
-	// todo: add your logic here and delete this line
-
-	return &ops.IdReq{}, nil
+	if in.Beid <= 0 {
+		return nil, model.ErrBeidRequired
+	}
+	if in.Id <= 0 {
+		return nil, model.ErrTaskIdRequired
+	}
+	if err := l.svcCtx.ArchiveTaskModel.Delete(l.ctx, in.Id, in.Beid); err != nil {
+		return nil, err
+	}
+	return &ops.IdReq{Id: in.Id, Beid: in.Beid}, nil
 }

@@ -33,5 +33,10 @@ type Config struct {
 	IdeRpc zrpc.RpcClientConf
 	AiRpc  zrpc.RpcClientConf
 
+	//Phase 5 数据中台服务
+	StandardRpc zrpc.RpcClientConf
+	MdmRpc      zrpc.RpcClientConf
+	OpsRpc      zrpc.RpcClientConf
+
 	CacheRedis cache.ClusterConf
 }

@@ -85,3 +85,18 @@ AiRpc:
     Hosts:
       - 127.0.0.1:2379
     Key: ai.rpc
+StandardRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: standard.rpc
+MdmRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: mdm.rpc
+OpsRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: ops.rpc

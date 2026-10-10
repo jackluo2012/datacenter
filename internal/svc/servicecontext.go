@@ -13,6 +13,9 @@ import (
 	"datacenter/job/rpc/jobClient"
 	"datacenter/metadata/rpc/metadataClient"
 	"datacenter/metric/rpc/metricsvc"
+	"datacenter/ops/rpc/opsClient"
+	"datacenter/mdm/rpc/mdmClient"
+	"datacenter/standard/rpc/standardClient"
 	"datacenter/quality/rpc/qualityClient"
 	"datacenter/questions/rpc/questionsclient"
 	"datacenter/search/rpc/searchclient"
@@ -54,6 +57,9 @@ type ServiceContext struct {
 	JobRpc           jobClient.Job               //调度集成（Phase 3）
 	IdeRpc           ideClient.Ide               //SQL IDE（Phase 3）
 	AiRpc            aiClient.Ai                 //AI 问数（Phase 4）
+	StandardRpc      standardClient.Standard     //数据标准（Phase 5）
+	MdmRpc           mdmClient.Mdm               //主数据（Phase 5）
+	OpsRpc           opsClient.Ops               //数据运维与日志（Phase 5）
 	Cache            cache.Cache
 	RedisConn        *redis.Redis
 }
@@ -85,6 +91,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	jr3 := jobClient.NewJob(zrpc.MustNewClient(c.JobRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	ir3 := ideClient.NewIde(zrpc.MustNewClient(c.IdeRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	ar3 := aiClient.NewAi(zrpc.MustNewClient(c.AiRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
+	sr5 := standardClient.NewStandard(zrpc.MustNewClient(c.StandardRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
+	mr5 := mdmClient.NewMdm(zrpc.MustNewClient(c.MdmRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
+	or5 := opsClient.NewOps(zrpc.MustNewClient(c.OpsRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	//缓存
 	ca := cache.New(c.CacheRedis, syncx.NewSingleFlight(), cache.NewStat("dc"), shared.ErrNotFound)
 	rcon := redis.MustNewRedis(c.CacheRedis[0].RedisConf)
@@ -109,6 +118,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		JobRpc:           jr3,
 		IdeRpc:           ir3,
 		AiRpc:            ar3,
+		StandardRpc:      sr5,
+		MdmRpc:           mr5,
+		OpsRpc:           or5,
 		Cache:            ca,
 		RedisConn:        rcon,
 	}

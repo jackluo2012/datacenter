@@ -13,11 +13,14 @@ import (
 	datasvc "datacenter/internal/handler/datasvc"
 	ide "datacenter/internal/handler/ide"
 	job "datacenter/internal/handler/job"
+	mdm "datacenter/internal/handler/mdm"
 	metadata "datacenter/internal/handler/metadata"
 	metric "datacenter/internal/handler/metric"
+	ops "datacenter/internal/handler/ops"
 	quality "datacenter/internal/handler/quality"
 	questions "datacenter/internal/handler/questions"
 	search "datacenter/internal/handler/search"
+	standard "datacenter/internal/handler/standard"
 	tag "datacenter/internal/handler/tag"
 	user "datacenter/internal/handler/user"
 	votes "datacenter/internal/handler/votes"
@@ -309,6 +312,72 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
+				Method:  http.MethodGet,
+				Path:    "/mdm/distribution/list",
+				Handler: mdm.MdmDistListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/mdm/model/delete",
+				Handler: mdm.DeleteMdmModelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/mdm/model/info",
+				Handler: mdm.MdmModelInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/mdm/model/list",
+				Handler: mdm.MdmModelListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/mdm/model/save",
+				Handler: mdm.SaveMdmModelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/mdm/nextcode",
+				Handler: mdm.MdmNextCodeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/mdm/record/delete",
+				Handler: mdm.DeleteMdmRecordHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/mdm/record/distribute",
+				Handler: mdm.DistributeMdmRecordHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/mdm/record/info",
+				Handler: mdm.MdmRecordInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/mdm/record/list",
+				Handler: mdm.MdmRecordListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/mdm/record/publish",
+				Handler: mdm.PublishMdmRecordHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/mdm/record/save",
+				Handler: mdm.SaveMdmRecordHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
 				// 采集库表元数据
 				Method:  http.MethodPost,
 				Path:    "/metadata/collect",
@@ -403,6 +472,47 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/metric/update",
 				Handler: metric.UpdateMetricHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/ops/archive/create",
+				Handler: ops.CreateArchiveTaskHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/ops/archive/delete",
+				Handler: ops.DeleteArchiveTaskHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/ops/archive/list",
+				Handler: ops.ArchiveTaskListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/ops/archive/log/list",
+				Handler: ops.ArchiveLogListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/ops/archive/run",
+				Handler: ops.RunArchiveHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/ops/log/audit",
+				Handler: ops.AuditLogListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/ops/log/login",
+				Handler: ops.LoginLogListHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
@@ -539,6 +649,97 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				},
 			}...,
 		),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/standard/check",
+				Handler: standard.StdCheckHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/standard/check/list",
+				Handler: standard.StdCheckListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/standard/dict/delete",
+				Handler: standard.DeleteDictHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/standard/dict/info",
+				Handler: standard.DictInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/standard/dict/list",
+				Handler: standard.DictListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/standard/dict/save",
+				Handler: standard.SaveDictHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/standard/element/delete",
+				Handler: standard.DeleteElementHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/standard/element/list",
+				Handler: standard.ElementListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/standard/element/save",
+				Handler: standard.SaveElementHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/standard/model/delete",
+				Handler: standard.DeleteStdModelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/standard/model/info",
+				Handler: standard.StdModelInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/standard/model/list",
+				Handler: standard.StdModelListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/standard/model/publish",
+				Handler: standard.PublishStdModelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/standard/model/save",
+				Handler: standard.SaveStdModelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/standard/wordroot/delete",
+				Handler: standard.DeleteWordRootHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/standard/wordroot/list",
+				Handler: standard.WordRootListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/standard/wordroot/save",
+				Handler: standard.SaveWordRootHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(

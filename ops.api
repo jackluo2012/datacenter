@@ -1,0 +1,130 @@
+syntax = "v1"
+
+//数据运维与系统日志（Phase 5）
+type OpsArchiveTask {
+	Id           int64  `json:"id,optional"`
+	Name         string `json:"name,optional"`
+	DatasourceId int64  `json:"datasource_id,optional"`
+	DbName       string `json:"db_name,optional"`
+	TableName    string `json:"table_name,optional"`
+	ConditionSql string `json:"condition_sql,optional"`
+	ArchiveTable string `json:"archive_table,optional"`
+	DeleteSource bool   `json:"delete_source,optional"`
+	BatchSize    int32  `json:"batch_size,optional"`
+	Cron         string `json:"cron,optional"`
+	LastStatus   string `json:"last_status,optional"`
+	LastRunAt    int64  `json:"last_run_at,optional"`
+}
+type CreateArchiveTaskReq {
+	Name         string `json:"name"`
+	DatasourceId int64  `json:"datasource_id"`
+	DbName       string `json:"db_name,optional"`
+	TableName    string `json:"table_name"`
+	ConditionSql string `json:"condition_sql,optional"`
+	ArchiveTable string `json:"archive_table"`
+	DeleteSource bool   `json:"delete_source,optional"`
+	BatchSize    int32  `json:"batch_size,optional"`
+	Cron         string `json:"cron,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+type OpsIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+type ArchiveTaskListReq {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Page int64 `json:"page,optional" form:"page,optional"`
+	Size int64 `json:"size,optional" form:"size,optional"`
+}
+type ArchiveTaskListResp {
+	List  []OpsArchiveTask `json:"list"`
+	Total int64            `json:"total"`
+}
+
+type RunArchiveResp {
+	ArchivedRows int64  `json:"archived_rows"`
+	DeletedRows  int64  `json:"deleted_rows"`
+	Status       string `json:"status"`
+}
+type OpsArchiveLog {
+	Id           int64  `json:"id,optional"`
+	TaskId       int64  `json:"task_id,optional"`
+	ArchivedRows int64  `json:"archived_rows,optional"`
+	DeletedRows  int64  `json:"deleted_rows,optional"`
+	Status       string `json:"status,optional"`
+	Msg          string `json:"msg,optional"`
+	RunAt        int64  `json:"run_at,optional"`
+}
+type ArchiveLogListReq {
+	TaskId int64 `json:"task_id,optional" form:"task_id,optional"`
+	Page   int64 `json:"page,optional" form:"page,optional"`
+	Size   int64 `json:"size,optional" form:"size,optional"`
+}
+type ArchiveLogListResp {
+	List  []OpsArchiveLog `json:"list"`
+	Total int64           `json:"total"`
+}
+
+type OpsLoginLog {
+	Id         int64  `json:"id,optional"`
+	Username   string `json:"username,optional"`
+	Uid        int64  `json:"uid,optional"`
+	Ip         string `json:"ip,optional"`
+	UserAgent  string `json:"user_agent,optional"`
+	Success    bool   `json:"success"`
+	Msg        string `json:"msg,optional"`
+	CreatedAt  int64  `json:"created_at,optional"`
+}
+type LoginLogListReq {
+	Username      string `json:"username,optional" form:"username,optional"`
+	SuccessFilter int32  `json:"success_filter,optional" form:"success_filter,optional"`
+	Page          int64  `json:"page,optional" form:"page,optional"`
+	Size          int64  `json:"size,optional" form:"size,optional"`
+}
+type LoginLogListResp {
+	List  []OpsLoginLog `json:"list"`
+	Total int64         `json:"total"`
+}
+
+type OpsAuditLog {
+	Id          int64  `json:"id,optional"`
+	Uid         int64  `json:"uid,optional"`
+	Username    string `json:"username,optional"`
+	Action      string `json:"action,optional"`
+	Resource    string `json:"resource,optional"`
+	ResourceId  string `json:"resource_id,optional"`
+	DetailJson  string `json:"detail_json,optional"`
+	Ip          string `json:"ip,optional"`
+	CreatedAt   int64  `json:"created_at,optional"`
+}
+type AuditLogListReq {
+	Resource string `json:"resource,optional" form:"resource,optional"`
+	Uid      int64  `json:"uid,optional" form:"uid,optional"`
+	Page     int64  `json:"page,optional" form:"page,optional"`
+	Size     int64  `json:"size,optional" form:"size,optional"`
+}
+type AuditLogListResp {
+	List  []OpsAuditLog `json:"list"`
+	Total int64         `json:"total"`
+}
+
+@server(
+	jwt: Auth
+	group: ops
+)
+service datacenter-api {
+	@handler createArchiveTask
+	post /ops/archive/create (CreateArchiveTaskReq) returns (OpsArchiveTask)
+	@handler archiveTaskList
+	get /ops/archive/list (ArchiveTaskListReq) returns (ArchiveTaskListResp)
+	@handler deleteArchiveTask
+	post /ops/archive/delete (OpsIdReq)
+	@handler runArchive
+	post /ops/archive/run (OpsIdReq) returns (RunArchiveResp)
+	@handler archiveLogList
+	get /ops/archive/log/list (ArchiveLogListReq) returns (ArchiveLogListResp)
+	@handler loginLogList
+	get /ops/log/login (LoginLogListReq) returns (LoginLogListResp)
+	@handler auditLogList
+	get /ops/log/audit (AuditLogListReq) returns (AuditLogListResp)
+}

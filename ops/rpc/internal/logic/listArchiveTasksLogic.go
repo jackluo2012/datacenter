@@ -23,9 +23,15 @@ func NewListArchiveTasksLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 	}
 }
 
-// 任务列表
+// 任务列表（beid 多租户必带 + 分页）
 func (l *ListArchiveTasksLogic) ListArchiveTasks(in *ops.TaskListReq) (*ops.TaskListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &ops.TaskListReply{}, nil
+	list, total, err := l.svcCtx.ArchiveTaskModel.FindList(l.ctx, in.Beid, in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	tasks := make([]*ops.ArchiveTask, 0, len(list))
+	for _, t := range list {
+		tasks = append(tasks, taskToPb(t))
+	}
+	return &ops.TaskListReply{List: tasks, Total: total}, nil
 }

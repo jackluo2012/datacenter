@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"datacenter/standard/model"
 	"datacenter/standard/rpc/internal/svc"
 	"datacenter/standard/rpc/standard"
 
@@ -23,8 +24,18 @@ func NewListModelsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListMo
 	}
 }
 
+// 标准模型列表（分页 + status 可选过滤 + keyword 对 model_code/model_name 模糊匹配）
 func (l *ListModelsLogic) ListModels(in *standard.ModelListReq) (*standard.ModelListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &standard.ModelListReply{}, nil
+	if in.Beid <= 0 {
+		return nil, model.ErrBeidRequired
+	}
+	list, total, err := l.svcCtx.StdModelModel.FindList(l.ctx, in.Beid, in.Status, in.Keyword, in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	models := make([]*standard.StdModel, 0, len(list))
+	for _, m := range list {
+		models = append(models, modelToPb(m))
+	}
+	return &standard.ModelListReply{List: models, Total: total}, nil
 }

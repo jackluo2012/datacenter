@@ -2,7 +2,9 @@ package logic
 
 import (
 	"context"
+	"errors"
 
+	"datacenter/mdm/model"
 	"datacenter/mdm/rpc/internal/svc"
 	"datacenter/mdm/rpc/mdm"
 
@@ -23,8 +25,17 @@ func NewGetRecordLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetReco
 	}
 }
 
+// GetRecord 按主键查询主数据记录
 func (l *GetRecordLogic) GetRecord(in *mdm.IdReq) (*mdm.RecordReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &mdm.RecordReply{}, nil
+	if in.Id <= 0 {
+		return nil, ErrInvalidParams
+	}
+	rec, err := l.svcCtx.RecordModel.FindOne(l.ctx, in.Id, in.Beid)
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return nil, ErrRecordNotFound
+		}
+		return nil, err
+	}
+	return &mdm.RecordReply{Record: toPbRecord(rec)}, nil
 }

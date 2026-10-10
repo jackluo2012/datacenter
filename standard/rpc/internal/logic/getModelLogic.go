@@ -2,7 +2,9 @@ package logic
 
 import (
 	"context"
+	"errors"
 
+	"datacenter/standard/model"
 	"datacenter/standard/rpc/internal/svc"
 	"datacenter/standard/rpc/standard"
 
@@ -23,8 +25,20 @@ func NewGetModelLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetModel
 	}
 }
 
+// 标准模型详情
 func (l *GetModelLogic) GetModel(in *standard.IdReq) (*standard.ModelReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &standard.ModelReply{}, nil
+	if in.Beid <= 0 {
+		return nil, model.ErrBeidRequired
+	}
+	if in.Id <= 0 {
+		return nil, ErrIdRequired
+	}
+	m, err := l.svcCtx.StdModelModel.FindOne(l.ctx, in.Id, in.Beid)
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return nil, ErrModelNotFound
+		}
+		return nil, err
+	}
+	return &standard.ModelReply{Model: modelToPb(m)}, nil
 }

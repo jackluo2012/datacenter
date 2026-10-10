@@ -23,9 +23,15 @@ func NewListAuditLogsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Lis
 	}
 }
 
-// 审计日志查询
+// 审计日志查询：resource 精确匹配可选 + uid 可选 + 分页
 func (l *ListAuditLogsLogic) ListAuditLogs(in *ops.AuditLogListReq) (*ops.AuditLogListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &ops.AuditLogListReply{}, nil
+	list, total, err := l.svcCtx.AuditLogModel.FindList(l.ctx, in.Resource, in.Uid, in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	logs := make([]*ops.AuditLog, 0, len(list))
+	for _, lg := range list {
+		logs = append(logs, auditLogToPb(lg))
+	}
+	return &ops.AuditLogListReply{List: logs, Total: total}, nil
 }

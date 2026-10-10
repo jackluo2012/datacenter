@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"datacenter/ops/model"
 	"datacenter/ops/rpc/internal/svc"
 	"datacenter/ops/rpc/ops"
 
@@ -23,9 +24,21 @@ func NewWriteAuditLogLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Wri
 	}
 }
 
-// 写通用审计日志
+// 写通用审计日志：直接 Insert。与登录日志同策略——写接口不向上返回错误，
+// 审计失败不能影响业务主流程，失败仅记服务端日志，通过 OkReply.Ok=false 弱提示
 func (l *WriteAuditLogLogic) WriteAuditLog(in *ops.WriteAuditLogReq) (*ops.OkReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &ops.OkReply{}, nil
+	entry := &model.AuditLog{
+		Uid:        in.Uid,
+		Username:   truncateRunes(in.Username, usernameMaxLen),
+		Action:     truncateRunes(in.Action, actionMaxLen),
+		Resource:   truncateRunes(in.Resource, resourceMaxLen),
+		ResourceId: truncateRunes(in.ResourceId, resourceIdMaxLen),
+		DetailJson: truncateBytes(in.DetailJson, detailJsonMaxByte),
+		Ip:         truncateRunes(in.Ip, ipMaxLen),
+	}
+	if err := l.svcCtx.AuditLogModel.Insert(l.ctx, entry); err != nil {
+		l.Errorf("写审计日志失败 uid=%d action=%s resource=%s: %v", in.Uid, in.Action, in.Resource, err)
+		return &ops.OkReply{Ok: false}, nil
+	}
+	return &ops.OkReply{Ok: true}, nil
 }

@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"datacenter/standard/model"
 	"datacenter/standard/rpc/internal/svc"
 	"datacenter/standard/rpc/standard"
 
@@ -23,9 +24,18 @@ func NewListCheckReportsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 	}
 }
 
-// 核对历史
+// 核对历史（按标准模型分页，报告按时间倒序）
 func (l *ListCheckReportsLogic) ListCheckReports(in *standard.CheckListReq) (*standard.CheckListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &standard.CheckListReply{}, nil
+	if in.Beid <= 0 {
+		return nil, model.ErrBeidRequired
+	}
+	list, total, err := l.svcCtx.CheckReportModel.FindListByModel(l.ctx, in.Beid, in.ModelId, in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	reports := make([]*standard.StdCheckReport, 0, len(list))
+	for _, r := range list {
+		reports = append(reports, reportToPb(r))
+	}
+	return &standard.CheckListReply{List: reports, Total: total}, nil
 }

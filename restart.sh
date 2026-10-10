@@ -71,6 +71,12 @@ RpcServerPlus ${getewayPath} job
 RpcServerPlus ${getewayPath} ide
 #AI 问数服务（Phase 4）
 RpcServerPlus ${getewayPath} ai
+#数据标准服务（Phase 5）
+RpcServerPlus ${getewayPath} standard
+#主数据服务（Phase 5）
+RpcServerPlus ${getewayPath} mdm
+#数据运维与日志服务（Phase 5）
+RpcServerPlus ${getewayPath} ops
 #问答抽奖服务
 RpcServerPlus ${getewayPath} questions
 #Api服务

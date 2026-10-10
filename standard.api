@@ -1,0 +1,205 @@
+syntax = "v1"
+
+//数据标准管理（Phase 5）
+type StdWordRoot {
+	Id      int64  `json:"id,optional"`
+	Name    string `json:"name,optional"`
+	CnName  string `json:"cn_name,optional"`
+	Type    string `json:"type,optional"`
+	Comment string `json:"comment,optional"`
+}
+type SaveWordRootReq {
+	Id      int64  `json:"id,optional"`
+	Name    string `json:"name"`
+	CnName  string `json:"cn_name,optional"`
+	Type    string `json:"type,optional"`
+	Comment string `json:"comment,optional"`
+	Beid    int64  `json:"beid,optional"`
+}
+type StdIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+type WordRootListReq {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+type WordRootListResp {
+	List  []StdWordRoot `json:"list"`
+	Total int64         `json:"total"`
+}
+
+type StdDictItem {
+	Id        int64  `json:"id,optional"`
+	DictId    int64  `json:"dict_id,optional"`
+	ItemCode  string `json:"item_code,optional"`
+	ItemValue string `json:"item_value,optional"`
+	Sort      int32  `json:"sort,optional"`
+}
+type StdDict {
+	Id        string `json:"id,optional"`
+	DictCode  string `json:"dict_code,optional"`
+	DictName  string `json:"dict_name,optional"`
+	Comment   string `json:"comment,optional"`
+	Status    int32  `json:"status,optional"`
+	Items     []StdDictItem `json:"items"`
+}
+type SaveDictReq {
+	Id       int64         `json:"id,optional"`
+	DictCode string        `json:"dict_code"`
+	DictName string        `json:"dict_name"`
+	Comment  string        `json:"comment,optional"`
+	Items    []StdDictItem `json:"items"`
+	Beid     int64         `json:"beid,optional"`
+}
+type DictListReq {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+type DictListResp {
+	List  []StdDict `json:"list"`
+	Total int64     `json:"total"`
+}
+
+type StdElement {
+	Id             int64  `json:"id,optional"`
+	ElementCode    string `json:"element_code,optional"`
+	ElementName    string `json:"element_name,optional"`
+	DataType       string `json:"data_type,optional"`
+	DataLength     int32  `json:"data_length,optional"`
+	DataPrecision  int32  `json:"data_precision,optional"`
+	DictCode       string `json:"dict_code,optional"`
+	Comment        string `json:"comment,optional"`
+}
+type SaveElementReq {
+	Id             int64  `json:"id,optional"`
+	ElementCode    string `json:"element_code"`
+	ElementName    string `json:"element_name"`
+	DataType       string `json:"data_type"`
+	DataLength     int32  `json:"data_length,optional"`
+	DataPrecision  int32  `json:"data_precision,optional"`
+	DictCode       string `json:"dict_code,optional"`
+	Comment        string `json:"comment,optional"`
+	Beid           int64  `json:"beid,optional"`
+}
+type ElementListReq {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+type ElementListResp {
+	List  []StdElement `json:"list"`
+	Total int64        `json:"total"`
+}
+
+type StdModel {
+	Id           int64  `json:"id,optional"`
+	ModelCode    string `json:"model_code,optional"`
+	ModelName    string `json:"model_name,optional"`
+	ElementsJson string `json:"elements_json,optional"`
+	Status       string `json:"status,optional"`
+	Version      int32  `json:"version,optional"`
+	SnapshotJson string `json:"snapshot_json,optional"`
+	PublishedAt  int64  `json:"published_at,optional"`
+}
+type SaveStdModelReq {
+	Id           int64  `json:"id,optional"`
+	ModelCode    string `json:"model_code"`
+	ModelName    string `json:"model_name"`
+	ElementsJson string `json:"elements_json"`
+	Beid         int64  `json:"beid,optional"`
+}
+type StdModelListReq {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Status  string `json:"status,optional" form:"status,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+type StdModelListResp {
+	List  []StdModel `json:"list"`
+	Total int64      `json:"total"`
+}
+
+type PublishStdModelReq {
+	Id       int64  `json:"id"`
+	Beid     int64  `json:"beid,optional"`
+	Operator string `json:"operator,optional"`
+}
+type PublishStdModelResp {
+	Version      int32  `json:"version"`
+	SnapshotJson string `json:"snapshot_json"`
+}
+
+type StdCheckReq {
+	ModelId      int64  `json:"model_id,optional" form:"model_id,optional"`
+	DatasourceId int64  `json:"datasource_id,optional" form:"datasource_id,optional"`
+	Beid         int64  `json:"beid,optional" form:"beid,optional"`
+	DbName       string `json:"db_name,optional" form:"db_name,optional"`
+	TableName    string `json:"table_name,optional" form:"table_name,optional"`
+}
+type StdCheckReport {
+	Id        int64  `json:"id,optional"`
+	ModelId   int64  `json:"model_id,optional"`
+	TableName string `json:"table_name,optional"`
+	DiffJson  string `json:"diff_json,optional"`
+	PassFlag  bool   `json:"pass_flag"`
+	RunAt     int64  `json:"run_at,optional"`
+}
+type StdCheckResp { Report StdCheckReport `json:"report"` }
+type StdCheckListReq {
+	ModelId int64 `json:"model_id,optional" form:"model_id,optional"`
+	Beid    int64 `json:"beid,optional" form:"beid,optional"`
+	Page    int64 `json:"page,optional" form:"page,optional"`
+	Size    int64 `json:"size,optional" form:"size,optional"`
+}
+type StdCheckListResp {
+	List  []StdCheckReport `json:"list"`
+	Total int64            `json:"total"`
+}
+
+@server(
+	jwt: Auth
+	group: standard
+)
+service datacenter-api {
+	@handler saveWordRoot
+	post /standard/wordroot/save (SaveWordRootReq) returns (StdWordRoot)
+	@handler deleteWordRoot
+	post /standard/wordroot/delete (StdIdReq)
+	@handler wordRootList
+	get /standard/wordroot/list (WordRootListReq) returns (WordRootListResp)
+	@handler saveDict
+	post /standard/dict/save (SaveDictReq) returns (StdDict)
+	@handler dictInfo
+	get /standard/dict/info (StdIdReq) returns (StdDict)
+	@handler deleteDict
+	post /standard/dict/delete (StdIdReq)
+	@handler dictList
+	get /standard/dict/list (DictListReq) returns (DictListResp)
+	@handler saveElement
+	post /standard/element/save (SaveElementReq) returns (StdElement)
+	@handler deleteElement
+	post /standard/element/delete (StdIdReq)
+	@handler elementList
+	get /standard/element/list (ElementListReq) returns (ElementListResp)
+	@handler saveStdModel
+	post /standard/model/save (SaveStdModelReq) returns (StdModel)
+	@handler stdModelInfo
+	get /standard/model/info (StdIdReq) returns (StdModel)
+	@handler deleteStdModel
+	post /standard/model/delete (StdIdReq)
+	@handler stdModelList
+	get /standard/model/list (StdModelListReq) returns (StdModelListResp)
+	@handler publishStdModel
+	post /standard/model/publish (PublishStdModelReq) returns (PublishStdModelResp)
+	@handler stdCheck
+	get /standard/check (StdCheckReq) returns (StdCheckResp)
+	@handler stdCheckList
+	get /standard/check/list (StdCheckListReq) returns (StdCheckListResp)
+}

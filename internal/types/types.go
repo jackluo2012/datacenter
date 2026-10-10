@@ -91,6 +91,28 @@ type Application struct {
 	Fullwebsite string `json:"fullwebsite"` // 全站名称
 }
 
+type ArchiveLogListReq struct {
+	TaskId int64 `json:"task_id,optional" form:"task_id,optional"`
+	Page   int64 `json:"page,optional" form:"page,optional"`
+	Size   int64 `json:"size,optional" form:"size,optional"`
+}
+
+type ArchiveLogListResp struct {
+	List  []OpsArchiveLog `json:"list"`
+	Total int64           `json:"total"`
+}
+
+type ArchiveTaskListReq struct {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Page int64 `json:"page,optional" form:"page,optional"`
+	Size int64 `json:"size,optional" form:"size,optional"`
+}
+
+type ArchiveTaskListResp struct {
+	List  []OpsArchiveTask `json:"list"`
+	Total int64            `json:"total"`
+}
+
 type ArticleReq struct {
 	NewsId    string `json:"NewsId"`
 	NewsTitle string `json:"NewsTitle"`
@@ -165,6 +187,18 @@ type AssetListResp struct {
 	Total int64   `json:"total"`
 }
 
+type AuditLogListReq struct {
+	Resource string `json:"resource,optional" form:"resource,optional"`
+	Uid      int64  `json:"uid,optional" form:"uid,optional"`
+	Page     int64  `json:"page,optional" form:"page,optional"`
+	Size     int64  `json:"size,optional" form:"size,optional"`
+}
+
+type AuditLogListResp struct {
+	List  []OpsAuditLog `json:"list"`
+	Total int64         `json:"total"`
+}
+
 type AwardConvertReq struct {
 	UserName  string `json:"username"`
 	Phone     string `json:"phone"`
@@ -224,6 +258,19 @@ type CreateApiReq struct {
 	ParamsJson   string `json:"params_json,optional"`
 	CacheTtl     int64  `json:"cache_ttl,optional"`
 	Owner        string `json:"owner,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type CreateArchiveTaskReq struct {
+	Name         string `json:"name"`
+	DatasourceId int64  `json:"datasource_id"`
+	DbName       string `json:"db_name,optional"`
+	TableName    string `json:"table_name"`
+	ConditionSql string `json:"condition_sql,optional"`
+	ArchiveTable string `json:"archive_table"`
+	DeleteSource bool   `json:"delete_source,optional"`
+	BatchSize    int32  `json:"batch_size,optional"`
+	Cron         string `json:"cron,optional"`
 	Beid         int64  `json:"beid,optional"`
 }
 
@@ -346,13 +393,49 @@ type DeployResp struct {
 	Msg            string `json:"msg,optional"`
 }
 
+type DictListReq struct {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+
+type DictListResp struct {
+	List  []StdDict `json:"list"`
+	Total int64     `json:"total"`
+}
+
 type DiffResp struct {
 	DiffJson string `json:"diff_json"`
+}
+
+type DistributeMdmReq struct {
+	RecordId    int64  `json:"record_id"`
+	TargetDsId  int64  `json:"target_ds_id"`
+	TargetDb    string `json:"target_db,optional"`
+	TargetTable string `json:"target_table,optional"`
+	Beid        int64  `json:"beid,optional"`
+}
+
+type DistributeMdmResp struct {
+	Distribution MdmDistribution `json:"distribution"`
 }
 
 type DsIdReq struct {
 	Id   int64 `json:"id,optional" form:"id,optional"`
 	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type ElementListReq struct {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+
+type ElementListResp struct {
+	List  []StdElement `json:"list"`
+	Total int64        `json:"total"`
 }
 
 type EnrollReq struct {
@@ -449,10 +532,95 @@ type LoginAppUser struct {
 	JwtToken
 }
 
+type LoginLogListReq struct {
+	Username      string `json:"username,optional" form:"username,optional"`
+	SuccessFilter int32  `json:"success_filter,optional" form:"success_filter,optional"`
+	Page          int64  `json:"page,optional" form:"page,optional"`
+	Size          int64  `json:"size,optional" form:"size,optional"`
+}
+
+type LoginLogListResp struct {
+	List  []OpsLoginLog `json:"list"`
+	Total int64         `json:"total"`
+}
+
 type LoginReq struct {
 	Mobile   string `json:"mobile"`
 	Type     int64  `json:"type"` //1.密码登陆，2.短信登陆
 	Password string `json:"password"`
+}
+
+type MdmDistListReq struct {
+	RecordId int64 `json:"record_id,optional" form:"record_id,optional"`
+	Beid     int64 `json:"beid,optional" form:"beid,optional"`
+	Page     int64 `json:"page,optional" form:"page,optional"`
+	Size     int64 `json:"size,optional" form:"size,optional"`
+}
+
+type MdmDistListResp struct {
+	List  []MdmDistribution `json:"list"`
+	Total int64             `json:"total"`
+}
+
+type MdmDistribution struct {
+	Id            int64  `json:"id,optional"`
+	RecordId      int64  `json:"record_id,optional"`
+	TargetDsId    int64  `json:"target_ds_id,optional"`
+	TargetDb      string `json:"target_db,optional"`
+	TargetTable   string `json:"target_table,optional"`
+	Status        string `json:"status,optional"`
+	Msg           string `json:"msg,optional"`
+	DistributedAt int64  `json:"distributed_at,optional"`
+}
+
+type MdmIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type MdmModelInfo struct {
+	Id           int64  `json:"id,optional"`
+	ModelCode    string `json:"model_code,optional"`
+	ModelName    string `json:"model_name,optional"`
+	TableName    string `json:"table_name,optional"`
+	FieldsJson   string `json:"fields_json,optional"`
+	CodeStrategy string `json:"code_strategy,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type MdmModelListReq struct {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+
+type MdmModelListResp struct {
+	List  []MdmModelInfo `json:"list"`
+	Total int64          `json:"total"`
+}
+
+type MdmRecordInfo struct {
+	Id       int64  `json:"id,optional"`
+	ModelId  int64  `json:"model_id,optional"`
+	BizCode  string `json:"biz_code,optional"`
+	DataJson string `json:"data_json,optional"`
+	Status   string `json:"status,optional"`
+	Version  int32  `json:"version,optional"`
+	Beid     int64  `json:"beid,optional"`
+}
+
+type MdmRecordListReq struct {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	ModelId int64  `json:"model_id,optional" form:"model_id,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+
+type MdmRecordListResp struct {
+	List  []MdmRecordInfo `json:"list"`
+	Total int64           `json:"total"`
 }
 
 type MetaEntity struct {
@@ -530,6 +698,10 @@ type MetricListResp struct {
 	Total int64        `json:"total"`
 }
 
+type NextCodeResp struct {
+	BizCode string `json:"biz_code"`
+}
+
 type ObjectTagsReq struct {
 	ObjectPk string `json:"object_pk,optional" form:"object_pk,optional"`
 	ObjectId int64  `json:"object_id,optional" form:"object_id,optional"`
@@ -538,6 +710,70 @@ type ObjectTagsReq struct {
 
 type ObjectTagsResp struct {
 	Tags []TagValueItem `json:"tags"`
+}
+
+type OpsArchiveLog struct {
+	Id           int64  `json:"id,optional"`
+	TaskId       int64  `json:"task_id,optional"`
+	ArchivedRows int64  `json:"archived_rows,optional"`
+	DeletedRows  int64  `json:"deleted_rows,optional"`
+	Status       string `json:"status,optional"`
+	Msg          string `json:"msg,optional"`
+	RunAt        int64  `json:"run_at,optional"`
+}
+
+type OpsArchiveTask struct {
+	Id           int64  `json:"id,optional"`
+	Name         string `json:"name,optional"`
+	DatasourceId int64  `json:"datasource_id,optional"`
+	DbName       string `json:"db_name,optional"`
+	TableName    string `json:"table_name,optional"`
+	ConditionSql string `json:"condition_sql,optional"`
+	ArchiveTable string `json:"archive_table,optional"`
+	DeleteSource bool   `json:"delete_source,optional"`
+	BatchSize    int32  `json:"batch_size,optional"`
+	Cron         string `json:"cron,optional"`
+	LastStatus   string `json:"last_status,optional"`
+	LastRunAt    int64  `json:"last_run_at,optional"`
+}
+
+type OpsAuditLog struct {
+	Id         int64  `json:"id,optional"`
+	Uid        int64  `json:"uid,optional"`
+	Username   string `json:"username,optional"`
+	Action     string `json:"action,optional"`
+	Resource   string `json:"resource,optional"`
+	ResourceId string `json:"resource_id,optional"`
+	DetailJson string `json:"detail_json,optional"`
+	Ip         string `json:"ip,optional"`
+	CreatedAt  int64  `json:"created_at,optional"`
+}
+
+type OpsIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type OpsLoginLog struct {
+	Id        int64  `json:"id,optional"`
+	Username  string `json:"username,optional"`
+	Uid       int64  `json:"uid,optional"`
+	Ip        string `json:"ip,optional"`
+	UserAgent string `json:"user_agent,optional"`
+	Success   bool   `json:"success"`
+	Msg       string `json:"msg,optional"`
+	CreatedAt int64  `json:"created_at,optional"`
+}
+
+type PublishStdModelReq struct {
+	Id       int64  `json:"id"`
+	Beid     int64  `json:"beid,optional"`
+	Operator string `json:"operator,optional"`
+}
+
+type PublishStdModelResp struct {
+	Version      int32  `json:"version"`
+	SnapshotJson string `json:"snapshot_json"`
 }
 
 type QualityIdReq struct {
@@ -630,6 +866,12 @@ type ResultListResp struct {
 	Total int64           `json:"total"`
 }
 
+type RunArchiveResp struct {
+	ArchivedRows int64  `json:"archived_rows"`
+	DeletedRows  int64  `json:"deleted_rows"`
+	Status       string `json:"status"`
+}
+
 type RunJobResp struct {
 	JobId      int64  `json:"job_id"`
 	TotalRules int64  `json:"total_rules"`
@@ -651,6 +893,45 @@ type RunScriptResp struct {
 	Truncated   bool   `json:"truncated"`
 }
 
+type SaveDictReq struct {
+	Id       int64         `json:"id,optional"`
+	DictCode string        `json:"dict_code"`
+	DictName string        `json:"dict_name"`
+	Comment  string        `json:"comment,optional"`
+	Items    []StdDictItem `json:"items"`
+	Beid     int64         `json:"beid,optional"`
+}
+
+type SaveElementReq struct {
+	Id            int64  `json:"id,optional"`
+	ElementCode   string `json:"element_code"`
+	ElementName   string `json:"element_name"`
+	DataType      string `json:"data_type"`
+	DataLength    int32  `json:"data_length,optional"`
+	DataPrecision int32  `json:"data_precision,optional"`
+	DictCode      string `json:"dict_code,optional"`
+	Comment       string `json:"comment,optional"`
+	Beid          int64  `json:"beid,optional"`
+}
+
+type SaveMdmModelReq struct {
+	Id           int64  `json:"id,optional"`
+	ModelCode    string `json:"model_code"`
+	ModelName    string `json:"model_name"`
+	TableName    string `json:"table_name,optional"`
+	FieldsJson   string `json:"fields_json"`
+	CodeStrategy string `json:"code_strategy,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type SaveMdmRecordReq struct {
+	Id       int64  `json:"id,optional"`
+	ModelId  int64  `json:"model_id"`
+	BizCode  string `json:"biz_code,optional"`
+	DataJson string `json:"data_json"`
+	Beid     int64  `json:"beid,optional"`
+}
+
 type SaveScriptReq struct {
 	Id           int64  `json:"id,optional"`
 	Name         string `json:"name"`
@@ -658,6 +939,23 @@ type SaveScriptReq struct {
 	DatasourceId int64  `json:"datasource_id"`
 	DbName       string `json:"db_name,optional"`
 	Beid         int64  `json:"beid,optional"`
+}
+
+type SaveStdModelReq struct {
+	Id           int64  `json:"id,optional"`
+	ModelCode    string `json:"model_code"`
+	ModelName    string `json:"model_name"`
+	ElementsJson string `json:"elements_json"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type SaveWordRootReq struct {
+	Id      int64  `json:"id,optional"`
+	Name    string `json:"name"`
+	CnName  string `json:"cn_name,optional"`
+	Type    string `json:"type,optional"`
+	Comment string `json:"comment,optional"`
+	Beid    int64  `json:"beid,optional"`
 }
 
 type SchedulerInfoResp struct {
@@ -717,6 +1015,104 @@ type SnsResp struct {
 	Appid    string `json:"appid"`     //sns 平台的id
 	Title    string `json:"title"`     //名称
 	LoginUrl string `json:"login_url"` //微信登陆的地址
+}
+
+type StdCheckListReq struct {
+	ModelId int64 `json:"model_id,optional" form:"model_id,optional"`
+	Beid    int64 `json:"beid,optional" form:"beid,optional"`
+	Page    int64 `json:"page,optional" form:"page,optional"`
+	Size    int64 `json:"size,optional" form:"size,optional"`
+}
+
+type StdCheckListResp struct {
+	List  []StdCheckReport `json:"list"`
+	Total int64            `json:"total"`
+}
+
+type StdCheckReport struct {
+	Id        int64  `json:"id,optional"`
+	ModelId   int64  `json:"model_id,optional"`
+	TableName string `json:"table_name,optional"`
+	DiffJson  string `json:"diff_json,optional"`
+	PassFlag  bool   `json:"pass_flag"`
+	RunAt     int64  `json:"run_at,optional"`
+}
+
+type StdCheckReq struct {
+	ModelId      int64  `json:"model_id,optional" form:"model_id,optional"`
+	DatasourceId int64  `json:"datasource_id,optional" form:"datasource_id,optional"`
+	Beid         int64  `json:"beid,optional" form:"beid,optional"`
+	DbName       string `json:"db_name,optional" form:"db_name,optional"`
+	TableName    string `json:"table_name,optional" form:"table_name,optional"`
+}
+
+type StdCheckResp struct {
+	Report StdCheckReport `json:"report"`
+}
+
+type StdDict struct {
+	Id       string        `json:"id,optional"`
+	DictCode string        `json:"dict_code,optional"`
+	DictName string        `json:"dict_name,optional"`
+	Comment  string        `json:"comment,optional"`
+	Status   int32         `json:"status,optional"`
+	Items    []StdDictItem `json:"items"`
+}
+
+type StdDictItem struct {
+	Id        int64  `json:"id,optional"`
+	DictId    int64  `json:"dict_id,optional"`
+	ItemCode  string `json:"item_code,optional"`
+	ItemValue string `json:"item_value,optional"`
+	Sort      int32  `json:"sort,optional"`
+}
+
+type StdElement struct {
+	Id            int64  `json:"id,optional"`
+	ElementCode   string `json:"element_code,optional"`
+	ElementName   string `json:"element_name,optional"`
+	DataType      string `json:"data_type,optional"`
+	DataLength    int32  `json:"data_length,optional"`
+	DataPrecision int32  `json:"data_precision,optional"`
+	DictCode      string `json:"dict_code,optional"`
+	Comment       string `json:"comment,optional"`
+}
+
+type StdIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type StdModel struct {
+	Id           int64  `json:"id,optional"`
+	ModelCode    string `json:"model_code,optional"`
+	ModelName    string `json:"model_name,optional"`
+	ElementsJson string `json:"elements_json,optional"`
+	Status       string `json:"status,optional"`
+	Version      int32  `json:"version,optional"`
+	SnapshotJson string `json:"snapshot_json,optional"`
+	PublishedAt  int64  `json:"published_at,optional"`
+}
+
+type StdModelListReq struct {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Status  string `json:"status,optional" form:"status,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+
+type StdModelListResp struct {
+	List  []StdModel `json:"list"`
+	Total int64      `json:"total"`
+}
+
+type StdWordRoot struct {
+	Id      int64  `json:"id,optional"`
+	Name    string `json:"name,optional"`
+	CnName  string `json:"cn_name,optional"`
+	Type    string `json:"type,optional"`
+	Comment string `json:"comment,optional"`
 }
 
 type SyncTask struct {
@@ -925,6 +1321,18 @@ type VoteResp struct {
 	VoteReq
 	Votecount int64 `json:"votecount"` //投票票数
 	Viewcount int64 `json:"viewcount"` //浏览数
+}
+
+type WordRootListReq struct {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+
+type WordRootListResp struct {
+	List  []StdWordRoot `json:"list"`
+	Total int64         `json:"total"`
 }
 
 type WxLoginReq struct {

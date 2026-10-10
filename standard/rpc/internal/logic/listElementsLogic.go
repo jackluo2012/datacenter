@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"datacenter/standard/model"
 	"datacenter/standard/rpc/internal/svc"
 	"datacenter/standard/rpc/standard"
 
@@ -23,8 +24,18 @@ func NewListElementsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *List
 	}
 }
 
+// 数据元列表（分页 + keyword 对 element_code/element_name 模糊匹配）
 func (l *ListElementsLogic) ListElements(in *standard.ElementListReq) (*standard.ElementListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &standard.ElementListReply{}, nil
+	if in.Beid <= 0 {
+		return nil, model.ErrBeidRequired
+	}
+	list, total, err := l.svcCtx.ElementModel.FindList(l.ctx, in.Beid, in.Keyword, in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	elements := make([]*standard.DataElement, 0, len(list))
+	for _, e := range list {
+		elements = append(elements, elementToPb(e))
+	}
+	return &standard.ElementListReply{List: elements, Total: total}, nil
 }

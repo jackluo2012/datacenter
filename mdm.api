@@ -1,0 +1,125 @@
+syntax = "v1"
+
+//主数据管理（Phase 5）
+type MdmModelInfo {
+	Id           int64  `json:"id,optional"`
+	ModelCode    string `json:"model_code,optional"`
+	ModelName    string `json:"model_name,optional"`
+	TableName    string `json:"table_name,optional"`
+	FieldsJson   string `json:"fields_json,optional"`
+	CodeStrategy string `json:"code_strategy,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+type SaveMdmModelReq {
+	Id           int64  `json:"id,optional"`
+	ModelCode    string `json:"model_code"`
+	ModelName    string `json:"model_name"`
+	TableName    string `json:"table_name,optional"`
+	FieldsJson   string `json:"fields_json"`
+	CodeStrategy string `json:"code_strategy,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+type MdmIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+type MdmModelListReq {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+type MdmModelListResp {
+	List  []MdmModelInfo `json:"list"`
+	Total int64          `json:"total"`
+}
+
+type NextCodeResp { BizCode string `json:"biz_code"` }
+
+type MdmRecordInfo {
+	Id        int64  `json:"id,optional"`
+	ModelId   int64  `json:"model_id,optional"`
+	BizCode   string `json:"biz_code,optional"`
+	DataJson  string `json:"data_json,optional"`
+	Status    string `json:"status,optional"`
+	Version   int32  `json:"version,optional"`
+	Beid      int64  `json:"beid,optional"`
+}
+type SaveMdmRecordReq {
+	Id       int64  `json:"id,optional"`
+	ModelId  int64  `json:"model_id"`
+	BizCode  string `json:"biz_code,optional"`
+	DataJson string `json:"data_json"`
+	Beid     int64  `json:"beid,optional"`
+}
+type MdmRecordListReq {
+	Beid     int64  `json:"beid,optional" form:"beid,optional"`
+	ModelId  int64  `json:"model_id,optional" form:"model_id,optional"`
+	Keyword  string `json:"keyword,optional" form:"keyword,optional"`
+	Page     int64  `json:"page,optional" form:"page,optional"`
+	Size     int64  `json:"size,optional" form:"size,optional"`
+}
+type MdmRecordListResp {
+	List  []MdmRecordInfo `json:"list"`
+	Total int64           `json:"total"`
+}
+
+type MdmDistribution {
+	Id            int64  `json:"id,optional"`
+	RecordId      int64  `json:"record_id,optional"`
+	TargetDsId    int64  `json:"target_ds_id,optional"`
+	TargetDb      string `json:"target_db,optional"`
+	TargetTable   string `json:"target_table,optional"`
+	Status        string `json:"status,optional"`
+	Msg           string `json:"msg,optional"`
+	DistributedAt int64  `json:"distributed_at,optional"`
+}
+type DistributeMdmReq {
+	RecordId    int64  `json:"record_id"`
+	TargetDsId  int64  `json:"target_ds_id"`
+	TargetDb    string `json:"target_db,optional"`
+	TargetTable string `json:"target_table,optional"`
+	Beid        int64  `json:"beid,optional"`
+}
+type DistributeMdmResp { Distribution MdmDistribution `json:"distribution"` }
+type MdmDistListReq {
+	RecordId int64 `json:"record_id,optional" form:"record_id,optional"`
+	Beid     int64 `json:"beid,optional" form:"beid,optional"`
+	Page     int64 `json:"page,optional" form:"page,optional"`
+	Size     int64 `json:"size,optional" form:"size,optional"`
+}
+type MdmDistListResp {
+	List  []MdmDistribution `json:"list"`
+	Total int64             `json:"total"`
+}
+
+@server(
+	jwt: Auth
+	group: mdm
+)
+service datacenter-api {
+	@handler saveMdmModel
+	post /mdm/model/save (SaveMdmModelReq) returns (MdmModelInfo)
+	@handler mdmModelInfo
+	get /mdm/model/info (MdmIdReq) returns (MdmModelInfo)
+	@handler deleteMdmModel
+	post /mdm/model/delete (MdmIdReq)
+	@handler mdmModelList
+	get /mdm/model/list (MdmModelListReq) returns (MdmModelListResp)
+	@handler mdmNextCode
+	get /mdm/nextcode (MdmIdReq) returns (NextCodeResp)
+	@handler saveMdmRecord
+	post /mdm/record/save (SaveMdmRecordReq) returns (MdmRecordInfo)
+	@handler mdmRecordInfo
+	get /mdm/record/info (MdmIdReq) returns (MdmRecordInfo)
+	@handler deleteMdmRecord
+	post /mdm/record/delete (MdmIdReq)
+	@handler mdmRecordList
+	get /mdm/record/list (MdmRecordListReq) returns (MdmRecordListResp)
+	@handler publishMdmRecord
+	post /mdm/record/publish (MdmIdReq) returns (MdmRecordInfo)
+	@handler distributeMdmRecord
+	post /mdm/record/distribute (DistributeMdmReq) returns (DistributeMdmResp)
+	@handler mdmDistList
+	get /mdm/distribution/list (MdmDistListReq) returns (MdmDistListResp)
+}

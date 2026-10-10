@@ -23,9 +23,18 @@ func NewListDistributionsLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 	}
 }
 
-// 分发记录
+// ListDistributions 分页查询分发记录（recordId 可选，按记录过滤）
 func (l *ListDistributionsLogic) ListDistributions(in *mdm.DistListReq) (*mdm.DistListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &mdm.DistListReply{}, nil
+	if in.Beid <= 0 {
+		return nil, ErrBeidRequired
+	}
+	list, total, err := l.svcCtx.DistributionModel.FindList(l.ctx, in.Beid, in.RecordId, in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	reply := &mdm.DistListReply{Total: total}
+	for _, d := range list {
+		reply.List = append(reply.List, toPbDistribution(d))
+	}
+	return reply, nil
 }

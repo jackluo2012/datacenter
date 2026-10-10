@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"datacenter/standard/model"
 	"datacenter/standard/rpc/internal/svc"
 	"datacenter/standard/rpc/standard"
 
@@ -23,8 +24,18 @@ func NewListDictsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListDic
 	}
 }
 
+// 字典列表（分页 + keyword 对 dict_code/dict_name 模糊匹配；不含字典项）
 func (l *ListDictsLogic) ListDicts(in *standard.DictListReq) (*standard.DictListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &standard.DictListReply{}, nil
+	if in.Beid <= 0 {
+		return nil, model.ErrBeidRequired
+	}
+	list, total, err := l.svcCtx.DictModel.FindList(l.ctx, in.Beid, in.Keyword, in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	dicts := make([]*standard.Dict, 0, len(list))
+	for _, d := range list {
+		dicts = append(dicts, dictToPb(d))
+	}
+	return &standard.DictListReply{List: dicts, Total: total}, nil
 }
