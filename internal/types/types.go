@@ -346,6 +346,13 @@ type CreateTagDefReq struct {
 	Beid        int64  `json:"beid,optional"`
 }
 
+type CreateTagGroupReq struct {
+	Name          string `json:"name"`
+	ObjectId      int64  `json:"object_id"`
+	CircleRuleSql string `json:"circle_rule_sql"`
+	Beid          int64  `json:"beid,optional"`
+}
+
 type CreateTagObjectReq struct {
 	ObjectType string `json:"object_type"`
 	Name       string `json:"name"`
@@ -391,6 +398,12 @@ type DeployResp struct {
 	Ok             bool   `json:"ok"`
 	DsWorkflowCode int32  `json:"ds_workflow_code,optional"`
 	Msg            string `json:"msg,optional"`
+}
+
+type DeployThemeModelResp struct {
+	Ok     bool   `json:"ok"`
+	Msg    string `json:"msg,optional"`
+	CostMs int64  `json:"cost_ms"`
 }
 
 type DictListReq struct {
@@ -457,6 +470,18 @@ type EnrollResp struct {
 	Viewcount int64    `json:"viewcount"` //当前活动的总浏览数
 }
 
+type EntityTagListReq struct {
+	Beid      int64  `json:"beid,optional" form:"beid,optional"`
+	LevelCode string `json:"level_code,optional" form:"level_code,optional"`
+	Page      int64  `json:"page,optional" form:"page,optional"`
+	Size      int64  `json:"size,optional" form:"size,optional"`
+}
+
+type EntityTagListResp struct {
+	List  []SecEntityTag `json:"list"`
+	Total int64          `json:"total"`
+}
+
 type ExecuteApiReq struct {
 	AppKey     string `json:"app_key"`
 	Sign       string `json:"sign"`
@@ -478,6 +503,23 @@ type GrantApiReq struct {
 	ExpireAt  int64  `json:"expire_at,optional"` //unix 秒,0 永久
 	FieldMask string `json:"field_mask,optional"`
 	Beid      int64  `json:"beid,optional"`
+}
+
+type GroupMember struct {
+	ObjectPk string `json:"object_pk,optional"`
+	TagValue string `json:"tag_value,optional"`
+}
+
+type GroupMembersReq struct {
+	GroupId int64 `json:"group_id,optional" form:"group_id,optional"`
+	Beid    int64 `json:"beid,optional" form:"beid,optional"`
+	Page    int64 `json:"page,optional" form:"page,optional"`
+	Size    int64 `json:"size,optional" form:"size,optional"`
+}
+
+type GroupMembersResp struct {
+	Members []GroupMember `json:"members"`
+	Total   int64         `json:"total"`
 }
 
 type JobListReq struct {
@@ -548,6 +590,27 @@ type LoginReq struct {
 	Mobile   string `json:"mobile"`
 	Type     int64  `json:"type"` //1.密码登陆，2.短信登陆
 	Password string `json:"password"`
+}
+
+type MaskPreviewReq struct {
+	RuleId int64  `json:"rule_id,optional" form:"rule_id,optional"`
+	Sample string `json:"sample,optional" form:"sample,optional"`
+}
+
+type MaskPreviewResp struct {
+	Masked   string `json:"masked"`
+	RuleCode string `json:"rule_code,optional"`
+}
+
+type MaskRuleListReq struct {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Page int64 `json:"page,optional" form:"page,optional"`
+	Size int64 `json:"size,optional" form:"size,optional"`
+}
+
+type MaskRuleListResp struct {
+	List  []SecMaskRule `json:"list"`
+	Total int64         `json:"total"`
 }
 
 type MdmDistListReq struct {
@@ -893,6 +956,16 @@ type RunScriptResp struct {
 	Truncated   bool   `json:"truncated"`
 }
 
+type RunTagCircleReq struct {
+	GroupId int64 `json:"group_id"`
+	Beid    int64 `json:"beid,optional"`
+}
+
+type RunTagCircleResp struct {
+	MemberCount int64  `json:"member_count"`
+	Msg         string `json:"msg,optional"`
+}
+
 type SaveDictReq struct {
 	Id       int64         `json:"id,optional"`
 	DictCode string        `json:"dict_code"`
@@ -941,12 +1014,73 @@ type SaveScriptReq struct {
 	Beid         int64  `json:"beid,optional"`
 }
 
+type SaveSecGrantReq struct {
+	Subject    string `json:"subject"`
+	Resource   string `json:"resource"`
+	ResourceId string `json:"resource_id,optional"`
+	LevelCode  string `json:"level_code"`
+	ExpireAt   int64  `json:"expire_at,optional"`
+	Beid       int64  `json:"beid,optional"`
+}
+
+type SaveSecLevelReq struct {
+	Code    string `json:"code"`
+	Name    string `json:"name"`
+	Comment string `json:"comment,optional"`
+	Beid    int64  `json:"beid,optional"`
+}
+
+type SaveSecMaskRuleReq struct {
+	RuleCode   string `json:"rule_code"`
+	RuleName   string `json:"rule_name"`
+	Algorithm  string `json:"algorithm"`
+	ParamsJson string `json:"params_json,optional"`
+	Beid       int64  `json:"beid,optional"`
+}
+
 type SaveStdModelReq struct {
 	Id           int64  `json:"id,optional"`
 	ModelCode    string `json:"model_code"`
 	ModelName    string `json:"model_name"`
 	ElementsJson string `json:"elements_json"`
 	Beid         int64  `json:"beid,optional"`
+}
+
+type SaveThemeDomainReq struct {
+	Code    string `json:"code"`
+	Name    string `json:"name"`
+	Comment string `json:"comment,optional"`
+	Beid    int64  `json:"beid,optional"`
+}
+
+type SaveThemeModelReq struct {
+	ThemeId      int64  `json:"theme_id"`
+	Layer        string `json:"layer"`
+	TableName    string `json:"table_name"`
+	ModelName    string `json:"model_name"`
+	FieldsJson   string `json:"fields_json"`
+	DimJson      string `json:"dim_json,optional"`
+	DatasourceId int64  `json:"datasource_id"`
+	DbName       string `json:"db_name,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type SaveThemeMvReq struct {
+	Name         string `json:"name"`
+	DatasourceId int64  `json:"datasource_id"`
+	DbName       string `json:"db_name,optional"`
+	ViewName     string `json:"view_name"`
+	SelectSql    string `json:"select_sql"`
+	RefreshMode  string `json:"refresh_mode,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type SaveThemeReq struct {
+	DomainId int64  `json:"domain_id"`
+	Code     string `json:"code"`
+	Name     string `json:"name"`
+	Comment  string `json:"comment,optional"`
+	Beid     int64  `json:"beid,optional"`
 }
 
 type SaveWordRootReq struct {
@@ -1003,6 +1137,73 @@ type SearchResp struct {
 	Data []ArticleReq `json:"data"`
 }
 
+type SecCheckPermReq struct {
+	Subject    string `json:"subject,optional" form:"subject,optional"`
+	Resource   string `json:"resource,optional" form:"resource,optional"`
+	ResourceId string `json:"resource_id,optional" form:"resource_id,optional"`
+	LevelCode  string `json:"level_code,optional" form:"level_code,optional"`
+	Beid       int64  `json:"beid,optional" form:"beid,optional"`
+}
+
+type SecCheckPermResp struct {
+	Allowed bool   `json:"allowed"`
+	Reason  string `json:"reason,optional"`
+}
+
+type SecEntityTag struct {
+	Id           int64  `json:"id,optional"`
+	EntityId     int64  `json:"entity_id,optional"`
+	EntityName   string `json:"entity_name,optional"`
+	LevelCode    string `json:"level_code,optional"`
+	MaskRuleCode string `json:"mask_rule_code,optional"`
+}
+
+type SecGrant struct {
+	Id         int64  `json:"id,optional"`
+	Subject    string `json:"subject,optional"`
+	Resource   string `json:"resource,optional"`
+	ResourceId string `json:"resource_id,optional"`
+	LevelCode  string `json:"level_code,optional"`
+	ExpireAt   int64  `json:"expire_at,optional"`
+}
+
+type SecGrantListReq struct {
+	Beid     int64  `json:"beid,optional" form:"beid,optional"`
+	Subject  string `json:"subject,optional" form:"subject,optional"`
+	Resource string `json:"resource,optional" form:"resource,optional"`
+	Page     int64  `json:"page,optional" form:"page,optional"`
+	Size     int64  `json:"size,optional" form:"size,optional"`
+}
+
+type SecGrantListResp struct {
+	List  []SecGrant `json:"list"`
+	Total int64      `json:"total"`
+}
+
+type SecIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type SecLevelInfo struct {
+	Id      int64  `json:"id,optional"`
+	Code    string `json:"code,optional"`
+	Name    string `json:"name,optional"`
+	Comment string `json:"comment,optional"`
+}
+
+type SecLevelListResp struct {
+	List []SecLevelInfo `json:"list"`
+}
+
+type SecMaskRule struct {
+	Id         int64  `json:"id,optional"`
+	RuleCode   string `json:"rule_code,optional"`
+	RuleName   string `json:"rule_name,optional"`
+	Algorithm  string `json:"algorithm,optional"`
+	ParamsJson string `json:"params_json,optional"`
+}
+
 type SnsReq struct {
 	Beid
 	Ptyid   int64  `json:"ptyid"`    //对应平台
@@ -1051,7 +1252,7 @@ type StdCheckResp struct {
 }
 
 type StdDict struct {
-	Id       string        `json:"id,optional"`
+	Id       int64         `json:"id,optional"`
 	DictCode string        `json:"dict_code,optional"`
 	DictName string        `json:"dict_name,optional"`
 	Comment  string        `json:"comment,optional"`
@@ -1187,6 +1388,27 @@ type TagDefListResp struct {
 	Total int64    `json:"total"`
 }
 
+type TagGroupInfo struct {
+	Id                int64  `json:"id,optional"`
+	Name              string `json:"name,optional"`
+	ObjectId          int64  `json:"object_id,optional"`
+	CircleRuleSql     string `json:"circle_rule_sql,optional"`
+	EstCount          int64  `json:"est_count,optional"`
+	MaterializedTable string `json:"materialized_table,optional"`
+	LastRunAt         int64  `json:"last_run_at,optional"`
+}
+
+type TagGroupListReq struct {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Page int64 `json:"page,optional" form:"page,optional"`
+	Size int64 `json:"size,optional" form:"size,optional"`
+}
+
+type TagGroupListResp struct {
+	List  []TagGroupInfo `json:"list"`
+	Total int64          `json:"total"`
+}
+
 type TagObject struct {
 	Id         int64  `json:"id,optional"`
 	ObjectType string `json:"object_type,optional"`
@@ -1208,6 +1430,14 @@ type TagObjectListReq struct {
 type TagObjectListResp struct {
 	List  []TagObject `json:"list"`
 	Total int64       `json:"total"`
+}
+
+type TagSecEntityReq struct {
+	EntityId     int64  `json:"entity_id"`
+	EntityName   string `json:"entity_name,optional"`
+	LevelCode    string `json:"level_code"`
+	MaskRuleCode string `json:"mask_rule_code,optional"`
+	Beid         int64  `json:"beid,optional"`
 }
 
 type TagValueItem struct {
@@ -1238,6 +1468,97 @@ type TestConnResp struct {
 	Ok        bool   `json:"ok"`
 	LatencyMs int64  `json:"latency_ms"`
 	ErrMsg    string `json:"err_msg,optional"`
+}
+
+type ThemeDomainInfo struct {
+	Id      int64  `json:"id,optional"`
+	Code    string `json:"code,optional"`
+	Name    string `json:"name,optional"`
+	Comment string `json:"comment,optional"`
+}
+
+type ThemeDomainListResp struct {
+	List []ThemeDomainInfo `json:"list"`
+}
+
+type ThemeIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type ThemeInfo struct {
+	Id       int64  `json:"id,optional"`
+	DomainId int64  `json:"domain_id,optional"`
+	Code     string `json:"code,optional"`
+	Name     string `json:"name,optional"`
+	Comment  string `json:"comment,optional"`
+}
+
+type ThemeListReq struct {
+	Beid     int64 `json:"beid,optional" form:"beid,optional"`
+	DomainId int64 `json:"domain_id,optional" form:"domain_id,optional"`
+	Page     int64 `json:"page,optional" form:"page,optional"`
+	Size     int64 `json:"size,optional" form:"size,optional"`
+}
+
+type ThemeListResp struct {
+	List  []ThemeInfo `json:"list"`
+	Total int64       `json:"total"`
+}
+
+type ThemeModelInfo struct {
+	Id           int64  `json:"id,optional"`
+	ThemeId      int64  `json:"theme_id,optional"`
+	Layer        string `json:"layer,optional"`
+	TableName    string `json:"table_name,optional"`
+	ModelName    string `json:"model_name,optional"`
+	FieldsJson   string `json:"fields_json,optional"`
+	DimJson      string `json:"dim_json,optional"`
+	CreateSql    string `json:"create_sql,optional"`
+	DatasourceId int64  `json:"datasource_id,optional"`
+	DbName       string `json:"db_name,optional"`
+}
+
+type ThemeModelListReq struct {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	ThemeId int64  `json:"theme_id,optional" form:"theme_id,optional"`
+	Layer   string `json:"layer,optional" form:"layer,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+
+type ThemeModelListResp struct {
+	List  []ThemeModelInfo `json:"list"`
+	Total int64            `json:"total"`
+}
+
+type ThemeMvInfo struct {
+	Id            int64  `json:"id,optional"`
+	Name          string `json:"name,optional"`
+	DatasourceId  int64  `json:"datasource_id,optional"`
+	DbName        string `json:"db_name,optional"`
+	ViewName      string `json:"view_name,optional"`
+	SelectSql     string `json:"select_sql,optional"`
+	RefreshMode   string `json:"refresh_mode,optional"`
+	LastStatus    string `json:"last_status,optional"`
+	LastRefreshAt int64  `json:"last_refresh_at,optional"`
+}
+
+type ThemeMvListReq struct {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Page int64 `json:"page,optional" form:"page,optional"`
+	Size int64 `json:"size,optional" form:"size,optional"`
+}
+
+type ThemeMvListResp struct {
+	List  []ThemeMvInfo `json:"list"`
+	Total int64         `json:"total"`
+}
+
+type ThemeRefreshResp struct {
+	Ok     bool   `json:"ok"`
+	Msg    string `json:"msg,optional"`
+	CostMs int64  `json:"cost_ms"`
 }
 
 type Token struct {

@@ -20,8 +20,10 @@ import (
 	quality "datacenter/internal/handler/quality"
 	questions "datacenter/internal/handler/questions"
 	search "datacenter/internal/handler/search"
+	security "datacenter/internal/handler/security"
 	standard "datacenter/internal/handler/standard"
 	tag "datacenter/internal/handler/tag"
+	theme "datacenter/internal/handler/theme"
 	user "datacenter/internal/handler/user"
 	votes "datacenter/internal/handler/votes"
 	"datacenter/internal/svc"
@@ -655,6 +657,72 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
+				Path:    "/security/checkperm",
+				Handler: security.SecCheckPermHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/security/entity/tag",
+				Handler: security.TagSecEntityHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/security/entity/tag/list",
+				Handler: security.SecEntityTagListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/security/grant/delete",
+				Handler: security.DeleteSecGrantHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/security/grant/list",
+				Handler: security.SecGrantListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/security/grant/save",
+				Handler: security.SaveSecGrantHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/security/level/list",
+				Handler: security.SecLevelListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/security/level/save",
+				Handler: security.SaveSecLevelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/security/mask/preview",
+				Handler: security.MaskPreviewHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/security/maskrule/delete",
+				Handler: security.DeleteSecMaskRuleHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/security/maskrule/list",
+				Handler: security.SecMaskRuleListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/security/maskrule/save",
+				Handler: security.SaveSecMaskRuleHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
 				Path:    "/standard/check",
 				Handler: standard.StdCheckHandler(serverCtx),
 			},
@@ -785,6 +853,118 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/tag/tagging",
 				Handler: tag.TaggingHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 创建人群
+				Method:  http.MethodPost,
+				Path:    "/tag/group/create",
+				Handler: tag.CreateTagGroupHandler(serverCtx),
+			},
+			{
+				// 删除人群
+				Method:  http.MethodPost,
+				Path:    "/tag/group/delete",
+				Handler: tag.DeleteTagGroupHandler(serverCtx),
+			},
+			{
+				// 人群列表
+				Method:  http.MethodGet,
+				Path:    "/tag/group/list",
+				Handler: tag.TagGroupListHandler(serverCtx),
+			},
+			{
+				// 人群成员
+				Method:  http.MethodGet,
+				Path:    "/tag/group/members",
+				Handler: tag.TagGroupMembersHandler(serverCtx),
+			},
+			{
+				// 执行圈选
+				Method:  http.MethodPost,
+				Path:    "/tag/group/run",
+				Handler: tag.RunTagCircleHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/theme/delete",
+				Handler: theme.DeleteThemeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/theme/domain/delete",
+				Handler: theme.DeleteThemeDomainHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/theme/domain/list",
+				Handler: theme.ThemeDomainListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/theme/domain/save",
+				Handler: theme.SaveThemeDomainHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/theme/list",
+				Handler: theme.ThemeListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/theme/model/delete",
+				Handler: theme.DeleteThemeModelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/theme/model/deploy",
+				Handler: theme.DeployThemeModelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/theme/model/list",
+				Handler: theme.ThemeModelListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/theme/model/save",
+				Handler: theme.SaveThemeModelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/theme/mv/delete",
+				Handler: theme.DeleteThemeMvHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/theme/mv/list",
+				Handler: theme.ThemeMvListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/theme/mv/refresh",
+				Handler: theme.RefreshThemeMvHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/theme/mv/save",
+				Handler: theme.SaveThemeMvHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/theme/save",
+				Handler: theme.SaveThemeHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

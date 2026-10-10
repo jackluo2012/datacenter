@@ -6,10 +6,10 @@ package mdm
 import (
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest/httpx"
 	"datacenter/internal/logic/mdm"
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func MdmModelListHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {

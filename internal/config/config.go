@@ -37,6 +37,8 @@ type Config struct {
 	StandardRpc zrpc.RpcClientConf
 	MdmRpc      zrpc.RpcClientConf
 	OpsRpc      zrpc.RpcClientConf
+	ThemeRpc    zrpc.RpcClientConf
+	SecurityRpc zrpc.RpcClientConf
 
 	CacheRedis cache.ClusterConf
 }

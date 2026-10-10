@@ -39,7 +39,7 @@ type StdDictItem {
 	Sort      int32  `json:"sort,optional"`
 }
 type StdDict {
-	Id        string `json:"id,optional"`
+	Id        int64  `json:"id,optional"`
 	DictCode  string `json:"dict_code,optional"`
 	DictName  string `json:"dict_name,optional"`
 	Comment   string `json:"comment,optional"`

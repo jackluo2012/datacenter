@@ -1,8 +1,6 @@
 package standard
 
 import (
-	"strconv"
-
 	"datacenter/internal/types"
 	"datacenter/standard/rpc/standardClient"
 )
@@ -50,7 +48,7 @@ func dictToTypes(dict *standardClient.Dict, items []*standardClient.DictItem) *t
 		list = append(list, *dictItemToTypes(item))
 	}
 	return &types.StdDict{
-		Id:       strconv.FormatInt(dict.GetId(), 10),
+		Id:       dict.GetId(),
 		DictCode: dict.GetDictCode(),
 		DictName: dict.GetDictName(),
 		Comment:  dict.GetComment(),

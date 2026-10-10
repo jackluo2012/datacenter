@@ -1,0 +1,156 @@
+syntax = "v1"
+
+//数仓建模（Phase 6）
+type ThemeDomainInfo {
+	Id      int64  `json:"id,optional"`
+	Code    string `json:"code,optional"`
+	Name    string `json:"name,optional"`
+	Comment string `json:"comment,optional"`
+}
+type SaveThemeDomainReq {
+	Code    string `json:"code"`
+	Name    string `json:"name"`
+	Comment string `json:"comment,optional"`
+	Beid    int64  `json:"beid,optional"`
+}
+type ThemeIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+type ThemeDomainListResp { List []ThemeDomainInfo `json:"list"` }
+
+type ThemeInfo {
+	Id       int64  `json:"id,optional"`
+	DomainId int64  `json:"domain_id,optional"`
+	Code     string `json:"code,optional"`
+	Name     string `json:"name,optional"`
+	Comment  string `json:"comment,optional"`
+}
+type SaveThemeReq {
+	DomainId int64  `json:"domain_id"`
+	Code     string `json:"code"`
+	Name     string `json:"name"`
+	Comment  string `json:"comment,optional"`
+	Beid     int64  `json:"beid,optional"`
+}
+type ThemeListReq {
+	Beid     int64 `json:"beid,optional" form:"beid,optional"`
+	DomainId int64 `json:"domain_id,optional" form:"domain_id,optional"`
+	Page     int64 `json:"page,optional" form:"page,optional"`
+	Size     int64 `json:"size,optional" form:"size,optional"`
+}
+type ThemeListResp {
+	List  []ThemeInfo `json:"list"`
+	Total int64       `json:"total"`
+}
+
+type ThemeModelInfo {
+	Id            int64  `json:"id,optional"`
+	ThemeId       int64  `json:"theme_id,optional"`
+	Layer         string `json:"layer,optional"`
+	TableName     string `json:"table_name,optional"`
+	ModelName     string `json:"model_name,optional"`
+	FieldsJson    string `json:"fields_json,optional"`
+	DimJson       string `json:"dim_json,optional"`
+	CreateSql     string `json:"create_sql,optional"`
+	DatasourceId  int64  `json:"datasource_id,optional"`
+	DbName        string `json:"db_name,optional"`
+}
+type SaveThemeModelReq {
+	ThemeId      int64  `json:"theme_id"`
+	Layer        string `json:"layer"`
+	TableName    string `json:"table_name"`
+	ModelName    string `json:"model_name"`
+	FieldsJson   string `json:"fields_json"`
+	DimJson      string `json:"dim_json,optional"`
+	DatasourceId int64  `json:"datasource_id"`
+	DbName       string `json:"db_name,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+type ThemeModelListReq {
+	Beid     int64  `json:"beid,optional" form:"beid,optional"`
+	ThemeId  int64  `json:"theme_id,optional" form:"theme_id,optional"`
+	Layer    string `json:"layer,optional" form:"layer,optional"`
+	Page     int64  `json:"page,optional" form:"page,optional"`
+	Size     int64  `json:"size,optional" form:"size,optional"`
+}
+type ThemeModelListResp {
+	List  []ThemeModelInfo `json:"list"`
+	Total int64            `json:"total"`
+}
+
+type DeployThemeModelResp {
+	Ok     bool   `json:"ok"`
+	Msg    string `json:"msg,optional"`
+	CostMs int64  `json:"cost_ms"`
+}
+
+type ThemeMvInfo {
+	Id            int64  `json:"id,optional"`
+	Name          string `json:"name,optional"`
+	DatasourceId  int64  `json:"datasource_id,optional"`
+	DbName        string `json:"db_name,optional"`
+	ViewName      string `json:"view_name,optional"`
+	SelectSql     string `json:"select_sql,optional"`
+	RefreshMode   string `json:"refresh_mode,optional"`
+	LastStatus    string `json:"last_status,optional"`
+	LastRefreshAt int64  `json:"last_refresh_at,optional"`
+}
+type SaveThemeMvReq {
+	Name          string `json:"name"`
+	DatasourceId  int64  `json:"datasource_id"`
+	DbName        string `json:"db_name,optional"`
+	ViewName      string `json:"view_name"`
+	SelectSql     string `json:"select_sql"`
+	RefreshMode   string `json:"refresh_mode,optional"`
+	Beid          int64  `json:"beid,optional"`
+}
+type ThemeMvListReq {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Page int64 `json:"page,optional" form:"page,optional"`
+	Size int64 `json:"size,optional" form:"size,optional"`
+}
+type ThemeMvListResp {
+	List  []ThemeMvInfo `json:"list"`
+	Total int64         `json:"total"`
+}
+type ThemeRefreshResp {
+	Ok     bool   `json:"ok"`
+	Msg    string `json:"msg,optional"`
+	CostMs int64  `json:"cost_ms"`
+}
+
+@server(
+	jwt: Auth
+	group: theme
+)
+service datacenter-api {
+	@handler saveThemeDomain
+	post /theme/domain/save (SaveThemeDomainReq) returns (ThemeDomainInfo)
+	@handler deleteThemeDomain
+	post /theme/domain/delete (ThemeIdReq)
+	@handler themeDomainList
+	get /theme/domain/list (ThemeIdReq) returns (ThemeDomainListResp)
+	@handler saveTheme
+	post /theme/save (SaveThemeReq) returns (ThemeInfo)
+	@handler deleteTheme
+	post /theme/delete (ThemeIdReq)
+	@handler themeList
+	get /theme/list (ThemeListReq) returns (ThemeListResp)
+	@handler saveThemeModel
+	post /theme/model/save (SaveThemeModelReq) returns (ThemeModelInfo)
+	@handler deleteThemeModel
+	post /theme/model/delete (ThemeIdReq)
+	@handler themeModelList
+	get /theme/model/list (ThemeModelListReq) returns (ThemeModelListResp)
+	@handler deployThemeModel
+	post /theme/model/deploy (ThemeIdReq) returns (DeployThemeModelResp)
+	@handler saveThemeMv
+	post /theme/mv/save (SaveThemeMvReq) returns (ThemeMvInfo)
+	@handler deleteThemeMv
+	post /theme/mv/delete (ThemeIdReq)
+	@handler themeMvList
+	get /theme/mv/list (ThemeMvListReq) returns (ThemeMvListResp)
+	@handler refreshThemeMv
+	post /theme/mv/refresh (ThemeIdReq) returns (ThemeRefreshResp)
+}

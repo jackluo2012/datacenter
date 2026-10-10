@@ -11,16 +11,18 @@ import (
 	"datacenter/internal/config"
 	"datacenter/internal/middleware"
 	"datacenter/job/rpc/jobClient"
+	"datacenter/mdm/rpc/mdmClient"
 	"datacenter/metadata/rpc/metadataClient"
 	"datacenter/metric/rpc/metricsvc"
 	"datacenter/ops/rpc/opsClient"
-	"datacenter/mdm/rpc/mdmClient"
-	"datacenter/standard/rpc/standardClient"
 	"datacenter/quality/rpc/qualityClient"
 	"datacenter/questions/rpc/questionsclient"
 	"datacenter/search/rpc/searchclient"
+	"datacenter/security/rpc/securityClient"
 	"datacenter/shared"
+	"datacenter/standard/rpc/standardClient"
 	"datacenter/tag/rpc/tagClient"
+	"datacenter/theme/rpc/themeClient"
 	"datacenter/user/rpc/userclient"
 	"datacenter/votes/rpc/votesclient"
 	"fmt"
@@ -60,6 +62,8 @@ type ServiceContext struct {
 	StandardRpc      standardClient.Standard     //数据标准（Phase 5）
 	MdmRpc           mdmClient.Mdm               //主数据（Phase 5）
 	OpsRpc           opsClient.Ops               //数据运维与日志（Phase 5）
+	ThemeRpc         themeClient.Theme           //数仓建模（Phase 6）
+	SecurityRpc      securityClient.Security     //数据安全（Phase 6）
 	Cache            cache.Cache
 	RedisConn        *redis.Redis
 }
@@ -94,6 +98,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	sr5 := standardClient.NewStandard(zrpc.MustNewClient(c.StandardRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	mr5 := mdmClient.NewMdm(zrpc.MustNewClient(c.MdmRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	or5 := opsClient.NewOps(zrpc.MustNewClient(c.OpsRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
+	tr6 := themeClient.NewTheme(zrpc.MustNewClient(c.ThemeRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
+	sr6 := securityClient.NewSecurity(zrpc.MustNewClient(c.SecurityRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	//缓存
 	ca := cache.New(c.CacheRedis, syncx.NewSingleFlight(), cache.NewStat("dc"), shared.ErrNotFound)
 	rcon := redis.MustNewRedis(c.CacheRedis[0].RedisConf)
@@ -121,6 +127,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		StandardRpc:      sr5,
 		MdmRpc:           mr5,
 		OpsRpc:           or5,
+		ThemeRpc:         tr6,
+		SecurityRpc:      sr6,
 		Cache:            ca,
 		RedisConn:        rcon,
 	}

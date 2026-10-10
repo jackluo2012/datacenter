@@ -77,6 +77,10 @@ RpcServerPlus ${getewayPath} standard
 RpcServerPlus ${getewayPath} mdm
 #数据运维与日志服务（Phase 5）
 RpcServerPlus ${getewayPath} ops
+#数仓建模服务（Phase 6）
+RpcServerPlus ${getewayPath} theme
+#数据安全服务（Phase 6）
+RpcServerPlus ${getewayPath} security
 #问答抽奖服务
 RpcServerPlus ${getewayPath} questions
 #Api服务

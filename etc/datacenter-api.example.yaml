@@ -100,3 +100,13 @@ OpsRpc:
     Hosts:
       - 127.0.0.1:2379
     Key: ops.rpc
+ThemeRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: theme.rpc
+SecurityRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: security.rpc

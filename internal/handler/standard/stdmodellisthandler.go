@@ -6,10 +6,10 @@ package standard
 import (
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest/httpx"
 	"datacenter/internal/logic/standard"
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func StdModelListHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {

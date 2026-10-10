@@ -2,7 +2,9 @@ package logic
 
 import (
 	"context"
+	"errors"
 
+	"datacenter/security/model"
 	"datacenter/security/rpc/internal/svc"
 	"datacenter/security/rpc/security"
 
@@ -23,8 +25,22 @@ func NewDeleteGrantLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delet
 	}
 }
 
+// 删除授权（按 id+beid 定位，不存在时报授权不存在）
 func (l *DeleteGrantLogic) DeleteGrant(in *security.IdReq) (*security.IdReq, error) {
-	// todo: add your logic here and delete this line
-
-	return &security.IdReq{}, nil
+	if in.Beid <= 0 {
+		return nil, model.ErrBeidRequired
+	}
+	if in.Id <= 0 {
+		return nil, ErrIdRequired
+	}
+	if _, err := l.svcCtx.GrantModel.FindOne(l.ctx, in.Id, in.Beid); err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return nil, ErrGrantNotFound
+		}
+		return nil, err
+	}
+	if err := l.svcCtx.GrantModel.Delete(l.ctx, in.Id, in.Beid); err != nil {
+		return nil, err
+	}
+	return &security.IdReq{Id: in.Id, Beid: in.Beid}, nil
 }

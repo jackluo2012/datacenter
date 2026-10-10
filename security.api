@@ -1,0 +1,147 @@
+syntax = "v1"
+
+//数据安全（Phase 6）
+type SecLevelInfo {
+	Id      int64  `json:"id,optional"`
+	Code    string `json:"code,optional"`
+	Name    string `json:"name,optional"`
+	Comment string `json:"comment,optional"`
+}
+type SaveSecLevelReq {
+	Code    string `json:"code"`
+	Name    string `json:"name"`
+	Comment string `json:"comment,optional"`
+	Beid    int64  `json:"beid,optional"`
+}
+type SecIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+type SecLevelListResp { List []SecLevelInfo `json:"list"` }
+
+type SecEntityTag {
+	Id            int64  `json:"id,optional"`
+	EntityId      int64  `json:"entity_id,optional"`
+	EntityName    string `json:"entity_name,optional"`
+	LevelCode     string `json:"level_code,optional"`
+	MaskRuleCode  string `json:"mask_rule_code,optional"`
+}
+type TagSecEntityReq {
+	EntityId      int64  `json:"entity_id"`
+	EntityName    string `json:"entity_name,optional"`
+	LevelCode     string `json:"level_code"`
+	MaskRuleCode  string `json:"mask_rule_code,optional"`
+	Beid          int64  `json:"beid,optional"`
+}
+type EntityTagListReq {
+	Beid      int64  `json:"beid,optional" form:"beid,optional"`
+	LevelCode string `json:"level_code,optional" form:"level_code,optional"`
+	Page      int64  `json:"page,optional" form:"page,optional"`
+	Size      int64  `json:"size,optional" form:"size,optional"`
+}
+type EntityTagListResp {
+	List  []SecEntityTag `json:"list"`
+	Total int64          `json:"total"`
+}
+
+type SecMaskRule {
+	Id          int64  `json:"id,optional"`
+	RuleCode    string `json:"rule_code,optional"`
+	RuleName    string `json:"rule_name,optional"`
+	Algorithm   string `json:"algorithm,optional"`
+	ParamsJson  string `json:"params_json,optional"`
+}
+type SaveSecMaskRuleReq {
+	RuleCode    string `json:"rule_code"`
+	RuleName    string `json:"rule_name"`
+	Algorithm   string `json:"algorithm"`
+	ParamsJson  string `json:"params_json,optional"`
+	Beid        int64  `json:"beid,optional"`
+}
+type MaskRuleListReq {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Page int64 `json:"page,optional" form:"page,optional"`
+	Size int64 `json:"size,optional" form:"size,optional"`
+}
+type MaskRuleListResp {
+	List  []SecMaskRule `json:"list"`
+	Total int64         `json:"total"`
+}
+type MaskPreviewReq {
+	RuleId int64  `json:"rule_id,optional" form:"rule_id,optional"`
+	Sample string `json:"sample,optional" form:"sample,optional"`
+}
+type MaskPreviewResp {
+	Masked   string `json:"masked"`
+	RuleCode string `json:"rule_code,optional"`
+}
+
+type SecGrant {
+	Id          int64  `json:"id,optional"`
+	Subject     string `json:"subject,optional"`
+	Resource    string `json:"resource,optional"`
+	ResourceId  string `json:"resource_id,optional"`
+	LevelCode   string `json:"level_code,optional"`
+	ExpireAt    int64  `json:"expire_at,optional"`
+}
+type SaveSecGrantReq {
+	Subject     string `json:"subject"`
+	Resource    string `json:"resource"`
+	ResourceId  string `json:"resource_id,optional"`
+	LevelCode   string `json:"level_code"`
+	ExpireAt    int64  `json:"expire_at,optional"`
+	Beid        int64  `json:"beid,optional"`
+}
+type SecGrantListReq {
+	Beid     int64  `json:"beid,optional" form:"beid,optional"`
+	Subject  string `json:"subject,optional" form:"subject,optional"`
+	Resource string `json:"resource,optional" form:"resource,optional"`
+	Page     int64  `json:"page,optional" form:"page,optional"`
+	Size     int64  `json:"size,optional" form:"size,optional"`
+}
+type SecGrantListResp {
+	List  []SecGrant `json:"list"`
+	Total int64      `json:"total"`
+}
+type SecCheckPermReq {
+	Subject    string `json:"subject,optional" form:"subject,optional"`
+	Resource   string `json:"resource,optional" form:"resource,optional"`
+	ResourceId string `json:"resource_id,optional" form:"resource_id,optional"`
+	LevelCode  string `json:"level_code,optional" form:"level_code,optional"`
+	Beid       int64  `json:"beid,optional" form:"beid,optional"`
+}
+type SecCheckPermResp {
+	Allowed bool   `json:"allowed"`
+	Reason  string `json:"reason,optional"`
+}
+
+@server(
+	jwt: Auth
+	group: security
+)
+service datacenter-api {
+	@handler saveSecLevel
+	post /security/level/save (SaveSecLevelReq) returns (SecLevelInfo)
+	@handler secLevelList
+	get /security/level/list (SecIdReq) returns (SecLevelListResp)
+	@handler tagSecEntity
+	post /security/entity/tag (TagSecEntityReq) returns (SecEntityTag)
+	@handler secEntityTagList
+	get /security/entity/tag/list (EntityTagListReq) returns (EntityTagListResp)
+	@handler saveSecMaskRule
+	post /security/maskrule/save (SaveSecMaskRuleReq) returns (SecMaskRule)
+	@handler deleteSecMaskRule
+	post /security/maskrule/delete (SecIdReq)
+	@handler secMaskRuleList
+	get /security/maskrule/list (MaskRuleListReq) returns (MaskRuleListResp)
+	@handler maskPreview
+	get /security/mask/preview (MaskPreviewReq) returns (MaskPreviewResp)
+	@handler saveSecGrant
+	post /security/grant/save (SaveSecGrantReq) returns (SecGrant)
+	@handler deleteSecGrant
+	post /security/grant/delete (SecIdReq)
+	@handler secGrantList
+	get /security/grant/list (SecGrantListReq) returns (SecGrantListResp)
+	@handler secCheckPerm
+	get /security/checkperm (SecCheckPermReq) returns (SecCheckPermResp)
+}

@@ -1,8 +1,0 @@
-Name: theme.rpc
-ListenOn: 0.0.0.0:8098
-Etcd:
-  Hosts:
-  - 127.0.0.1:2379
-  Key: theme.rpc
-Mysql:
-  DataSource: root:admin@tcp(127.0.0.1:3306)/datacenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai

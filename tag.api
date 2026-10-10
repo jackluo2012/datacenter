@@ -1,5 +1,53 @@
 syntax = "v1"
 
+type TagGroupInfo {
+	Id                int64  `json:"id,optional"`
+	Name              string `json:"name,optional"`
+	ObjectId          int64  `json:"object_id,optional"`
+	CircleRuleSql     string `json:"circle_rule_sql,optional"`
+	EstCount          int64  `json:"est_count,optional"`
+	MaterializedTable string `json:"materialized_table,optional"`
+	LastRunAt         int64  `json:"last_run_at,optional"`
+}
+type CreateTagGroupReq {
+	Name          string `json:"name"`
+	ObjectId      int64  `json:"object_id"`
+	CircleRuleSql string `json:"circle_rule_sql"`
+	Beid          int64  `json:"beid,optional"`
+}
+type TagGroupListReq {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Page int64 `json:"page,optional" form:"page,optional"`
+	Size int64 `json:"size,optional" form:"size,optional"`
+}
+type RunTagCircleReq {
+	GroupId int64 `json:"group_id"`
+	Beid    int64 `json:"beid,optional"`
+}
+type RunTagCircleResp {
+	MemberCount int64  `json:"member_count"`
+	Msg         string `json:"msg,optional"`
+}
+type GroupMembersReq {
+	GroupId int64 `json:"group_id,optional" form:"group_id,optional"`
+	Beid    int64 `json:"beid,optional" form:"beid,optional"`
+	Page    int64 `json:"page,optional" form:"page,optional"`
+	Size    int64 `json:"size,optional" form:"size,optional"`
+}
+type GroupMember {
+	ObjectPk string `json:"object_pk,optional"`
+	TagValue string `json:"tag_value,optional"`
+}
+type GroupMembersResp {
+	Members []GroupMember `json:"members"`
+	Total   int64         `json:"total"`
+}
+
+type TagGroupListResp {
+	List  []TagGroupInfo `json:"list"`
+	Total int64          `json:"total"`
+}
+
 //数据标签（Phase 2）
 type TagObject {
 	Id        int64  `json:"id,optional"`
@@ -100,6 +148,9 @@ type ObjectTagsResp {
 	jwt: Auth
 	group: tag
 )
+
+
+
 service datacenter-api {
 	@doc(
 		summary: "创建标签对象"
@@ -136,4 +187,36 @@ service datacenter-api {
 	)
 	@handler objectTags
 	get /tag/object/tags (ObjectTagsReq) returns (ObjectTagsResp)
+}
+
+@server(
+	jwt: Auth
+	group: tag
+)
+service datacenter-api {
+	@doc(
+		summary: "创建人群"
+	)
+	@handler createTagGroup
+	post /tag/group/create (CreateTagGroupReq) returns (TagGroupInfo)
+	@doc(
+		summary: "人群列表"
+	)
+	@handler tagGroupList
+	get /tag/group/list (TagGroupListReq) returns (TagGroupListResp)
+	@doc(
+		summary: "删除人群"
+	)
+	@handler deleteTagGroup
+	post /tag/group/delete (TagDefIdReq)
+	@doc(
+		summary: "执行圈选"
+	)
+	@handler runTagCircle
+	post /tag/group/run (RunTagCircleReq) returns (RunTagCircleResp)
+	@doc(
+		summary: "人群成员"
+	)
+	@handler tagGroupMembers
+	get /tag/group/members (GroupMembersReq) returns (GroupMembersResp)
 }
