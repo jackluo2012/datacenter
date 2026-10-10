@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package job;
+
+option go_package = "./job";
+
+//同步任务（管控面：本平台管理定义，执行面推送 DolphinScheduler/SeaTunnel）
+message SyncTask {
+  int64  id               = 1;
+  string name             = 2;
+  int64  source_ds_id     = 3;
+  int64  target_ds_id     = 4;
+  string mode             = 5;  //offline/cdc
+  string mapping_json     = 6;
+  string cron             = 7;
+  int32  ds_workflow_code = 8;  //DS 工作流编码(部署后回填)
+  string status           = 9;  //draft/deployed/running/failed
+  int64  last_run_at      = 10;
+  int64  beid             = 11;
+}
+message TaskReply { SyncTask task = 1; }
+message TaskListReply {
+  repeated SyncTask list = 1;
+  int64 total = 2;
+}
+
+message CreateSyncTaskReq {
+  string name          = 1;
+  int64  source_ds_id  = 2;
+  int64  target_ds_id  = 3;
+  string mode          = 4;
+  string mapping_json  = 5;
+  string cron          = 6;
+  int64  beid          = 7;
+}
+message TaskListReq { int64 beid = 1; string status = 2; int64 page = 3; int64 size = 4; }
+message IdReq       { int64 id = 1; int64 beid = 2; }
+
+message DeployReply {
+  bool   ok              = 1;
+  int32  ds_workflow_code = 2;
+  string msg             = 3;  //失败原因(DS 未配置/不可达等)
+}
+message TriggerReply {
+  bool  ok                    = 1;
+  int32 ds_process_instance_id = 2;
+  string msg                 = 3;
+}
+message StatusReply {
+  string status  = 1;  //本地状态 + DS 实例状态聚合
+  int32  ds_instance_id = 2;
+  string msg       = 3;
+}
+message SchedulerReply {
+  bool   configured = 1;  //是否已配置 DS 地址
+  bool   connected  = 2;  //当前是否可达(登录成功)
+  string base_url   = 3;
+  string msg        = 4;
+}
+
+service Job {
+  //创建同步任务
+  rpc CreateSyncTask(CreateSyncTaskReq) returns (TaskReply);
+  //任务列表
+  rpc ListSyncTasks(TaskListReq) returns (TaskListReply);
+  //删除任务（已部署的先提示需先下线）
+  rpc DeleteSyncTask(IdReq) returns (IdReq);
+  //部署到调度器（DolphinScheduler；未配置/不可达时 ok=false 带原因）
+  rpc DeployToScheduler(IdReq) returns (DeployReply);
+  //手动触发一次
+  rpc TriggerTask(IdReq) returns (TriggerReply);
+  //任务状态（本地 + 调度器实例状态）
+  rpc GetTaskStatus(IdReq) returns (StatusReply);
+  //调度器连接信息（运维视图）
+  rpc GetSchedulerInfo(IdReq) returns (SchedulerReply);
+}

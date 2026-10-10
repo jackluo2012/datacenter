@@ -1,0 +1,9 @@
+Name: datasource.rpc
+ListenOn: 0.0.0.0:8085
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: datasource.rpc
+Mysql:
+  DataSource: root:admin@tcp(127.0.0.1:3306)/datacenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+EncryptKey: 0123456789abcdef0123456789abcdef

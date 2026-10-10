@@ -1,0 +1,82 @@
+syntax = "v1"
+
+//数据资产目录（Phase 1）
+type AssetCategory {
+	Id       int64  `json:"id,optional"`
+	ParentId int64  `json:"parent_id,optional"`
+	Name     string `json:"name,optional"`
+	Beid     int64  `json:"beid,optional"`
+}
+
+type CreateCategoryReq {
+	ParentId int64  `json:"parent_id,optional"`
+	Name     string `json:"name"`
+	Beid     int64  `json:"beid,optional"`
+}
+
+type CategoryListReq {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+type CategoryListResp { List []AssetCategory `json:"list"` }
+
+type TagAssetReq {
+	EntityId      int64  `json:"entity_id"`
+	CategoryId    int64  `json:"category_id,optional"`
+	Name          string `json:"name"`
+	EntityType    string `json:"entity_type,optional"`
+	Comment       string `json:"comment,optional"`
+	Classification string `json:"classification,optional"`
+	AssetTagsJson string `json:"asset_tags_json,optional"`
+	Visibility    string `json:"visibility,optional"`
+	Beid          int64  `json:"beid,optional"`
+}
+
+type AssetListReq {
+	Beid       int64  `json:"beid,optional" form:"beid,optional"`
+	CategoryId int64  `json:"category_id,optional" form:"category_id,optional"`
+	Keyword    string `json:"keyword,optional" form:"keyword,optional"`
+	Page       int64  `json:"page,optional" form:"page,optional"`
+	Size       int64  `json:"size,optional" form:"size,optional"`
+}
+type Asset {
+	Id             int64  `json:"id,optional"`
+	EntityId       int64  `json:"entity_id,optional"`
+	CategoryId     int64  `json:"category_id,optional"`
+	Name           string `json:"name,optional"`
+	EntityType     string `json:"entity_type,optional"`
+	Comment        string `json:"comment,optional"`
+	Classification string `json:"classification,optional"`
+	AssetTagsJson  string `json:"asset_tags_json,optional"`
+	Visibility     string `json:"visibility,optional"`
+}
+type AssetListResp {
+	List  []Asset `json:"list"`
+	Total int64   `json:"total"`
+}
+
+@server(
+	jwt: Auth
+	group: catalog
+)
+service datacenter-api {
+	@doc(
+		summary: "创建资产分类"
+	)
+	@handler createCategory
+	post /catalog/category/create (CreateCategoryReq) returns (AssetCategory)
+	@doc(
+		summary: "分类列表"
+	)
+	@handler categoryList
+	get /catalog/category/list (CategoryListReq) returns (CategoryListResp)
+	@doc(
+		summary: "登记资产"
+	)
+	@handler tagAsset
+	post /catalog/asset/tag (TagAssetReq) returns (Asset)
+	@doc(
+		summary: "资产列表"
+	)
+	@handler assetList
+	get /catalog/asset/list (AssetListReq) returns (AssetListResp)
+}

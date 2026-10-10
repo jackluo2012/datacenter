@@ -34,4 +34,54 @@ QuestionsRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: questions.rpc                 
+    Key: questions.rpc
+DataSourceRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: datasource.rpc
+MetadataRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: metadata.rpc
+DataSvcRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: datasvc.rpc
+CatalogRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: catalog.rpc
+QualityRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: quality.rpc
+MetricRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: metric.rpc
+TagRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: tag.rpc
+JobRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: job.rpc
+IdeRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: ide.rpc
+AiRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: ai.rpc

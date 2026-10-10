@@ -1,0 +1,2842 @@
+{
+  "info": {
+    "_postman_id": "139fccba-75f3-4586-a1e0-eb00a2094d93",
+    "name": "数据中台接口（datacenter）",
+    "description": "数据中台 Postman 集合（由 *.api 文件生成，Postman v2.1）。\n\n使用步骤：\n1. 启动服务：docker compose up -d（网关 http://localhost:8887）；\n2. 调 auth 组「用户登录」/user/login 获取 JWT，Tests 脚本自动把 access_token 写入集合变量 token；\n3. 其余请求自动携带 Authorization: Bearer {{token}}；\n4. 例外：/datasvc/execute 为对外执行入口，走 app_key+签名鉴权，不带 JWT。\n\n注意：user/common/votes/search/questions 五个遗留 RPC 未包含在 docker compose 编排内，/user/login 需先按 restart.sh 另起 user 服务。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base",
+      "value": "http://localhost:8887"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "auth（认证，先登录拿 token）",
+      "item": [
+        {
+          "name": "连通性检查",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/user/ping",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "user",
+                "ping"
+              ]
+            },
+            "description": "来源：user.api\n路由：POST /user/ping\n无需 JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "try {",
+                  "    var data = pm.response.json();",
+                  "    if (data && data.access_token) {",
+                  "        pm.collectionVariables.set('token', data.access_token);",
+                  "        console.log('已将 access_token 写入集合变量 token');",
+                  "    } else {",
+                  "        console.log('响应中无 access_token，请检查账号/服务');",
+                  "    }",
+                  "} catch (e) {",
+                  "    console.log('解析响应失败: ' + e);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "用户注册",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/user/register",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "user",
+                "register"
+              ]
+            },
+            "description": "来源：user.api\n路由：POST /user/register\n无需 JWT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mobile\": \"13800138000\",\n  \"password\": \"123456\",\n  \"smscode\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "try {",
+                  "    var data = pm.response.json();",
+                  "    if (data && data.access_token) {",
+                  "        pm.collectionVariables.set('token', data.access_token);",
+                  "        console.log('已将 access_token 写入集合变量 token');",
+                  "    } else {",
+                  "        console.log('响应中无 access_token，请检查账号/服务');",
+                  "    }",
+                  "} catch (e) {",
+                  "    console.log('解析响应失败: ' + e);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "用户登录（获取 JWT）",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/user/login",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            },
+            "description": "来源：user.api\n路由：POST /user/login\n无需 JWT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mobile\": \"13800138000\",\n  \"type\": 1,\n  \"password\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "try {",
+                  "    var data = pm.response.json();",
+                  "    if (data && data.access_token) {",
+                  "        pm.collectionVariables.set('token', data.access_token);",
+                  "        console.log('已将 access_token 写入集合变量 token');",
+                  "    } else {",
+                  "        console.log('响应中无 access_token，请检查账号/服务');",
+                  "    }",
+                  "} catch (e) {",
+                  "    console.log('解析响应失败: ' + e);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "微信登录",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/user/wx/login",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "user",
+                "wx",
+                "login"
+              ]
+            },
+            "description": "来源：user.api\n路由：POST /user/wx/login\n无需 JWT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"beid\": 1,\n  \"code\": \"微信授权code\",\n  \"ptyid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "try {",
+                  "    var data = pm.response.json();",
+                  "    if (data && data.access_token) {",
+                  "        pm.collectionVariables.set('token', data.access_token);",
+                  "        console.log('已将 access_token 写入集合变量 token');",
+                  "    } else {",
+                  "        console.log('响应中无 access_token，请检查账号/服务');",
+                  "    }",
+                  "} catch (e) {",
+                  "    console.log('解析响应失败: ' + e);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "微信 code2Session",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/user/wx/login",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "user",
+                "wx",
+                "login"
+              ]
+            },
+            "description": "来源：user.api\n路由：GET /user/wx/login\n无需 JWT"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "try {",
+                  "    var data = pm.response.json();",
+                  "    if (data && data.access_token) {",
+                  "        pm.collectionVariables.set('token', data.access_token);",
+                  "        console.log('已将 access_token 写入集合变量 token');",
+                  "    } else {",
+                  "        console.log('响应中无 access_token，请检查账号/服务');",
+                  "    }",
+                  "} catch (e) {",
+                  "    console.log('解析响应失败: ' + e);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "datasource（数据源管理）",
+      "item": [
+        {
+          "name": "创建数据源",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasource/create",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasource",
+                "create"
+              ]
+            },
+            "description": "来源：datasource.api\n路由：POST /datasource/create\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"示例 MySQL 数据源\",\n  \"type\": \"mysql\",\n  \"host\": \"mysql\",\n  \"port\": 3306,\n  \"db_name\": \"datacenter\",\n  \"username\": \"root\",\n  \"password\": \"admin\",\n  \"params_json\": \"{}\",\n  \"owner\": \"admin\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "更新数据源",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasource/update",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasource",
+                "update"
+              ]
+            },
+            "description": "来源：datasource.api\n路由：POST /datasource/update\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1,\n  \"name\": \"示例 MySQL 数据源\",\n  \"type\": \"mysql\",\n  \"host\": \"mysql\",\n  \"port\": 3306,\n  \"db_name\": \"datacenter\",\n  \"username\": \"root\",\n  \"password\": \"admin\",\n  \"status\": 1,\n  \"owner\": \"admin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "删除数据源",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasource/delete?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasource",
+                "delete"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：datasource.api\n路由：POST /datasource/delete\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "数据源详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasource/info?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasource",
+                "info"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：datasource.api\n路由：GET /datasource/info\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "数据源列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasource/list?beid=1&type=mysql&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasource",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                },
+                {
+                  "key": "type",
+                  "value": "mysql"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：datasource.api\n路由：GET /datasource/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "测试数据源连接",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasource/test?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasource",
+                "test"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：datasource.api\n路由：GET /datasource/test\n需要 JWT（登录后自动携带）"
+          }
+        }
+      ]
+    },
+    {
+      "name": "metadata（元数据管理）",
+      "item": [
+        {
+          "name": "采集库表元数据",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metadata/collect",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metadata",
+                "collect"
+              ]
+            },
+            "description": "来源：metadata.api\n路由：POST /metadata/collect\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ds_id\": 1,\n  \"beid\": 1,\n  \"db_type\": \"mysql\",\n  \"dsn\": \"\",\n  \"db_name\": \"datacenter\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "实体详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metadata/entity/info?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metadata",
+                "entity",
+                "info"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：metadata.api\n路由：GET /metadata/entity/info\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "实体列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metadata/entity/list?beid=1&entity_type=table&keyword=&ds_id=1&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metadata",
+                "entity",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                },
+                {
+                  "key": "entity_type",
+                  "value": "table"
+                },
+                {
+                  "key": "keyword",
+                  "value": ""
+                },
+                {
+                  "key": "ds_id",
+                  "value": "1"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：metadata.api\n路由：GET /metadata/entity/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "登记血缘",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metadata/lineage/add",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metadata",
+                "lineage",
+                "add"
+              ]
+            },
+            "description": "来源：metadata.api\n路由：POST /metadata/lineage/add\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from_id\": 1,\n  \"to_id\": 2,\n  \"props_json\": \"{}\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "血缘图",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metadata/lineage?entity_id=1&direction=downstream&depth=2&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metadata",
+                "lineage"
+              ],
+              "query": [
+                {
+                  "key": "entity_id",
+                  "value": "1"
+                },
+                {
+                  "key": "direction",
+                  "value": "downstream"
+                },
+                {
+                  "key": "depth",
+                  "value": "2"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：metadata.api\n路由：GET /metadata/lineage\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "定版快照",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metadata/version/create?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metadata",
+                "version",
+                "create"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：metadata.api\n路由：POST /metadata/version/create\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "版本列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metadata/version/list?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metadata",
+                "version",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：metadata.api\n路由：GET /metadata/version/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "版本对比",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metadata/version/compare?version_a=1&version_b=2",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metadata",
+                "version",
+                "compare"
+              ],
+              "query": [
+                {
+                  "key": "version_a",
+                  "value": "1"
+                },
+                {
+                  "key": "version_b",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "来源：metadata.api\n路由：GET /metadata/version/compare\n需要 JWT（登录后自动携带）"
+          }
+        }
+      ]
+    },
+    {
+      "name": "datasvc（数据服务 API）",
+      "item": [
+        {
+          "name": "创建数据API",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasvc/api/create",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasvc",
+                "api",
+                "create"
+              ]
+            },
+            "description": "来源：datasvc.api\n路由：POST /datasvc/api/create\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"订单按天统计\",\n  \"path\": \"/api/v1/order/daily\",\n  \"mode\": \"sql\",\n  \"datasource_id\": 1,\n  \"sql_text\": \"select date(created_at) as d, count(*) as cnt from orders group by d\",\n  \"params_json\": \"{}\",\n  \"cache_ttl\": 60,\n  \"owner\": \"admin\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "更新数据API",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasvc/api/update",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasvc",
+                "api",
+                "update"
+              ]
+            },
+            "description": "来源：datasvc.api\n路由：POST /datasvc/api/update\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1,\n  \"name\": \"示例名称\",\n  \"sql_text\": \"select id, name from orders limit 10\",\n  \"params_json\": \"{}\",\n  \"cache_ttl\": 60\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "删除数据API",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasvc/api/delete?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasvc",
+                "api",
+                "delete"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：datasvc.api\n路由：POST /datasvc/api/delete\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "API详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasvc/api/info?path=/api/v1/demo&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasvc",
+                "api",
+                "info"
+              ],
+              "query": [
+                {
+                  "key": "path",
+                  "value": "/api/v1/demo"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：datasvc.api\n路由：GET /datasvc/api/info\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "API列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasvc/api/list?beid=1&status=string&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasvc",
+                "api",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                },
+                {
+                  "key": "status",
+                  "value": "string"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：datasvc.api\n路由：GET /datasvc/api/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "发布API",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasvc/api/publish?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasvc",
+                "api",
+                "publish"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：datasvc.api\n路由：POST /datasvc/api/publish\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "下线API",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasvc/api/offline?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasvc",
+                "api",
+                "offline"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：datasvc.api\n路由：POST /datasvc/api/offline\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "注册调用应用",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasvc/app/register",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasvc",
+                "app",
+                "register"
+              ]
+            },
+            "description": "来源：datasvc.api\n路由：POST /datasvc/app/register\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"示例名称\",\n  \"rate_limit_qps\": 1,\n  \"ip_whitelist\": \"\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "授权API给应用",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasvc/grant",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasvc",
+                "grant"
+              ]
+            },
+            "description": "来源：datasvc.api\n路由：POST /datasvc/grant\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_id\": 1,\n  \"app_id\": 1,\n  \"expire_at\": 0,\n  \"field_mask\": \"\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "执行数据API（外部统一入口）",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/datasvc/execute",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "datasvc",
+                "execute"
+              ]
+            },
+            "description": "来源：datasvc.api\n路由：POST /datasvc/execute\n无需 JWT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"app_key\": \"your-app-key\",\n  \"sign\": \"按约定算法计算的签名\",\n  \"ts\": \"1700000000\",\n  \"path\": \"/api/v1/order/daily\",\n  \"params_json\": \"{}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "catalog（资产目录）",
+      "item": [
+        {
+          "name": "创建资产分类",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/catalog/category/create",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "catalog",
+                "category",
+                "create"
+              ]
+            },
+            "description": "来源：catalog.api\n路由：POST /catalog/category/create\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parent_id\": 0,\n  \"name\": \"示例名称\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "分类列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/catalog/category/list?beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "catalog",
+                "category",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：catalog.api\n路由：GET /catalog/category/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "登记资产",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/catalog/asset/tag",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "catalog",
+                "asset",
+                "tag"
+              ]
+            },
+            "description": "来源：catalog.api\n路由：POST /catalog/asset/tag\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entity_id\": 1,\n  \"category_id\": 1,\n  \"name\": \"示例名称\",\n  \"entity_type\": \"table\",\n  \"comment\": \"备注\",\n  \"classification\": \"内部\",\n  \"asset_tags_json\": \"[]\",\n  \"visibility\": \"public\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "资产列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/catalog/asset/list?beid=1&category_id=1&keyword=&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "catalog",
+                "asset",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                },
+                {
+                  "key": "category_id",
+                  "value": "1"
+                },
+                {
+                  "key": "keyword",
+                  "value": ""
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：catalog.api\n路由：GET /catalog/asset/list\n需要 JWT（登录后自动携带）"
+          }
+        }
+      ]
+    },
+    {
+      "name": "quality（数据质量）",
+      "item": [
+        {
+          "name": "创建质量规则",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/quality/rule/create",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "quality",
+                "rule",
+                "create"
+              ]
+            },
+            "description": "来源：quality.api\n路由：POST /quality/rule/create\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"示例名称\",\n  \"rule_type\": \"not_null\",\n  \"target_table\": \"orders\",\n  \"target_column\": \"id\",\n  \"params_json\": \"{}\",\n  \"threshold_json\": \"{}\",\n  \"owner\": \"admin\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "删除质量规则",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/quality/rule/delete?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "quality",
+                "rule",
+                "delete"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：quality.api\n路由：POST /quality/rule/delete\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "质量规则列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/quality/rule/list?beid=1&rule_type=not_null&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "quality",
+                "rule",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                },
+                {
+                  "key": "rule_type",
+                  "value": "not_null"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：quality.api\n路由：GET /quality/rule/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "创建质量任务",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/quality/job/create",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "quality",
+                "job",
+                "create"
+              ]
+            },
+            "description": "来源：quality.api\n路由：POST /quality/job/create\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"示例名称\",\n  \"datasource_id\": 1,\n  \"db_name\": \"datacenter\",\n  \"rule_ids\": \"1\",\n  \"cron\": \"0 0 * * *\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "质量任务列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/quality/job/list?beid=1&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "quality",
+                "job",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：quality.api\n路由：GET /quality/job/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "执行质量任务",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/quality/job/run?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "quality",
+                "job",
+                "run"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：quality.api\n路由：POST /quality/job/run\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "质量结果列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/quality/result/list?job_id=1&pass_filter=0&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "quality",
+                "result",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "job_id",
+                  "value": "1"
+                },
+                {
+                  "key": "pass_filter",
+                  "value": "0"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：quality.api\n路由：GET /quality/result/list\n需要 JWT（登录后自动携带）"
+          }
+        }
+      ]
+    },
+    {
+      "name": "metric（数据指标）",
+      "item": [
+        {
+          "name": "创建指标",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metric/create",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metric",
+                "create"
+              ]
+            },
+            "description": "来源：metric.api\n路由：POST /metric/create\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name_en\": \"order_amount\",\n  \"name_cn\": \"订单金额\",\n  \"metric_type\": \"atom\",\n  \"biz_field\": \"string\",\n  \"agg_type\": \"string\",\n  \"expr\": \"sum(amount)\",\n  \"dimension_json\": \"{}\",\n  \"comment\": \"备注\",\n  \"owner\": \"admin\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "更新指标",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metric/update",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metric",
+                "update"
+              ]
+            },
+            "description": "来源：metric.api\n路由：POST /metric/update\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1,\n  \"name_cn\": \"订单金额\",\n  \"expr\": \"sum(amount)\",\n  \"dimension_json\": \"{}\",\n  \"comment\": \"备注\",\n  \"status\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "删除指标",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metric/delete?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metric",
+                "delete"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：metric.api\n路由：POST /metric/delete\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "指标详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metric/info?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metric",
+                "info"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：metric.api\n路由：GET /metric/info\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "指标列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metric/list?beid=1&metric_type=atom&keyword=&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metric",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                },
+                {
+                  "key": "metric_type",
+                  "value": "atom"
+                },
+                {
+                  "key": "keyword",
+                  "value": ""
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：metric.api\n路由：GET /metric/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "派生指标绑定原子指标",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metric/bind/atoms",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metric",
+                "bind",
+                "atoms"
+              ]
+            },
+            "description": "来源：metric.api\n路由：POST /metric/bind/atoms\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"derive_metric_id\": 1,\n  \"atom_metric_ids\": [\n    1\n  ],\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "派生指标引用的原子指标",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/metric/atoms?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "metric",
+                "atoms"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：metric.api\n路由：GET /metric/atoms\n需要 JWT（登录后自动携带）"
+          }
+        }
+      ]
+    },
+    {
+      "name": "tag（数据标签）",
+      "item": [
+        {
+          "name": "创建标签对象",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/tag/object/create",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "tag",
+                "object",
+                "create"
+              ]
+            },
+            "description": "来源：tag.api\n路由：POST /tag/object/create\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"object_type\": \"table\",\n  \"name\": \"示例名称\",\n  \"ds_id\": 1,\n  \"db_name\": \"datacenter\",\n  \"table_name\": \"orders\",\n  \"pk_column\": \"id\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "标签对象列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/tag/object/list?beid=1&object_type=table&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "tag",
+                "object",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                },
+                {
+                  "key": "object_type",
+                  "value": "table"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：tag.api\n路由：GET /tag/object/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "创建标签定义",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/tag/def/create",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "tag",
+                "def",
+                "create"
+              ]
+            },
+            "description": "来源：tag.api\n路由：POST /tag/def/create\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"object_id\": 1,\n  \"tag_key\": \"vip_level\",\n  \"tag_name\": \"会员等级\",\n  \"tag_type\": \"enum\",\n  \"rule_sql\": \"select id from orders where amount > 0\",\n  \"refresh_cron\": \"0 0 * * *\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "标签定义列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/tag/def/list?beid=1&object_id=1&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "tag",
+                "def",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                },
+                {
+                  "key": "object_id",
+                  "value": "1"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：tag.api\n路由：GET /tag/def/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "删除标签定义",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/tag/def/delete?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "tag",
+                "def",
+                "delete"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：tag.api\n路由：POST /tag/def/delete\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "执行打标",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/tag/tagging",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "tag",
+                "tagging"
+              ]
+            },
+            "description": "来源：tag.api\n路由：POST /tag/tagging\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tag_id\": 1,\n  \"object_id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "对象标签画像",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/tag/object/tags?object_pk=1&object_id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "tag",
+                "object",
+                "tags"
+              ],
+              "query": [
+                {
+                  "key": "object_pk",
+                  "value": "1"
+                },
+                {
+                  "key": "object_id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：tag.api\n路由：GET /tag/object/tags\n需要 JWT（登录后自动携带）"
+          }
+        }
+      ]
+    },
+    {
+      "name": "job（调度集成）",
+      "item": [
+        {
+          "name": "创建同步任务",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/job/task/create",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "job",
+                "task",
+                "create"
+              ]
+            },
+            "description": "来源：job.api\n路由：POST /job/task/create\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"示例名称\",\n  \"source_ds_id\": 1,\n  \"target_ds_id\": 1,\n  \"mode\": \"sql\",\n  \"mapping_json\": \"{}\",\n  \"cron\": \"0 0 * * *\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "同步任务列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/job/task/list?beid=1&status=string&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "job",
+                "task",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                },
+                {
+                  "key": "status",
+                  "value": "string"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：job.api\n路由：GET /job/task/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "删除同步任务",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/job/task/delete?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "job",
+                "task",
+                "delete"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：job.api\n路由：POST /job/task/delete\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "部署到调度器",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/job/task/deploy?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "job",
+                "task",
+                "deploy"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：job.api\n路由：POST /job/task/deploy\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "手动触发任务",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/job/task/trigger?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "job",
+                "task",
+                "trigger"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：job.api\n路由：POST /job/task/trigger\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "任务状态",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/job/task/status?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "job",
+                "task",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：job.api\n路由：GET /job/task/status\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "调度器连接信息",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/job/scheduler/info?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "job",
+                "scheduler",
+                "info"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：job.api\n路由：GET /job/scheduler/info\n需要 JWT（登录后自动携带）"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ide（SQL IDE）",
+      "item": [
+        {
+          "name": "保存脚本",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/ide/script/save",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "ide",
+                "script",
+                "save"
+              ]
+            },
+            "description": "来源：ide.api\n路由：POST /ide/script/save\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"name\": \"示例名称\",\n  \"sql_text\": \"select id, name from orders limit 10\",\n  \"datasource_id\": 1,\n  \"db_name\": \"datacenter\",\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "脚本列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/ide/script/list?beid=1&keyword=&page=1&size=10",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "ide",
+                "script",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "beid",
+                  "value": "1"
+                },
+                {
+                  "key": "keyword",
+                  "value": ""
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "来源：ide.api\n路由：GET /ide/script/list\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "脚本详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/ide/script/info?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "ide",
+                "script",
+                "info"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：ide.api\n路由：GET /ide/script/info\n需要 JWT（登录后自动携带）"
+          }
+        },
+        {
+          "name": "删除脚本",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/ide/script/delete?id=1&beid=1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "ide",
+                "script",
+                "delete"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "beid",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "来源：ide.api\n路由：POST /ide/script/delete\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "执行脚本（仅 SELECT，行数保护）",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/ide/script/run",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "ide",
+                "script",
+                "run"
+              ]
+            },
+            "description": "来源：ide.api\n路由：POST /ide/script/run\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"beid\": 1,\n  \"max_rows\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ai（AI 问数）",
+      "item": [
+        {
+          "name": "AI 问数",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/ai/ask",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "ai",
+                "ask"
+              ]
+            },
+            "description": "来源：ai.api\n路由：POST /ai/ask\n需要 JWT（登录后自动携带）",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"上个月订单总额是多少\",\n  \"beid\": 1,\n  \"max_candidates\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package ai;
+
+option go_package = "./ai";
+
+//语义候选（元数据实体或指标）
+message Candidate {
+  string type    = 1;  //entity/metric
+  int64  id      = 2;
+  string name    = 3;
+  string detail  = 4;  //entity=fqn / metric=expr
+  string comment = 5;
+}
+
+message AskReq {
+  string question     = 1;
+  int64  beid         = 2;
+  int32  max_candidates = 3;  //语义检索返回上限,默认 5
+}
+message AskReply {
+  repeated Candidate candidates = 1;
+  bool   llm_enabled    = 2;  //是否启用了 LLM
+  string generated_sql  = 3;  //LLM 生成的 SQL(未启用为空)
+  string answer         = 4;  //回复(未启用 LLM 时为检索摘要)
+  int64  cost_ms        = 5;
+}
+
+message AskAndRunReq {
+  string question        = 1;
+  int64  beid            = 2;
+  int32  max_candidates  = 3;
+  bool   auto_run        = 4;  //生成 SQL 后自动经 ide 安全闸执行
+  int32  max_rows        = 5;  //执行返回行数上限,默认 20
+  int64  datasource_id   = 6;  //执行目标数据源(AI 无法确定生成 SQL 的目标库,由调用方指定;auto_run=true 时必填)
+}
+message AskAndRunReply {
+  repeated Candidate candidates = 1;
+  bool   llm_enabled    = 2;
+  string generated_sql  = 3;
+  string answer         = 4;
+  int64  cost_ms        = 5;
+  bool   executed       = 6;  //是否实际执行
+  string columns_json   = 7;
+  string rows_json      = 8;
+  int64  row_count      = 9;
+  string run_error      = 10; //执行失败原因(LLM SQL 不合法/超时等,业务态不返回 error)
+}
+
+service Ai {
+  //AI 问数：语义检索(元数据+指标) → 命中候选 → (可选 LLM) 生成 SQL 与回答，全程审计
+  rpc Ask(AskReq) returns (AskReply);
+  //问数并执行：Ask 全流程复用，auto_run=true 时把生成 SQL 先存为临时脚本，
+  //再经 ide-rpc 安全闸(仅 SELECT、行数截断)真实执行并返回数据；执行失败降级写入 run_error
+  rpc AskAndRun(AskAndRunReq) returns (AskAndRunReply);
+}

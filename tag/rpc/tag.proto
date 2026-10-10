@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package tag;
+
+option go_package = "./tag";
+
+message TagObject {
+  int64  id         = 1;
+  string object_type = 2;  //user/member/goods
+  string name       = 3;
+  int64  ds_id      = 4;
+  string db_name    = 5;
+  string table_name = 6;
+  string pk_column  = 7;
+  int64  beid       = 8;
+}
+message ObjectReply { TagObject object = 1; }
+message ObjectListReply {
+  repeated TagObject list = 1;
+  int64 total = 2;
+}
+
+message CreateObjectReq {
+  string object_type = 1;
+  string name        = 2;
+  int64  ds_id       = 3;
+  string db_name     = 4;
+  string table_name  = 5;
+  string pk_column   = 6;
+  int64  beid        = 7;
+}
+message ObjectListReq { int64 beid = 1; string object_type = 2; int64 page = 3; int64 size = 4; }
+message IdReq { int64 id = 1; int64 beid = 2; }
+
+message TagDef {
+  int64  id           = 1;
+  int64  object_id    = 2;
+  string tag_key      = 3;
+  string tag_name     = 4;
+  string tag_type     = 5;  //rule/fact/model
+  string rule_sql     = 6;  //select <pk> as object_id, <expr> as tag_value from ...
+  string refresh_cron = 7;
+  int32  status       = 8;
+  int64  beid         = 9;
+}
+message TagDefReply { TagDef def = 1; }
+message TagDefListReply {
+  repeated TagDef list = 1;
+  int64 total = 2;
+}
+
+message CreateTagReq {
+  int64  object_id    = 1;
+  string tag_key      = 2;
+  string tag_name     = 3;
+  string tag_type     = 4;
+  string rule_sql     = 5;
+  string refresh_cron = 6;
+  int64  beid         = 7;
+}
+message TagDefListReq {
+  int64  beid      = 1;
+  int64  object_id = 2;
+  int64  page      = 3;
+  int64  size      = 4;
+}
+
+message TaggingReq {
+  int64  tag_id = 1;  //为空则对 object 全部 rule 标签打标
+  int64  object_id = 2;
+  int64  beid   = 3;
+}
+message TaggingReply {
+  int64  tagged_rows = 1;  //本次写入标签值行数
+  int64  tag_id      = 2;
+}
+
+message ObjectTagsReq {
+  string object_pk = 1;  //对象主键值
+  int64  object_id = 2;
+  int64  beid      = 3;
+}
+message TagValueItem {
+  string tag_key   = 1;
+  string tag_name  = 2;
+  string tag_value = 3;
+  int64  tagged_at = 4;
+}
+message ObjectTagsReply { repeated TagValueItem tags = 1; }
+
+service Tag {
+  //创建标签对象
+  rpc CreateObject(CreateObjectReq) returns (ObjectReply);
+  //对象列表
+  rpc ListObjects(ObjectListReq) returns (ObjectListReply);
+  //创建标签定义
+  rpc CreateTag(CreateTagReq) returns (TagDefReply);
+  //标签定义列表
+  rpc ListTags(TagDefListReq) returns (TagDefListReply);
+  //删除标签定义
+  rpc DeleteTag(IdReq) returns (IdReq);
+  //执行打标（规则 SQL 跑目标库，结果写 dc_tag_value）
+  rpc Tagging(TaggingReq) returns (TaggingReply);
+  //查对象标签画像
+  rpc GetObjectTags(ObjectTagsReq) returns (ObjectTagsReply);
+}

@@ -1,0 +1,106 @@
+syntax = "v1"
+
+//调度集成（Phase 3：管控面，执行面推 DolphinScheduler）
+type SyncTask {
+	Id             int64  `json:"id,optional"`
+	Name           string `json:"name,optional"`
+	SourceDsId     int64  `json:"source_ds_id,optional"`
+	TargetDsId     int64  `json:"target_ds_id,optional"`
+	Mode           string `json:"mode,optional"`
+	MappingJson    string `json:"mapping_json,optional"`
+	Cron           string `json:"cron,optional"`
+	DsWorkflowCode int32  `json:"ds_workflow_code,optional"`
+	Status         string `json:"status,optional"`
+	LastRunAt      int64  `json:"last_run_at,optional"`
+	Beid           int64  `json:"beid,optional"`
+}
+
+type CreateSyncTaskReq {
+	Name         string `json:"name"`
+	SourceDsId   int64  `json:"source_ds_id"`
+	TargetDsId   int64  `json:"target_ds_id,optional"`
+	Mode         string `json:"mode,optional"`
+	MappingJson  string `json:"mapping_json,optional"`
+	Cron         string `json:"cron,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type SyncTaskIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type SyncTaskListReq {
+	Beid   int64  `json:"beid,optional" form:"beid,optional"`
+	Status string `json:"status,optional" form:"status,optional"`
+	Page   int64  `json:"page,optional" form:"page,optional"`
+	Size   int64  `json:"size,optional" form:"size,optional"`
+}
+type SyncTaskListResp {
+	List  []SyncTask `json:"list"`
+	Total int64      `json:"total"`
+}
+
+type DeployResp {
+	Ok             bool   `json:"ok"`
+	DsWorkflowCode int32  `json:"ds_workflow_code,optional"`
+	Msg            string `json:"msg,optional"`
+}
+type TriggerResp {
+	Ok                   bool   `json:"ok"`
+	DsProcessInstanceId  int32  `json:"ds_process_instance_id,optional"`
+	Msg                  string `json:"msg,optional"`
+}
+type TaskStatusResp {
+	Status        string `json:"status,optional"`
+	DsInstanceId  int32  `json:"ds_instance_id,optional"`
+	Msg           string `json:"msg,optional"`
+}
+type SchedulerInfoResp {
+	Configured bool   `json:"configured"`
+	Connected  bool   `json:"connected"`
+	BaseUrl    string `json:"base_url,optional"`
+	Msg        string `json:"msg,optional"`
+}
+
+@server(
+	jwt: Auth
+	group: job
+)
+service datacenter-api {
+	@doc(
+		summary: "创建同步任务"
+	)
+	@handler createSyncTask
+	post /job/task/create (CreateSyncTaskReq) returns (SyncTask)
+	@doc(
+		summary: "同步任务列表"
+	)
+	@handler syncTaskList
+	get /job/task/list (SyncTaskListReq) returns (SyncTaskListResp)
+	@doc(
+		summary: "删除同步任务"
+	)
+	@handler deleteSyncTask
+	post /job/task/delete (SyncTaskIdReq)
+	@doc(
+		summary: "部署到调度器"
+	)
+	@handler deployTask
+	post /job/task/deploy (SyncTaskIdReq) returns (DeployResp)
+	@doc(
+		summary: "手动触发任务"
+	)
+	@handler triggerTask
+	post /job/task/trigger (SyncTaskIdReq) returns (TriggerResp)
+	@doc(
+		summary: "任务状态"
+	)
+	@handler taskStatus
+	get /job/task/status (SyncTaskIdReq) returns (TaskStatusResp)
+	@doc(
+		summary: "调度器连接信息"
+	)
+	@handler schedulerInfo
+	get /job/scheduler/info (SyncTaskIdReq) returns (SchedulerInfoResp)
+}

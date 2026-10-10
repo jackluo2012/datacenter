@@ -1,0 +1,139 @@
+syntax = "v1"
+
+//数据标签（Phase 2）
+type TagObject {
+	Id        int64  `json:"id,optional"`
+	ObjectType string `json:"object_type,optional"`
+	Name      string `json:"name,optional"`
+	DsId      int64  `json:"ds_id,optional"`
+	DbName    string `json:"db_name,optional"`
+	TableName string `json:"table_name,optional"`
+	PkColumn  string `json:"pk_column,optional"`
+	Beid      int64  `json:"beid,optional"`
+}
+
+type CreateTagObjectReq {
+	ObjectType string `json:"object_type"`
+	Name       string `json:"name"`
+	DsId       int64  `json:"ds_id,optional"`
+	DbName     string `json:"db_name,optional"`
+	TableName  string `json:"table_name,optional"`
+	PkColumn   string `json:"pk_column,optional"`
+	Beid       int64  `json:"beid,optional"`
+}
+
+type TagObjectListReq {
+	Beid       int64  `json:"beid,optional" form:"beid,optional"`
+	ObjectType string `json:"object_type,optional" form:"object_type,optional"`
+	Page       int64  `json:"page,optional" form:"page,optional"`
+	Size       int64  `json:"size,optional" form:"size,optional"`
+}
+type TagObjectListResp {
+	List  []TagObject `json:"list"`
+	Total int64       `json:"total"`
+}
+
+type TagDef {
+	Id         int64  `json:"id,optional"`
+	ObjectId   int64  `json:"object_id,optional"`
+	TagKey     string `json:"tag_key,optional"`
+	TagName    string `json:"tag_name,optional"`
+	TagType    string `json:"tag_type,optional"`
+	RuleSql    string `json:"rule_sql,optional"`
+	RefreshCron string `json:"refresh_cron,optional"`
+	Status     int32  `json:"status,optional"`
+	Beid       int64  `json:"beid,optional"`
+}
+
+type CreateTagDefReq {
+	ObjectId   int64  `json:"object_id"`
+	TagKey     string `json:"tag_key"`
+	TagName    string `json:"tag_name"`
+	TagType    string `json:"tag_type,optional"`
+	RuleSql    string `json:"rule_sql,optional"`
+	RefreshCron string `json:"refresh_cron,optional"`
+	Beid       int64  `json:"beid,optional"`
+}
+
+type TagDefIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type TagDefListReq {
+	Beid     int64 `json:"beid,optional" form:"beid,optional"`
+	ObjectId int64 `json:"object_id,optional" form:"object_id,optional"`
+	Page     int64 `json:"page,optional" form:"page,optional"`
+	Size     int64 `json:"size,optional" form:"size,optional"`
+}
+type TagDefListResp {
+	List  []TagDef `json:"list"`
+	Total int64    `json:"total"`
+}
+
+type TaggingReq {
+	TagId    int64 `json:"tag_id,optional"`
+	ObjectId int64 `json:"object_id,optional"`
+	Beid     int64 `json:"beid,optional"`
+}
+type TaggingResp {
+	TaggedRows int64 `json:"tagged_rows"`
+	TagId      int64 `json:"tag_id"`
+}
+
+type ObjectTagsReq {
+	ObjectPk string `json:"object_pk,optional" form:"object_pk,optional"`
+	ObjectId int64  `json:"object_id,optional" form:"object_id,optional"`
+	Beid     int64  `json:"beid,optional" form:"beid,optional"`
+}
+type TagValueItem {
+	TagKey   string `json:"tag_key,optional"`
+	TagName  string `json:"tag_name,optional"`
+	TagValue string `json:"tag_value,optional"`
+	TaggedAt int64  `json:"tagged_at,optional"`
+}
+type ObjectTagsResp {
+	Tags []TagValueItem `json:"tags"`
+}
+
+@server(
+	jwt: Auth
+	group: tag
+)
+service datacenter-api {
+	@doc(
+		summary: "创建标签对象"
+	)
+	@handler createTagObject
+	post /tag/object/create (CreateTagObjectReq) returns (TagObject)
+	@doc(
+		summary: "标签对象列表"
+	)
+	@handler tagObjectList
+	get /tag/object/list (TagObjectListReq) returns (TagObjectListResp)
+	@doc(
+		summary: "创建标签定义"
+	)
+	@handler createTagDef
+	post /tag/def/create (CreateTagDefReq) returns (TagDef)
+	@doc(
+		summary: "标签定义列表"
+	)
+	@handler tagDefList
+	get /tag/def/list (TagDefListReq) returns (TagDefListResp)
+	@doc(
+		summary: "删除标签定义"
+	)
+	@handler deleteTagDef
+	post /tag/def/delete (TagDefIdReq)
+	@doc(
+		summary: "执行打标"
+	)
+	@handler tagging
+	post /tag/tagging (TaggingReq) returns (TaggingResp)
+	@doc(
+		summary: "对象标签画像"
+	)
+	@handler objectTags
+	get /tag/object/tags (ObjectTagsReq) returns (ObjectTagsResp)
+}

@@ -13,3 +13,13 @@ common/rpc/etc/rpc.yaml
 votes/rpc/etc/rpc.yaml
 search/rpc/etc/search.yaml
 questions/rpc/etc/questions.yaml
+datasource/rpc/etc/datasource.yaml
+metadata/rpc/etc/metadata.yaml
+datasvc/rpc/etc/datasvc.yaml
+catalog/rpc/etc/catalog.yaml
+quality/rpc/etc/quality.yaml
+metric/rpc/etc/metric.yaml
+tag/rpc/etc/tag.yaml
+job/rpc/etc/job.yaml
+ide/rpc/etc/ide.yaml
+ai/rpc/etc/ai.yaml

@@ -1,0 +1,142 @@
+syntax = "v1"
+
+//元数据管理（Phase 1）
+type MetaEntity {
+	Id             int64  `json:"id,optional"`
+	EntityType     string `json:"entity_type,optional"`
+	Fqn            string `json:"fqn,optional"`
+	Name           string `json:"name,optional"`
+	Comment        string `json:"comment,optional"`
+	Engine         string `json:"engine,optional"`
+	RowsCnt        int64  `json:"rows_cnt,optional"`
+	PropsJson      string `json:"props_json,optional"`
+	Classification string `json:"classification,optional"`
+	Owner          string `json:"owner,optional"`
+	DsId           int64  `json:"ds_id,optional"`
+	Beid           int64  `json:"beid,optional"`
+}
+
+type CollectDatabaseReq {
+	DsId   int64  `json:"ds_id,optional"`
+	Beid   int64  `json:"beid,optional"`
+	DbType string `json:"db_type,optional"`
+	Dsn    string `json:"dsn,optional"` //为空则按 ds_id 从数据源服务取
+	DbName string `json:"db_name,optional"`
+}
+
+type CollectResp {
+	TablesCreated  int64 `json:"tables_created"`
+	ColumnsCreated int64 `json:"columns_created"`
+}
+
+type MetaEntityIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type MetaEntityListReq {
+	Beid       int64  `json:"beid,optional" form:"beid,optional"`
+	EntityType string `json:"entity_type,optional" form:"entity_type,optional"`
+	Keyword    string `json:"keyword,optional" form:"keyword,optional"`
+	DsId       int64  `json:"ds_id,optional" form:"ds_id,optional"`
+	Page       int64  `json:"page,optional" form:"page,optional"`
+	Size       int64  `json:"size,optional" form:"size,optional"`
+}
+
+type MetaEntityListResp {
+	List  []MetaEntity `json:"list"`
+	Total int64        `json:"total"`
+}
+
+type AddLineageReq {
+	FromId    int64  `json:"from_id"`
+	ToId      int64  `json:"to_id"`
+	PropsJson string `json:"props_json,optional"`
+	Beid      int64  `json:"beid,optional"`
+}
+
+type LineageReq {
+	EntityId  int64  `json:"entity_id,optional" form:"entity_id,optional"`
+	Direction string `json:"direction,optional" form:"direction,optional"`
+	Depth     int32  `json:"depth,optional" form:"depth,optional"`
+	Beid      int64  `json:"beid,optional" form:"beid,optional"`
+}
+
+type LineageNode {
+	Id   int64  `json:"id,optional"`
+	Fqn  string `json:"fqn,optional"`
+	Name string `json:"name,optional"`
+}
+type LineageEdge {
+	FromId    int64  `json:"from_id,optional"`
+	ToId      int64  `json:"to_id,optional"`
+	PropsJson string `json:"props_json,optional"`
+}
+type LineageResp {
+	Nodes []LineageNode `json:"nodes"`
+	Edges []LineageEdge `json:"edges"`
+}
+
+type MetaVersion {
+	Id           int64  `json:"id,optional"`
+	EntityId     int64  `json:"entity_id,optional"`
+	Version      int64  `json:"version,optional"`
+	SnapshotJson string `json:"snapshot_json,optional"`
+	Operator     string `json:"operator,optional"`
+	PublishedAt  int64  `json:"published_at,optional"`
+}
+type VersionResp { Version MetaVersion `json:"version"` }
+type VersionListResp { List []MetaVersion `json:"list"` }
+
+type CompareReq {
+	VersionA int64 `json:"version_a,optional" form:"version_a,optional"`
+	VersionB int64 `json:"version_b,optional" form:"version_b,optional"`
+}
+type DiffResp { DiffJson string `json:"diff_json"` }
+
+@server(
+	jwt: Auth
+	group: metadata
+)
+service datacenter-api {
+	@doc(
+		summary: "采集库表元数据"
+	)
+	@handler collectDatabase
+	post /metadata/collect (CollectDatabaseReq) returns (CollectResp)
+	@doc(
+		summary: "实体详情"
+	)
+	@handler metaEntityInfo
+	get /metadata/entity/info (MetaEntityIdReq) returns (MetaEntity)
+	@doc(
+		summary: "实体列表"
+	)
+	@handler metaEntityList
+	get /metadata/entity/list (MetaEntityListReq) returns (MetaEntityListResp)
+	@doc(
+		summary: "登记血缘"
+	)
+	@handler addLineage
+	post /metadata/lineage/add (AddLineageReq)
+	@doc(
+		summary: "血缘图"
+	)
+	@handler lineage
+	get /metadata/lineage (LineageReq) returns (LineageResp)
+	@doc(
+		summary: "定版快照"
+	)
+	@handler createVersion
+	post /metadata/version/create (MetaEntityIdReq) returns (VersionResp)
+	@doc(
+		summary: "版本列表"
+	)
+	@handler versionList
+	get /metadata/version/list (MetaEntityIdReq) returns (VersionListResp)
+	@doc(
+		summary: "版本对比"
+	)
+	@handler versionCompare
+	get /metadata/version/compare (CompareReq) returns (DiffResp)
+}

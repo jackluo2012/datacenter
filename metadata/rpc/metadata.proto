@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+package metadata;
+
+option go_package = "./metadata";
+
+//元数据实体
+message MetaEntity {
+  int64  id           = 1;
+  string entity_type  = 2;  //database/table/column
+  string fqn          = 3;  //全限定名 mysql://{db}.{table}.{column}
+  string name         = 4;
+  string comment      = 5;
+  string engine       = 6;
+  int64  rows_cnt     = 7;
+  string props_json   = 8;  //扩展属性(json)
+  string classification = 9; //L1/L2/L3/L4 分级
+  string owner        = 10;
+  int64  ds_id        = 11; //来源数据源id
+  int64  beid         = 12;
+}
+
+message EntityReply { MetaEntity entity = 1; }
+message EntityListReply {
+  repeated MetaEntity list = 1;
+  int64 total = 2;
+}
+
+message CollectDatabaseReq {
+  int64  ds_id    = 1;  //数据源id（血缘登记用）
+  int64  beid     = 2;
+  string db_type  = 3;  //mysql
+  string dsn      = 4;  //由调用方（网关编排）传入
+  string db_name  = 5;
+}
+message CollectReply {
+  int64 tables_created  = 1;
+  int64 columns_created = 2;
+}
+
+message AddLineageReq {
+  int64  from_id    = 1;
+  int64  to_id      = 2;
+  string props_json = 3; //如转换SQL摘要
+  int64  beid       = 4;
+}
+
+message LineageNode {
+  int64  id   = 1;
+  string fqn  = 2;
+  string name = 3;
+}
+message LineageEdge {
+  int64  from_id    = 1;
+  int64  to_id      = 2;
+  string props_json = 3;
+}
+message LineageReply {
+  repeated LineageNode nodes = 1;
+  repeated LineageEdge edges = 2;
+}
+
+message LineageReq {
+  int64 entity_id = 1;
+  string direction = 2; //upstream/downstream
+  int32 depth      = 3;
+  int64 beid       = 4;
+}
+
+message EntityListReq {
+  int64  beid        = 1;
+  string entity_type = 2; //为空查全部
+  string keyword     = 3; //fqn/name 模糊
+  int64  ds_id       = 4;
+  int64  page        = 5;
+  int64  size        = 6;
+}
+
+message MetaVersion {
+  int64  id            = 1;
+  int64  entity_id     = 2;
+  int64  version       = 3;
+  string snapshot_json = 4;
+  string operator      = 5;
+  int64  published_at  = 6;
+}
+message VersionReply { MetaVersion version = 1; }
+message VersionListReply { repeated MetaVersion list = 1; }
+
+message CompareReq {
+  int64 version_a = 1;
+  int64 version_b = 2;
+}
+message DiffReply {
+  string diff_json = 1; //[]{field,before,after}
+}
+
+service Metadata {
+  //采集库表元数据（含 contains 关系）
+  rpc CollectDatabase(CollectDatabaseReq) returns (CollectReply);
+  //实体详情
+  rpc GetEntity(IdReq) returns (EntityReply);
+  //实体列表
+  rpc ListEntities(EntityListReq) returns (EntityListReply);
+  //登记血缘
+  rpc AddLineage(AddLineageReq) returns (OkReply);
+  //血缘图（上下游 N 跳）
+  rpc GetLineage(LineageReq) returns (LineageReply);
+  //定版快照
+  rpc CreateVersion(IdReq) returns (VersionReply);
+  //版本列表
+  rpc ListVersions(IdReq) returns (VersionListReply);
+  //版本对比
+  rpc CompareVersions(CompareReq) returns (DiffReply);
+}
+
+message IdReq { int64 id = 1; int64 beid = 2; }
+message OkReply { bool ok = 1; }

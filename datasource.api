@@ -1,0 +1,104 @@
+syntax = "v1"
+
+//数据源管理（Phase 1）
+type DataSourceInfo {
+	Id        int64  `json:"id,optional"`
+	Name      string `json:"name,optional"`
+	Type      string `json:"type,optional"`
+	Host      string `json:"host,optional"`
+	Port      int32  `json:"port,optional"`
+	DbName    string `json:"db_name,optional"`
+	Username  string `json:"username,optional"`
+	Status    int32  `json:"status,optional"`
+	Owner     string `json:"owner,optional"`
+	CreatedAt int64  `json:"created_at,optional"`
+	UpdatedAt int64  `json:"updated_at,optional"`
+}
+
+type CreateDataSourceReq {
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Host       string `json:"host,optional"`
+	Port       int32  `json:"port,optional"`
+	DbName     string `json:"db_name,optional"`
+	Username   string `json:"username,optional"`
+	Password   string `json:"password,optional"`
+	ParamsJson string `json:"params_json,optional"`
+	Owner      string `json:"owner,optional"`
+	Beid       int64  `json:"beid,optional"`
+}
+
+type UpdateDataSourceReq {
+	Id         int64  `json:"id"`
+	Beid       int64  `json:"beid,optional"`
+	Name       string `json:"name,optional"`
+	Type       string `json:"type,optional"`
+	Host       string `json:"host,optional"`
+	Port       int32  `json:"port,optional"`
+	DbName     string `json:"db_name,optional"`
+	Username   string `json:"username,optional"`
+	Password   string `json:"password,optional"`
+	ParamsJson string `json:"params_json,optional"`
+	Status     int32  `json:"status,optional"`
+	Owner      string `json:"owner,optional"`
+}
+
+type DataSourceIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type DataSourceListReq {
+	Beid int64  `json:"beid,optional" form:"beid,optional"`
+	Type string `json:"type,optional" form:"type,optional"`
+	Page int64  `json:"page,optional" form:"page,optional"`
+	Size int64  `json:"size,optional" form:"size,optional"`
+}
+
+type DataSourceListResp {
+	List  []DataSourceInfo `json:"list"`
+	Total int64            `json:"total"`
+}
+
+type TestConnResp {
+	Ok        bool   `json:"ok"`
+	LatencyMs int64  `json:"latency_ms"`
+	ErrMsg    string `json:"err_msg,optional"`
+}
+
+@server(
+	jwt: Auth
+	group: datasource
+)
+service datacenter-api {
+	@doc(
+		summary: "创建数据源"
+	)
+	@handler createDataSource
+	post /datasource/create (CreateDataSourceReq) returns (DataSourceInfo)
+	@doc(
+		summary: "更新数据源"
+	)
+	@handler updateDataSource
+	post /datasource/update (UpdateDataSourceReq)
+	@doc(
+		summary: "删除数据源"
+	)
+	@handler deleteDataSource
+	post /datasource/delete (DataSourceIdReq)
+	@doc(
+		summary: "数据源详情"
+	)
+	@handler dataSourceInfo
+	get /datasource/info (DataSourceIdReq) returns (DataSourceInfo)
+	@doc(
+		summary: "数据源列表"
+	)
+	@handler dataSourceList
+	get /datasource/list (DataSourceListReq) returns (DataSourceListResp)
+	@doc(
+		summary: "测试数据源连接"
+	)
+	@handler dataSourceTest
+	get /datasource/test (DataSourceIdReq) returns (TestConnResp)
+}
