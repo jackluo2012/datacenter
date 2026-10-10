@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package mdm;
+
+option go_package = "./mdm";
+
+message MdmModel {
+  int64  id           = 1;
+  string model_code   = 2;
+  string model_name   = 3;
+  string table_name   = 4;
+  string fields_json  = 5;
+  string code_strategy = 6; //segment/auto
+  int64  beid         = 7;
+}
+message ModelReply { MdmModel model = 1; }
+message ModelListReply { repeated MdmModel list = 1; int64 total = 2; }
+
+message SaveModelReq {
+  int64  id            = 1;
+  string model_code    = 2;
+  string model_name    = 3;
+  string table_name    = 4;
+  string fields_json   = 5;
+  string code_strategy = 6;
+  int64  beid          = 7;
+}
+message ModelListReq { int64 beid = 1; string keyword = 2; int64 page = 3; int64 size = 4; }
+message IdReq { int64 id = 1; int64 beid = 2; }
+
+message MdmRecord {
+  int64  id        = 1;
+  int64  model_id  = 2;
+  string biz_code  = 3;
+  string data_json = 4;
+  string status    = 5;  //draft/published/archived
+  int32  version   = 6;
+  int64  beid      = 7;
+}
+message RecordReply { MdmRecord record = 1; }
+message RecordListReply { repeated MdmRecord list = 1; int64 total = 2; }
+
+message SaveRecordReq {
+  int64  id        = 1;  //0 新建(生成码),>0 更新(version+1)
+  int64  model_id  = 2;
+  string biz_code  = 3;  //新建时可空=自动生成
+  string data_json = 4;  //须符合模型 fields_json
+  int64  beid      = 5;
+}
+message RecordListReq {
+  int64  beid     = 1;
+  int64  model_id = 2;
+  string keyword  = 3;  //biz_code 模糊
+  int64  page     = 4;
+  int64  size     = 5;
+}
+
+message SegmentReply {
+  string biz_code = 1;
+  int64  current_value = 2;
+}
+
+message MdmDistribution {
+  int64  id           = 1;
+  int64  record_id    = 2;
+  int64  target_ds_id = 3;
+  string target_db    = 4;
+  string target_table = 5;
+  string status       = 6;
+  string msg          = 7;
+  int64  distributed_at = 8;
+  int64  beid         = 9;
+}
+message DistributeReq {
+  int64  record_id    = 1;
+  int64  target_ds_id = 2;
+  string target_db    = 3;
+  string target_table = 4;
+  int64  beid         = 5;
+}
+message DistributeReply { MdmDistribution distribution = 1; }
+message DistListReply { repeated MdmDistribution list = 1; int64 total = 2; }
+message DistListReq { int64 record_id = 1; int64 beid = 2; int64 page = 3; int64 size = 4; }
+
+service Mdm {
+  //主数据模型
+  rpc SaveModel(SaveModelReq) returns (ModelReply);
+  rpc GetModel(IdReq) returns (ModelReply);
+  rpc DeleteModel(IdReq) returns (IdReq);
+  rpc ListModels(ModelListReq) returns (ModelListReply);
+  //生成下一个业务编码（号段模式）
+  rpc NextCode(IdReq) returns (SegmentReply);
+  //主数据记录
+  rpc SaveRecord(SaveRecordReq) returns (RecordReply);
+  rpc GetRecord(IdReq) returns (RecordReply);
+  rpc DeleteRecord(IdReq) returns (IdReq);
+  rpc ListRecords(RecordListReq) returns (RecordListReply);
+  //发布记录（draft→published）
+  rpc PublishRecord(IdReq) returns (RecordReply);
+  //分发到目标数据源（真实写入目标表）
+  rpc DistributeRecord(DistributeReq) returns (DistributeReply);
+  //分发记录
+  rpc ListDistributions(DistListReq) returns (DistListReply);
+}

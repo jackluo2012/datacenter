@@ -23,3 +23,6 @@ tag/rpc/etc/tag.yaml
 job/rpc/etc/job.yaml
 ide/rpc/etc/ide.yaml
 ai/rpc/etc/ai.yaml
+standard/rpc/etc/standard.yaml
+mdm/rpc/etc/mdm.yaml
+ops/rpc/etc/ops.yaml

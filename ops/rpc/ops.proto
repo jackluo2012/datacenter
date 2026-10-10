@@ -1,0 +1,128 @@
+syntax = "proto3";
+
+package ops;
+
+option go_package = "./ops";
+
+message ArchiveTask {
+  int64  id            = 1;
+  string name          = 2;
+  int64  datasource_id = 3;
+  string db_name       = 4;
+  string table_name    = 5;
+  string condition_sql = 6;
+  string archive_table = 7;
+  bool   delete_source = 8;
+  int32  batch_size    = 9;
+  string cron          = 10;
+  string last_status   = 11;
+  int64  last_run_at   = 12;
+  int64  beid          = 13;
+}
+message TaskReply { ArchiveTask task = 1; }
+message TaskListReply { repeated ArchiveTask list = 1; int64 total = 2; }
+
+message CreateArchiveTaskReq {
+  string name          = 1;
+  int64  datasource_id = 2;
+  string db_name       = 3;
+  string table_name    = 4;
+  string condition_sql = 5;
+  string archive_table = 6;
+  bool   delete_source = 7;
+  int32  batch_size    = 8;
+  string cron          = 9;
+  int64  beid          = 10;
+}
+message TaskListReq { int64 beid = 1; int64 page = 2; int64 size = 3; }
+message IdReq { int64 id = 1; int64 beid = 2; }
+
+message ArchiveLog {
+  int64  id            = 1;
+  int64  task_id       = 2;
+  int64  archived_rows = 3;
+  int64  deleted_rows  = 4;
+  string status        = 5;
+  string msg           = 6;
+  int64  run_at        = 7;
+}
+message RunArchiveReply {
+  int64 archived_rows = 1;
+  int64 deleted_rows  = 2;
+  string status       = 3;
+}
+message ArchiveLogListReply { repeated ArchiveLog list = 1; int64 total = 2; }
+message ArchiveLogListReq { int64 task_id = 1; int64 page = 2; int64 size = 3; }
+
+message WriteLoginLogReq {
+  string username = 1;
+  int64  uid      = 2;
+  string ip       = 3;
+  string user_agent = 4;
+  bool   success  = 5;
+  string msg      = 6;
+  int64  beid     = 7;
+}
+message LoginLog {
+  int64  id         = 1;
+  string username   = 2;
+  int64  uid        = 3;
+  string ip         = 4;
+  string user_agent = 5;
+  bool   success    = 6;
+  string msg        = 7;
+  int64  created_at = 8;
+}
+message LoginLogListReply { repeated LoginLog list = 1; int64 total = 2; }
+message LoginLogListReq { string username = 1; int32 success_filter = 2; int64 page = 3; int64 size = 4; }
+
+message WriteAuditLogReq {
+  int64  uid          = 1;
+  string username     = 2;
+  string action       = 3;
+  string resource     = 4;
+  string resource_id  = 5;
+  string detail_json  = 6;
+  string ip           = 7;
+  int64  beid         = 8;
+}
+message AuditLog {
+  int64  id           = 1;
+  int64  uid          = 2;
+  string username     = 3;
+  string action       = 4;
+  string resource     = 5;
+  string resource_id  = 6;
+  string detail_json  = 7;
+  string ip           = 8;
+  int64  created_at   = 9;
+}
+message AuditLogListReply { repeated AuditLog list = 1; int64 total = 2; }
+message AuditLogListReq {
+  string resource = 1;
+  int64  uid      = 2;
+  int64  page     = 3;
+  int64  size     = 4;
+}
+message OkReply { bool ok = 1; }
+
+service Ops {
+  //创建归档任务
+  rpc CreateArchiveTask(CreateArchiveTaskReq) returns (TaskReply);
+  //任务列表
+  rpc ListArchiveTasks(TaskListReq) returns (TaskListReply);
+  //删除任务
+  rpc DeleteArchiveTask(IdReq) returns (IdReq);
+  //执行归档（真实跑库：分批 insert-select + delete 事务）
+  rpc RunArchive(IdReq) returns (RunArchiveReply);
+  //归档日志
+  rpc ListArchiveLogs(ArchiveLogListReq) returns (ArchiveLogListReply);
+  //写登录日志（网关登录后调用）
+  rpc WriteLoginLog(WriteLoginLogReq) returns (OkReply);
+  //登录日志查询
+  rpc ListLoginLogs(LoginLogListReq) returns (LoginLogListReply);
+  //写通用审计日志
+  rpc WriteAuditLog(WriteAuditLogReq) returns (OkReply);
+  //审计日志查询
+  rpc ListAuditLogs(AuditLogListReq) returns (AuditLogListReply);
+}

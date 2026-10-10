@@ -1,0 +1,155 @@
+syntax = "proto3";
+
+package standard;
+
+option go_package = "./standard";
+
+message WordRoot {
+  int64  id      = 1;
+  string name    = 2;
+  string cn_name = 3;
+  string type    = 4;
+  string comment = 5;
+  int64  beid    = 6;
+}
+message WordRootReply { WordRoot root = 1; }
+message WordRootListReply { repeated WordRoot list = 1; int64 total = 2; }
+
+message SaveWordRootReq {
+  int64  id      = 1;  //0 新建
+  string name    = 2;
+  string cn_name = 3;
+  string type    = 4;
+  string comment = 5;
+  int64  beid    = 6;
+}
+message WordRootListReq { int64 beid = 1; string keyword = 2; int64 page = 3; int64 size = 4; }
+message IdReq { int64 id = 1; int64 beid = 2; }
+
+message Dict {
+  int64  id        = 1;
+  string dict_code = 2;
+  string dict_name = 3;
+  string comment   = 4;
+  int32  status    = 5;
+  int64  beid      = 6;
+}
+message DictItem {
+  int64  id         = 1;
+  int64  dict_id    = 2;
+  string item_code  = 3;
+  string item_value = 4;
+  int32  sort       = 5;
+  int64  beid       = 6;
+}
+message DictReply { Dict dict = 1; repeated DictItem items = 2; }
+message DictListReply { repeated Dict list = 1; int64 total = 2; }
+
+message SaveDictReq {
+  int64  id        = 1;
+  string dict_code = 2;
+  string dict_name = 3;
+  string comment   = 4;
+  int64  beid      = 5;
+  repeated DictItem items = 6; //整存整取(覆盖)
+}
+message DictListReq { int64 beid = 1; string keyword = 2; int64 page = 3; int64 size = 4; }
+
+message DataElement {
+  int64  id             = 1;
+  string element_code   = 2;
+  string element_name   = 3;
+  string data_type      = 4;
+  int32  data_length    = 5;
+  int32  data_precision = 6;
+  string dict_code      = 7;
+  string comment        = 8;
+  int64  beid           = 9;
+}
+message ElementReply { DataElement element = 1; }
+message ElementListReply { repeated DataElement list = 1; int64 total = 2; }
+
+message SaveElementReq {
+  int64  id             = 1;
+  string element_code   = 2;
+  string element_name   = 3;
+  string data_type      = 4;
+  int32  data_length    = 5;
+  int32  data_precision = 6;
+  string dict_code      = 7;
+  string comment        = 8;
+  int64  beid           = 9;
+}
+message ElementListReq { int64 beid = 1; string keyword = 2; int64 page = 3; int64 size = 4; }
+
+message StdModel {
+  int64  id            = 1;
+  string model_code    = 2;
+  string model_name    = 3;
+  string elements_json = 4;
+  string status        = 5;  //draft/published/deprecated
+  int32  version       = 6;
+  string snapshot_json = 7;
+  int64  published_at  = 8;
+  int64  beid          = 9;
+}
+message ModelReply { StdModel model = 1; }
+message ModelListReply { repeated StdModel list = 1; int64 total = 2; }
+
+message SaveModelReq {
+  int64  id            = 1;
+  string model_code    = 2;
+  string model_name    = 3;
+  string elements_json = 4;
+  int64  beid          = 5;
+}
+message ModelListReq { int64 beid = 1; string status = 2; string keyword = 3; int64 page = 4; int64 size = 5; }
+
+message PublishReq { int64 id = 1; int64 beid = 2; string operator = 3; }
+message PublishReply { int32 version = 1; string snapshot_json = 2; }
+
+message CheckReq {
+  int64  model_id      = 1;
+  int64  datasource_id = 2;
+  int64  beid          = 3;
+  string db_name       = 4;
+  string table_name    = 5;
+}
+message StdCheckReport {
+  int64  id         = 1;
+  int64  model_id   = 2;
+  string table_name = 3;
+  string diff_json  = 4;
+  bool   pass_flag  = 5;
+  int64  run_at     = 6;
+}
+message CheckReply { StdCheckReport report = 1; }
+message CheckListReply { repeated StdCheckReport list = 1; int64 total = 2; }
+message CheckListReq { int64 model_id = 1; int64 beid = 2; int64 page = 3; int64 size = 4; }
+
+service Standard {
+  //词根
+  rpc SaveWordRoot(SaveWordRootReq) returns (WordRootReply);
+  rpc DeleteWordRoot(IdReq) returns (IdReq);
+  rpc ListWordRoots(WordRootListReq) returns (WordRootListReply);
+  //字典（含项，整存整取）
+  rpc SaveDict(SaveDictReq) returns (DictReply);
+  rpc GetDict(IdReq) returns (DictReply);
+  rpc DeleteDict(IdReq) returns (IdReq);
+  rpc ListDicts(DictListReq) returns (DictListReply);
+  //数据元
+  rpc SaveElement(SaveElementReq) returns (ElementReply);
+  rpc DeleteElement(IdReq) returns (IdReq);
+  rpc ListElements(ElementListReq) returns (ElementListReply);
+  //标准模型
+  rpc SaveModel(SaveModelReq) returns (ModelReply);
+  rpc GetModel(IdReq) returns (ModelReply);
+  rpc DeleteModel(IdReq) returns (IdReq);
+  rpc ListModels(ModelListReq) returns (ModelListReply);
+  //发布（版本+1并落快照）
+  rpc PublishModel(PublishReq) returns (PublishReply);
+  //标准核对（表结构与标准模型比对，经数据源真实执行）
+  rpc CheckTable(CheckReq) returns (CheckReply);
+  //核对历史
+  rpc ListCheckReports(CheckListReq) returns (CheckListReply);
+}
