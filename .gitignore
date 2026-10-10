@@ -8,3 +8,8 @@ mysql8
 redis
 etcd
 elasticsearch
+user/rpc/etc/rpc.yaml
+common/rpc/etc/rpc.yaml
+votes/rpc/etc/rpc.yaml
+search/rpc/etc/search.yaml
+questions/rpc/etc/questions.yaml

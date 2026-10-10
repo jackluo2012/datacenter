@@ -21,7 +21,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	aem := model.NewAppEnrollModel(conn, c.CacheRedis)
 	avm := model.NewAppVotesModel(conn)
 	avam := model.NewAppVotesActivityModel(conn, c.CacheRedis)
-	rconn := redis.NewRedis(c.CacheRedis[0].Host, c.CacheRedis[0].Type, c.CacheRedis[0].Pass)
+	rconn := redis.MustNewRedis(c.CacheRedis[0].RedisConf)
 	return &ServiceContext{
 		c:                     c,
 		AppEnrollModel:        aem,

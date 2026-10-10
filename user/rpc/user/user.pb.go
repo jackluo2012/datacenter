@@ -76,7 +76,7 @@ func (x *Request) GetPing() string {
 	return ""
 }
 
-//注册请求
+// 注册请求
 type RegisterReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -140,7 +140,7 @@ func (x *RegisterReq) GetSmscode() string {
 	return ""
 }
 
-//登陆请求
+// 登陆请求
 type LoginReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -204,7 +204,7 @@ func (x *LoginReq) GetPassword() string {
 	return ""
 }
 
-//返回用户信息
+// 返回用户信息
 type UserReply struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -324,7 +324,7 @@ func (x *UserReply) GetJwttoken() *JwtToken {
 	return nil
 }
 
-//返回用户信息
+// 返回用户信息
 type UserReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -459,7 +459,7 @@ func (x *JwtToken) GetRefreshAfter() int64 {
 	return 0
 }
 
-//请求的api
+// 请求的api
 type AppConfigReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -523,7 +523,7 @@ func (x *AppConfigReq) GetCode() string {
 	return ""
 }
 
-//返回用户的信息
+// 返回用户的信息
 type AppUserResp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -778,7 +778,7 @@ func (x *AppUserLoginResp) GetJwttoken() *JwtToken {
 	return nil
 }
 
-//返回的值
+// 返回的值
 type AppConfigResp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

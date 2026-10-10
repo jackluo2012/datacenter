@@ -249,7 +249,7 @@ func (x *EnrollInfoReq) GetActid() int64 {
 	return 0
 }
 
-//报名 请求
+// 报名 请求
 type EnrollReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -361,7 +361,7 @@ func (x *EnrollReq) GetActid() int64 {
 	return 0
 }
 
-//报名返回
+// 报名返回
 type EnrollResp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -497,7 +497,7 @@ func (x *EnrollResp) GetActid() int64 {
 	return 0
 }
 
-//返回列表
+// 返回列表
 type EnrollListResp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -545,7 +545,7 @@ func (x *EnrollListResp) GetData() []*EnrollResp {
 	return nil
 }
 
-//投票
+// 投票
 type VotesReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -641,7 +641,7 @@ func (x *VotesReq) GetIp() string {
 	return ""
 }
 
-//返回票数
+// 返回票数
 type VotesResp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -745,7 +745,7 @@ func (x *VotesResp) GetViewcount() int64 {
 	return 0
 }
 
-//返回活动信息
+// 返回活动信息
 type ActInfoResp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

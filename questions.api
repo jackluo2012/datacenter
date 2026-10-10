@@ -1,3 +1,4 @@
+syntax = "v1"
 // 问答 抽奖 开始
 @server(
 	group: questions
@@ -18,20 +19,20 @@ service datacenter-api {
 	get /questions/award/list (Actid) returns (ActivityResp)
 	
 }
-type AnswerReq struct {
+type AnswerReq {
 	ActivityId	int64 `json:"actid"` 
 	Answers	string `json:"answers"` 
 	Score	string `json:"score"`
 }
-type QuestionsAwardReq struct {
+type QuestionsAwardReq {
 	ActivityId	int64 `json:"actid"` 
 	AnswerId	int64 `json:"answerid"` 
 }
-type AnswerResp struct {
+type AnswerResp {
 	Answers	string `json:"answers"` 
 	Score	string `json:"score"`
 }
-type AwardConvertReq struct {
+type AwardConvertReq {
 	UserName	string `json:"username"` 
 	Phone		string `json:"phone"` 
 	LotteryId	int64 `json:"lotteryid"` 

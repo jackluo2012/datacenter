@@ -83,7 +83,7 @@ func (m *defaultQuestions) GetQuestionsList(ctx context.Context, in *ActivitiesR
 	return client.GetQuestionsList(ctx, in)
 }
 
-//  提交 答案
+// 提交 答案
 func (m *defaultQuestions) PostQuestionsChange(ctx context.Context, in *QuestionsAnswerReq) (*QuestionsAnswerResp, error) {
 	client := questions.NewQuestionsClient(m.cli.Conn())
 	return client.PostQuestionsChange(ctx, in)

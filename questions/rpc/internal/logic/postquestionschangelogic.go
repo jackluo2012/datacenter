@@ -24,7 +24,7 @@ func NewPostQuestionsChangeLogic(ctx context.Context, svcCtx *svc.ServiceContext
 	}
 }
 
-//  提交 答案
+// 提交 答案
 func (l *PostQuestionsChangeLogic) PostQuestionsChange(in *questions.QuestionsAnswerReq) (*questions.QuestionsAnswerResp, error) {
 	logx.Info("in=", in)
 	result, err := l.svcCtx.QuestionsAnswersModel.Insert(model.AppQuestionsAnswers{

@@ -155,7 +155,7 @@ func (x *BaseAppResp) GetFullwebsite() string {
 	return ""
 }
 
-//请求的api
+// 请求的api
 type AppConfigReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -211,7 +211,7 @@ func (x *AppConfigReq) GetPtyid() int64 {
 	return 0
 }
 
-//返回的值
+// 返回的值
 type AppConfigResp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

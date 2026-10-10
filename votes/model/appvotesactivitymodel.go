@@ -74,7 +74,7 @@ func (m *defaultAppVotesActivityModel) IncrVotes(actid int64) error {
 	return err
 }
 
-//浏览量 +1
+// 浏览量 +1
 func (m *defaultAppVotesActivityModel) IncrView(actid int64) error {
 	appVotesActivityActidKey := fmt.Sprintf("%s%v", cacheAppVotesActivityActidPrefix, actid)
 	_, err := m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
@@ -84,7 +84,7 @@ func (m *defaultAppVotesActivityModel) IncrView(actid int64) error {
 	return err
 }
 
-//报名数 +1
+// 报名数 +1
 func (m *defaultAppVotesActivityModel) IncrEnroll(actid int64) error {
 	appVotesActivityActidKey := fmt.Sprintf("%s%v", cacheAppVotesActivityActidPrefix, actid)
 	_, err := m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {

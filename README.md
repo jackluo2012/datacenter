@@ -61,6 +61,14 @@ syslog查询、syslog实时查看、登录日志、审计日志
 
 # 基于go-zero 框架写的一个数据中台中心
 
+> **2026-10 全栈升级**：Go 1.26 + go-zero v1.10.3 + MySQL 8.4 + Redis 8 + etcd 3.5 + ES 7.17，升级明细见 [docs/UPGRADE.md](docs/UPGRADE.md)。
+> 项目正在从"活动业务中台"向真正的数据中台演进，路线图见 [docs/ROADMAP.md](docs/ROADMAP.md)。
+
+### 环境要求
+- Go **1.24+**（go.mod 声明 1.26）
+- goctl v1.10.2（`go install github.com/zeromicro/go-zero/tools/goctl@latest`，仅重新生成代码时需要）
+- protoc 36.x + protoc-gen-go + protoc-gen-go-grpc（仅重新生成 RPC 时需要）
+
 ### 详细介绍 [我是如何用go-zero实现一个中台系统的](https://www.cnblogs.com/jackluo/p/14148518.html)
 
 ## 架构图
@@ -109,39 +117,9 @@ es
 es
 04b37b58f10411fa8ab5894c917266cc7bc7f9a96988908fff9b3734e6259ad4
 ```
-### 需要注意的是 elasticsearch 第一次用的时候，需要初始化密码 执行下面的操作
-```bash
-➜ ~ docker exec -it es /bin/bash
-[root@04b37b58f104 elasticsearch]# sh /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto
-Initiating the setup of passwords for reserved users elastic,apm_system,kibana,logstash_system,beats_system,remote_monitoring_user.
-The passwords will be randomly generated and printed to the console.
-Please confirm that you would like to continue [y/N]y
+### elasticsearch 的帐号密码已经通过 server.sh 内置（`ELASTIC_PASSWORD=admin`）
+### 即帐号: elastic ,密码: admin，将其填入 search/rpc/etc/search.yaml 文件中即可
 
-
-Changed password for user apm_system
-PASSWORD apm_system = iKVpVyFFTC8qEXvJILi2
-
-Changed password for user kibana
-PASSWORD kibana = DnDgQRRgkuyV8YqTrxbk
-
-Changed password for user logstash_system
-PASSWORD logstash_system = aqjVEdMsG7P2CXm9sQNk
-
-Changed password for user beats_system
-PASSWORD beats_system = Oleo1gQhli6tGaWuHz96
-
-Changed password for user remote_monitoring_user
-PASSWORD remote_monitoring_user = rX9CsBLM2c3ow9sH6Iud
-
-Changed password for user elastic
-PASSWORD elastic = yi4cxxdiz86pRKOoTAcm
-```
-### 看到上面最后行 
-```
-Changed password for user elastic
-PASSWORD elastic = yi4cxxdiz86pRKOoTAcm
-```
-### 得到elastic 的帐号: elastic ,密码: yi4cxxdiz86pRKOoTAcm 将这个填入search/rpc/search.yaml 文件中
 
 
     接着导入 sql.sql到 mysql数据中 ,如果有工具自行导入,下面仅参考

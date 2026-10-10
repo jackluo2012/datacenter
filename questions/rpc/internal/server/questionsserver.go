@@ -45,7 +45,7 @@ func (s *QuestionsServer) GetQuestionsList(ctx context.Context, in *questions.Ac
 	return l.GetQuestionsList(in)
 }
 
-//  提交 答案
+// 提交 答案
 func (s *QuestionsServer) PostQuestionsChange(ctx context.Context, in *questions.QuestionsAnswerReq) (*questions.QuestionsAnswerResp, error) {
 	l := logic.NewPostQuestionsChangeLogic(ctx, s.svcCtx)
 	return l.PostQuestionsChange(in)

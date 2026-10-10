@@ -1,26 +1,27 @@
+syntax = "v1"
 
 //注册请求
-type RegisterReq struct {
+type RegisterReq {
 	// TODO: add members here and delete this comment
 	Mobile   string `json:"mobile"` //基本一个手机号码就完事
 	Password string `json:"password"`
 	Smscode	string `json:"smscode"` //短信码
 }
 //登陆请求
-type LoginReq struct{
+type LoginReq {
 	Mobile   string `json:"mobile"`
 	Type int64 `json:"type"`	//1.密码登陆，2.短信登陆
 	Password string `json:"password"`
 }
 //微信登陆
-type WxLoginReq struct {
+type WxLoginReq {
 	Beid	  int64  `json:"beid"` //应用id
 	Code string `json:"code"` //微信登陆密钥
 	Ptyid	  int64  `json:"ptyid"` //对应平台
 }
 
 //返回用户信息
-type UserReply struct {
+type UserReply {
 	Auid       int64  `json:"auid"`
 	Uid       int64  `json:"uid"`
 	Beid	  int64  `json:"beid"` //应用id
@@ -33,7 +34,7 @@ type UserReply struct {
 	JwtToken
 }
 //返回APPUser
-type AppUser struct{
+type AppUser {
 	Uid       int64  `json:"uid"`
 	Auid       int64  `json:"auid"`
 	Beid	  int64  `json:"beid"` //应用id
@@ -43,7 +44,7 @@ type AppUser struct{
 	Avator string `json:"avator"`
 }
 
-type LoginAppUser struct{
+type LoginAppUser {
 	Uid       int64  `json:"uid"`
 	Auid       int64  `json:"auid"`
 	Beid	  int64  `json:"beid"` //应用id
@@ -54,17 +55,17 @@ type LoginAppUser struct{
 	JwtToken
 }
 
-type JwtToken struct {
+type JwtToken {
 	AccessToken  string `json:"access_token,omitempty"`
 	AccessExpire int64  `json:"access_expire,omitempty"`
 	RefreshAfter int64  `json:"refresh_after,omitempty"`
 }
 
-type UserReq struct{
-	Auid       int64  `json:"auid"`
-	Uid       int64  `json:"uid"`
-	Beid	  int64  `json:"beid"` //应用id
-	Ptyid	  int64  `json:"ptyid"` //对应平台
+type UserReq {
+	Auid       int64  `json:"auid,optional" form:"auid,optional"`
+	Uid       int64  `json:"uid,optional" form:"uid,optional"`
+	Beid	  int64  `json:"beid,optional" form:"beid,optional"` //应用id
+	Ptyid	  int64  `json:"ptyid,optional" form:"ptyid,optional"` //对应平台
 }
 
 type Request {

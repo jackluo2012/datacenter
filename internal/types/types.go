@@ -2,7 +2,7 @@
 package types
 
 type Beid struct {
-	Beid int64 `json:"beid"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
 }
 
 type Token struct {
@@ -100,10 +100,10 @@ type JwtToken struct {
 }
 
 type UserReq struct {
-	Auid  int64 `json:"auid"`
-	Uid   int64 `json:"uid"`
-	Beid  int64 `json:"beid"`  //应用id
-	Ptyid int64 `json:"ptyid"` //对应平台
+	Auid  int64 `json:"auid,optional" form:"auid,optional"`
+	Uid   int64 `json:"uid,optional" form:"uid,optional"`
+	Beid  int64 `json:"beid,optional" form:"beid,optional"` //应用id
+	Ptyid int64 `json:"ptyid,optional" form:"ptyid,optional"`
 }
 
 type Request struct {
@@ -115,11 +115,11 @@ type Response struct {
 }
 
 type Actid struct {
-	Actid int64 `json:"actid"` //活动id
+	Actid int64 `json:"actid,optional" form:"actid,optional"` //活动id
 }
 
 type VoteReq struct {
-	Aeid int64 `json:"aeid"` // 作品id
+	Aeid int64 `json:"aeid,optional" form:"aeid,optional"` // 作品id
 	Actid
 }
 
@@ -162,9 +162,9 @@ type EnrollResp struct {
 }
 
 type SearchReq struct {
-	Keyword string `json:"keyword"`
-	Page    string `json:"page"`
-	Size    string `json:"size"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    string `json:"page,optional" form:"page,optional"`
+	Size    string `json:"size,optional" form:"size,optional"`
 }
 
 type SearchResp struct {

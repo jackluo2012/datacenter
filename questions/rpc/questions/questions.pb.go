@@ -170,7 +170,7 @@ func (x *ActivitiesReq) GetActid() int64 {
 	return 0
 }
 
-//返回问答抽奖活动信息
+// 返回问答抽奖活动信息
 type ActInfoResp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -638,7 +638,7 @@ func (x *QuestionsListResp) GetData() []*QuestionsResp {
 	return nil
 }
 
-//答案提交
+// 答案提交
 type QuestionsAnswerReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -734,7 +734,7 @@ func (x *QuestionsAnswerReq) GetAuid() int64 {
 	return 0
 }
 
-//问答返回
+// 问答返回
 type QuestionsAnswerResp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -790,7 +790,7 @@ func (x *QuestionsAnswerResp) GetScore() string {
 	return ""
 }
 
-//得分
+// 得分
 type GradeReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -854,7 +854,7 @@ func (x *GradeReq) GetAuid() int64 {
 	return 0
 }
 
-//抽奖
+// 抽奖
 type TurnTableReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -942,7 +942,7 @@ func (x *TurnTableReq) GetAnswerId() int64 {
 	return 0
 }
 
-//兑奖
+// 兑奖
 type ConvertReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
