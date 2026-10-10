@@ -10,6 +10,6 @@ type Config struct {
 	Mysql struct {
 		DataSource string
 	}
-	EncryptKey string `json:",optional"` //AES-GCM 密钥(32字节)
+	EncryptKey string            `json:",optional"` //AES-GCM 密钥(32字节)
 	CacheRedis cache.ClusterConf `json:",optional"`
 }

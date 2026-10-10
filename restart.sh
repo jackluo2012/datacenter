@@ -51,6 +51,14 @@ RpcServer ${userPath} ${UserRpc} ${configPath}
 RpcServer ${votesPath} ${VotesRpc} ${configPath}
 #搜索服务
 RpcServerPlus ${getewayPath} search
+#数据源服务（Phase 1）
+RpcServerPlus ${getewayPath} datasource
+#元数据服务（Phase 1）
+RpcServerPlus ${getewayPath} metadata
+#数据服务API（Phase 1）
+RpcServerPlus ${getewayPath} datasvc
+#资产目录服务（Phase 1）
+RpcServerPlus ${getewayPath} catalog
 #问答抽奖服务
 RpcServerPlus ${getewayPath} questions
 #Api服务

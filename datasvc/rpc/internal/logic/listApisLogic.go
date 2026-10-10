@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"strings"
 
 	"datacenter/datasvc/rpc/datasvc"
 	"datacenter/datasvc/rpc/internal/svc"
@@ -23,9 +24,15 @@ func NewListApisLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListApis
 	}
 }
 
-// API列表
+// API列表（beid+可选 status 分页，分页参数非法时在 model 层兜底）
 func (l *ListApisLogic) ListApis(in *datasvc.ApiListReq) (*datasvc.ApiListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &datasvc.ApiListReply{}, nil
+	list, total, err := l.svcCtx.ApiModel.List(in.Beid, strings.TrimSpace(in.Status), in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	pbList := make([]*datasvc.Api, 0, len(list))
+	for _, api := range list {
+		pbList = append(pbList, apiToPb(api))
+	}
+	return &datasvc.ApiListReply{List: pbList, Total: total}, nil
 }

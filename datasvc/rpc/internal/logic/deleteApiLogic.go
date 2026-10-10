@@ -2,7 +2,10 @@ package logic
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
+	"datacenter/datasvc/model"
 	"datacenter/datasvc/rpc/datasvc"
 	"datacenter/datasvc/rpc/internal/svc"
 
@@ -23,9 +26,29 @@ func NewDeleteApiLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DeleteA
 	}
 }
 
-// 删除API
+// 删除API（同时清理该 API 的授权关系）
 func (l *DeleteApiLogic) DeleteApi(in *datasvc.IdReq) (*datasvc.OkReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &datasvc.OkReply{}, nil
+	if in.Id <= 0 {
+		return nil, fmt.Errorf("%w: id 非法", ErrParamInvalid)
+	}
+	api, err := l.svcCtx.ApiModel.FindOne(in.Id)
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return nil, ErrApiNotFound
+		}
+		return nil, err
+	}
+	//多租户校验
+	if in.Beid != 0 && api.Beid != in.Beid {
+		return nil, ErrApiNotFound
+	}
+	//先清理授权关系，再删 API
+	if err := l.svcCtx.GrantModel.DeleteByApi(api.Id); err != nil {
+		return nil, err
+	}
+	if err := l.svcCtx.ApiModel.Delete(api.Id); err != nil {
+		return nil, err
+	}
+	l.Infof("删除API成功 id=%d beid=%d path=%s", api.Id, api.Beid, api.Path)
+	return &datasvc.OkReply{Ok: true}, nil
 }

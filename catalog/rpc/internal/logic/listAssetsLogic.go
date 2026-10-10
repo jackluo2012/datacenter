@@ -23,9 +23,18 @@ func NewListAssetsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListAs
 	}
 }
 
-// 资产列表
+// 资产列表（分页 + 分类过滤 + keyword 模糊匹配 name/comment）
 func (l *ListAssetsLogic) ListAssets(in *catalog.AssetListReq) (*catalog.AssetListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &catalog.AssetListReply{}, nil
+	if in.Beid <= 0 {
+		return nil, ErrInvalidParam
+	}
+	list, total, err := l.svcCtx.AssetModel.FindList(in.Beid, in.CategoryId, in.Keyword, in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	reply := make([]*catalog.Asset, 0, len(list))
+	for _, a := range list {
+		reply = append(reply, assetToPb(a))
+	}
+	return &catalog.AssetListReply{List: reply, Total: total}, nil
 }

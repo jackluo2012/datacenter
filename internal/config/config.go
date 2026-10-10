@@ -19,5 +19,11 @@ type Config struct {
 	SearchRpc    zrpc.RpcClientConf
 	QuestionsRpc zrpc.RpcClientConf
 
+	//Phase 1 数据中台服务
+	DataSourceRpc zrpc.RpcClientConf
+	MetadataRpc   zrpc.RpcClientConf
+	DataSvcRpc    zrpc.RpcClientConf
+	CatalogRpc    zrpc.RpcClientConf
+
 	CacheRedis cache.ClusterConf
 }

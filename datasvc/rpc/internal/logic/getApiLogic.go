@@ -2,7 +2,10 @@ package logic
 
 import (
 	"context"
+	"errors"
+	"strings"
 
+	"datacenter/datasvc/model"
 	"datacenter/datasvc/rpc/datasvc"
 	"datacenter/datasvc/rpc/internal/svc"
 
@@ -23,9 +26,14 @@ func NewGetApiLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetApiLogi
 	}
 }
 
-// API详情
+// API详情（按 beid+path 查询）
 func (l *GetApiLogic) GetApi(in *datasvc.PathReq) (*datasvc.ApiReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &datasvc.ApiReply{}, nil
+	api, err := l.svcCtx.ApiModel.FindByPath(in.Beid, strings.TrimSpace(in.Path))
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return nil, ErrApiNotFound
+		}
+		return nil, err
+	}
+	return &datasvc.ApiReply{Api: apiToPb(api)}, nil
 }

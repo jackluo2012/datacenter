@@ -2,7 +2,9 @@ package logic
 
 import (
 	"context"
+	"errors"
 
+	"datacenter/metadata/model"
 	"datacenter/metadata/rpc/internal/svc"
 	"datacenter/metadata/rpc/metadata"
 
@@ -25,7 +27,15 @@ func NewGetEntityLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetEnti
 
 // 实体详情
 func (l *GetEntityLogic) GetEntity(in *metadata.IdReq) (*metadata.EntityReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &metadata.EntityReply{}, nil
+	if in.Id <= 0 {
+		return nil, ErrEntityNotFound
+	}
+	entity, err := l.svcCtx.EntityModel.FindOne(l.ctx, in.Id, in.Beid)
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return nil, ErrEntityNotFound
+		}
+		return nil, err
+	}
+	return &metadata.EntityReply{Entity: entityToPb(entity)}, nil
 }

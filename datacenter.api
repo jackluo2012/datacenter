@@ -8,6 +8,10 @@ info (
 )
 
 import "user.api"
+import "datasource.api"
+import "metadata.api"
+import "datasvc.api"
+import "catalog.api"
 import "votes.api"
 import "search.api"
 import "questions.api"

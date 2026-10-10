@@ -1,0 +1,147 @@
+syntax = "v1"
+
+//数据服务 API（Phase 1，参考 OneService：配置出 API、统一管控）
+type ApiInfo {
+	Id            int64  `json:"id,optional"`
+	Name          string `json:"name,optional"`
+	Path          string `json:"path,optional"`
+	Mode          string `json:"mode,optional"`
+	DatasourceId  int64  `json:"datasource_id,optional"`
+	SqlText       string `json:"sql_text,optional"`
+	ParamsJson    string `json:"params_json,optional"`
+	CacheTtl      int64  `json:"cache_ttl,optional"`
+	Status        string `json:"status,optional"`
+	Owner         string `json:"owner,optional"`
+}
+
+type CreateApiReq {
+	Name         string `json:"name"`
+	Path         string `json:"path"`
+	Mode         string `json:"mode,optional"`
+	DatasourceId int64  `json:"datasource_id"`
+	SqlText      string `json:"sql_text"`
+	ParamsJson   string `json:"params_json,optional"`
+	CacheTtl     int64  `json:"cache_ttl,optional"`
+	Owner        string `json:"owner,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type UpdateApiReq {
+	Id         int64  `json:"id"`
+	Beid       int64  `json:"beid,optional"`
+	Name       string `json:"name,optional"`
+	SqlText    string `json:"sql_text,optional"`
+	ParamsJson string `json:"params_json,optional"`
+	CacheTtl   int64  `json:"cache_ttl,optional"`
+}
+
+type DsIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type ApiPathReq {
+	Path string `json:"path,optional" form:"path,optional"`
+	Beid int64  `json:"beid,optional" form:"beid,optional"`
+}
+
+type ApiListReq {
+	Beid   int64  `json:"beid,optional" form:"beid,optional"`
+	Status string `json:"status,optional" form:"status,optional"`
+	Page   int64  `json:"page,optional" form:"page,optional"`
+	Size   int64  `json:"size,optional" form:"size,optional"`
+}
+type ApiListResp {
+	List  []ApiInfo `json:"list"`
+	Total int64     `json:"total"`
+}
+
+type RegisterAppReq {
+	Name          string `json:"name"`
+	RateLimitQps  int64  `json:"rate_limit_qps,optional"`
+	IpWhitelist   string `json:"ip_whitelist,optional"`
+	Beid          int64  `json:"beid,optional"`
+}
+type AppResp {
+	AppId    int64  `json:"app_id"`
+	AppKey   string `json:"app_key"`
+	AppSecret string `json:"app_secret"` //仅注册时返回一次
+}
+
+type GrantApiReq {
+	ApiId     int64  `json:"api_id"`
+	AppId     int64  `json:"app_id"`
+	ExpireAt  int64  `json:"expire_at,optional"` //unix 秒,0 永久
+	FieldMask string `json:"field_mask,optional"`
+	Beid      int64  `json:"beid,optional"`
+}
+
+type ExecuteApiReq {
+	AppKey     string `json:"app_key"`
+	Sign       string `json:"sign"`
+	Ts         string `json:"ts"`
+	Path       string `json:"path"`
+	ParamsJson string `json:"params_json,optional"`
+}
+type ExecuteApiResp {
+	RowsJson string `json:"rows_json"`
+	CostMs   int64  `json:"cost_ms"`
+	CacheHit bool   `json:"cache_hit"`
+	Affected int64  `json:"affected"`
+}
+
+@server(
+	group: datasvc
+)
+service datacenter-api {
+	@doc(
+		summary: "创建数据API"
+	)
+	@handler createApi
+	post /datasvc/api/create (CreateApiReq) returns (ApiInfo)
+	@doc(
+		summary: "更新数据API"
+	)
+	@handler updateApi
+	post /datasvc/api/update (UpdateApiReq)
+	@doc(
+		summary: "删除数据API"
+	)
+	@handler deleteApi
+	post /datasvc/api/delete (DsIdReq)
+	@doc(
+		summary: "API详情"
+	)
+	@handler apiInfo
+	get /datasvc/api/info (ApiPathReq) returns (ApiInfo)
+	@doc(
+		summary: "API列表"
+	)
+	@handler apiList
+	get /datasvc/api/list (ApiListReq) returns (ApiListResp)
+	@doc(
+		summary: "发布API"
+	)
+	@handler publishApi
+	post /datasvc/api/publish (DsIdReq)
+	@doc(
+		summary: "下线API"
+	)
+	@handler offlineApi
+	post /datasvc/api/offline (DsIdReq)
+	@doc(
+		summary: "注册调用应用"
+	)
+	@handler registerApp
+	post /datasvc/app/register (RegisterAppReq) returns (AppResp)
+	@doc(
+		summary: "授权API给应用"
+	)
+	@handler grantApi
+	post /datasvc/grant (GrantApiReq)
+	@doc(
+		summary: "执行数据API（外部统一入口）"
+	)
+	@handler executeApi
+	post /datasvc/execute (ExecuteApiReq) returns (ExecuteApiResp)
+}

@@ -25,7 +25,13 @@ func NewListVersionsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *List
 
 // 版本列表
 func (l *ListVersionsLogic) ListVersions(in *metadata.IdReq) (*metadata.VersionListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &metadata.VersionListReply{}, nil
+	list, err := l.svcCtx.VersionModel.FindList(l.ctx, in.Id)
+	if err != nil {
+		return nil, err
+	}
+	versions := make([]*metadata.MetaVersion, 0, len(list))
+	for _, v := range list {
+		versions = append(versions, versionToPb(v))
+	}
+	return &metadata.VersionListReply{List: versions}, nil
 }
