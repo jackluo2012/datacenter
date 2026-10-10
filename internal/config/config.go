@@ -24,6 +24,9 @@ type Config struct {
 	MetadataRpc   zrpc.RpcClientConf
 	DataSvcRpc    zrpc.RpcClientConf
 	CatalogRpc    zrpc.RpcClientConf
+	QualityRpc    zrpc.RpcClientConf
+	MetricRpc     zrpc.RpcClientConf
+	TagRpc        zrpc.RpcClientConf
 
 	CacheRedis cache.ClusterConf
 }

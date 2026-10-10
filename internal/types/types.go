@@ -139,6 +139,12 @@ type Beid struct {
 	Beid int64 `json:"beid,optional" form:"beid,optional"`
 }
 
+type BindAtomsReq struct {
+	DeriveMetricId int64   `json:"derive_metric_id"`
+	AtomMetricIds  []int64 `json:"atom_metric_ids"`
+	Beid           int64   `json:"beid,optional"`
+}
+
 type CategoryListReq struct {
 	Beid int64 `json:"beid,optional" form:"beid,optional"`
 }
@@ -193,6 +199,59 @@ type CreateDataSourceReq struct {
 	Password   string `json:"password,optional"`
 	ParamsJson string `json:"params_json,optional"`
 	Owner      string `json:"owner,optional"`
+	Beid       int64  `json:"beid,optional"`
+}
+
+type CreateMetricReq struct {
+	NameEn        string `json:"name_en"`
+	NameCn        string `json:"name_cn"`
+	MetricType    string `json:"metric_type"`
+	BizField      string `json:"biz_field,optional"`
+	AggType       string `json:"agg_type,optional"`
+	Expr          string `json:"expr,optional"`
+	DimensionJson string `json:"dimension_json,optional"`
+	Comment       string `json:"comment,optional"`
+	Owner         string `json:"owner,optional"`
+	Beid          int64  `json:"beid,optional"`
+}
+
+type CreateQualityJobReq struct {
+	Name         string `json:"name"`
+	DatasourceId int64  `json:"datasource_id"`
+	DbName       string `json:"db_name,optional"`
+	RuleIds      string `json:"rule_ids"`
+	Cron         string `json:"cron,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type CreateQualityRuleReq struct {
+	Name          string `json:"name"`
+	RuleType      string `json:"rule_type"`
+	TargetTable   string `json:"target_table"`
+	TargetColumn  string `json:"target_column,optional"`
+	ParamsJson    string `json:"params_json,optional"`
+	ThresholdJson string `json:"threshold_json,optional"`
+	Owner         string `json:"owner,optional"`
+	Beid          int64  `json:"beid,optional"`
+}
+
+type CreateTagDefReq struct {
+	ObjectId    int64  `json:"object_id"`
+	TagKey      string `json:"tag_key"`
+	TagName     string `json:"tag_name"`
+	TagType     string `json:"tag_type,optional"`
+	RuleSql     string `json:"rule_sql,optional"`
+	RefreshCron string `json:"refresh_cron,optional"`
+	Beid        int64  `json:"beid,optional"`
+}
+
+type CreateTagObjectReq struct {
+	ObjectType string `json:"object_type"`
+	Name       string `json:"name"`
+	DsId       int64  `json:"ds_id,optional"`
+	DbName     string `json:"db_name,optional"`
+	TableName  string `json:"table_name,optional"`
+	PkColumn   string `json:"pk_column,optional"`
 	Beid       int64  `json:"beid,optional"`
 }
 
@@ -276,6 +335,17 @@ type GrantApiReq struct {
 	ExpireAt  int64  `json:"expire_at,optional"` //unix 秒,0 永久
 	FieldMask string `json:"field_mask,optional"`
 	Beid      int64  `json:"beid,optional"`
+}
+
+type JobListReq struct {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Page int64 `json:"page,optional" form:"page,optional"`
+	Size int64 `json:"size,optional" form:"size,optional"`
+}
+
+type JobListResp struct {
+	List  []QualityJob `json:"list"`
+	Total int64        `json:"total"`
 }
 
 type JwtToken struct {
@@ -368,6 +438,100 @@ type MetaVersion struct {
 	PublishedAt  int64  `json:"published_at,optional"`
 }
 
+type MetricIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type MetricInfo struct {
+	Id            int64  `json:"id,optional"`
+	NameEn        string `json:"name_en,optional"`
+	NameCn        string `json:"name_cn,optional"`
+	MetricType    string `json:"metric_type,optional"`
+	BizField      string `json:"biz_field,optional"`
+	AggType       string `json:"agg_type,optional"`
+	Expr          string `json:"expr,optional"`
+	DimensionJson string `json:"dimension_json,optional"`
+	Comment       string `json:"comment,optional"`
+	Owner         string `json:"owner,optional"`
+	Status        int32  `json:"status,optional"`
+}
+
+type MetricListReq struct {
+	Beid       int64  `json:"beid,optional" form:"beid,optional"`
+	MetricType string `json:"metric_type,optional" form:"metric_type,optional"`
+	Keyword    string `json:"keyword,optional" form:"keyword,optional"`
+	Page       int64  `json:"page,optional" form:"page,optional"`
+	Size       int64  `json:"size,optional" form:"size,optional"`
+}
+
+type MetricListResp struct {
+	List  []MetricInfo `json:"list"`
+	Total int64        `json:"total"`
+}
+
+type ObjectTagsReq struct {
+	ObjectPk string `json:"object_pk,optional" form:"object_pk,optional"`
+	ObjectId int64  `json:"object_id,optional" form:"object_id,optional"`
+	Beid     int64  `json:"beid,optional" form:"beid,optional"`
+}
+
+type ObjectTagsResp struct {
+	Tags []TagValueItem `json:"tags"`
+}
+
+type QualityIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type QualityJob struct {
+	Id           int64  `json:"id,optional"`
+	Name         string `json:"name,optional"`
+	DatasourceId int64  `json:"datasource_id,optional"`
+	DbName       string `json:"db_name,optional"`
+	RuleIds      string `json:"rule_ids,optional"`
+	Cron         string `json:"cron,optional"`
+	LastStatus   string `json:"last_status,optional"`
+	LastRunAt    int64  `json:"last_run_at,optional"`
+	Beid         int64  `json:"beid,optional"`
+}
+
+type QualityResult struct {
+	Id         int64  `json:"id,optional"`
+	JobId      int64  `json:"job_id,optional"`
+	RuleId     int64  `json:"rule_id,optional"`
+	RuleType   string `json:"rule_type,optional"`
+	CheckValue string `json:"check_value,optional"`
+	PassFlag   bool   `json:"pass_flag,optional"`
+	DetailJson string `json:"detail_json,optional"`
+	RunAt      int64  `json:"run_at,optional"`
+}
+
+type QualityRule struct {
+	Id            int64  `json:"id,optional"`
+	Name          string `json:"name,optional"`
+	RuleType      string `json:"rule_type,optional"`
+	TargetTable   string `json:"target_table,optional"`
+	TargetColumn  string `json:"target_column,optional"`
+	ParamsJson    string `json:"params_json,optional"`
+	ThresholdJson string `json:"threshold_json,optional"`
+	Status        int32  `json:"status,optional"`
+	Owner         string `json:"owner,optional"`
+}
+
+type QualityRuleListReq struct {
+	Beid     int64  `json:"beid,optional" form:"beid,optional"`
+	RuleType string `json:"rule_type,optional" form:"rule_type,optional"`
+	Page     int64  `json:"page,optional" form:"page,optional"`
+	Size     int64  `json:"size,optional" form:"size,optional"`
+}
+
+type QualityRuleListResp struct {
+	List  []QualityRule `json:"list"`
+	Total int64         `json:"total"`
+}
+
 type QuestionsAwardReq struct {
 	ActivityId int64 `json:"actid"`
 	AnswerId   int64 `json:"answerid"`
@@ -392,6 +556,25 @@ type Request struct {
 
 type Response struct {
 	Message string `json:"message"`
+}
+
+type ResultListReq struct {
+	JobId      int64 `json:"job_id,optional" form:"job_id,optional"`
+	PassFilter int64 `json:"pass_filter,optional" form:"pass_filter,optional"`
+	Page       int64 `json:"page,optional" form:"page,optional"`
+	Size       int64 `json:"size,optional" form:"size,optional"`
+}
+
+type ResultListResp struct {
+	List  []QualityResult `json:"list"`
+	Total int64           `json:"total"`
+}
+
+type RunJobResp struct {
+	JobId      int64  `json:"job_id"`
+	TotalRules int64  `json:"total_rules"`
+	Passed     int64  `json:"passed"`
+	LastStatus string `json:"last_status"`
 }
 
 type SearchReq struct {
@@ -430,6 +613,76 @@ type TagAssetReq struct {
 	Beid           int64  `json:"beid,optional"`
 }
 
+type TagDef struct {
+	Id          int64  `json:"id,optional"`
+	ObjectId    int64  `json:"object_id,optional"`
+	TagKey      string `json:"tag_key,optional"`
+	TagName     string `json:"tag_name,optional"`
+	TagType     string `json:"tag_type,optional"`
+	RuleSql     string `json:"rule_sql,optional"`
+	RefreshCron string `json:"refresh_cron,optional"`
+	Status      int32  `json:"status,optional"`
+	Beid        int64  `json:"beid,optional"`
+}
+
+type TagDefIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type TagDefListReq struct {
+	Beid     int64 `json:"beid,optional" form:"beid,optional"`
+	ObjectId int64 `json:"object_id,optional" form:"object_id,optional"`
+	Page     int64 `json:"page,optional" form:"page,optional"`
+	Size     int64 `json:"size,optional" form:"size,optional"`
+}
+
+type TagDefListResp struct {
+	List  []TagDef `json:"list"`
+	Total int64    `json:"total"`
+}
+
+type TagObject struct {
+	Id         int64  `json:"id,optional"`
+	ObjectType string `json:"object_type,optional"`
+	Name       string `json:"name,optional"`
+	DsId       int64  `json:"ds_id,optional"`
+	DbName     string `json:"db_name,optional"`
+	TableName  string `json:"table_name,optional"`
+	PkColumn   string `json:"pk_column,optional"`
+	Beid       int64  `json:"beid,optional"`
+}
+
+type TagObjectListReq struct {
+	Beid       int64  `json:"beid,optional" form:"beid,optional"`
+	ObjectType string `json:"object_type,optional" form:"object_type,optional"`
+	Page       int64  `json:"page,optional" form:"page,optional"`
+	Size       int64  `json:"size,optional" form:"size,optional"`
+}
+
+type TagObjectListResp struct {
+	List  []TagObject `json:"list"`
+	Total int64       `json:"total"`
+}
+
+type TagValueItem struct {
+	TagKey   string `json:"tag_key,optional"`
+	TagName  string `json:"tag_name,optional"`
+	TagValue string `json:"tag_value,optional"`
+	TaggedAt int64  `json:"tagged_at,optional"`
+}
+
+type TaggingReq struct {
+	TagId    int64 `json:"tag_id,optional"`
+	ObjectId int64 `json:"object_id,optional"`
+	Beid     int64 `json:"beid,optional"`
+}
+
+type TaggingResp struct {
+	TaggedRows int64 `json:"tagged_rows"`
+	TagId      int64 `json:"tag_id"`
+}
+
 type TestConnResp struct {
 	Ok        bool   `json:"ok"`
 	LatencyMs int64  `json:"latency_ms"`
@@ -462,6 +715,16 @@ type UpdateDataSourceReq struct {
 	ParamsJson string `json:"params_json,optional"`
 	Status     int32  `json:"status,optional"`
 	Owner      string `json:"owner,optional"`
+}
+
+type UpdateMetricReq struct {
+	Id            int64  `json:"id"`
+	Beid          int64  `json:"beid,optional"`
+	NameCn        string `json:"name_cn,optional"`
+	Expr          string `json:"expr,optional"`
+	DimensionJson string `json:"dimension_json,optional"`
+	Comment       string `json:"comment,optional"`
+	Status        int32  `json:"status,optional"`
 }
 
 type UserReply struct {

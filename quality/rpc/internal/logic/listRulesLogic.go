@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"datacenter/quality/model"
 	"datacenter/quality/rpc/internal/svc"
 	"datacenter/quality/rpc/quality"
 
@@ -23,9 +24,19 @@ func NewListRulesLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListRul
 	}
 }
 
-// 规则列表
+// 规则列表（分页 + rule_type 可选过滤）
 func (l *ListRulesLogic) ListRules(in *quality.RuleListReq) (*quality.RuleListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &quality.RuleListReply{}, nil
+	// 多租户条件必填
+	if in.Beid <= 0 {
+		return nil, model.ErrBeidRequired
+	}
+	list, total, err := l.svcCtx.RuleModel.FindList(l.ctx, in.Beid, in.RuleType, in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	rules := make([]*quality.QualityRule, 0, len(list))
+	for _, r := range list {
+		rules = append(rules, ruleToPb(r))
+	}
+	return &quality.RuleListReply{List: rules, Total: total}, nil
 }

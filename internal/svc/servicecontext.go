@@ -9,9 +9,12 @@ import (
 	"datacenter/internal/config"
 	"datacenter/internal/middleware"
 	"datacenter/metadata/rpc/metadataClient"
+	"datacenter/metric/rpc/metricsvc"
+	"datacenter/quality/rpc/qualityClient"
 	"datacenter/questions/rpc/questionsclient"
 	"datacenter/search/rpc/searchclient"
 	"datacenter/shared"
+	"datacenter/tag/rpc/tagClient"
 	"datacenter/user/rpc/userclient"
 	"datacenter/votes/rpc/votesclient"
 	"fmt"
@@ -42,6 +45,9 @@ type ServiceContext struct {
 	MetadataRpc      metadataClient.Metadata     //元数据（Phase 1）
 	DataSvcRpc       dataSvcClient.DataSvc       //数据服务（Phase 1）
 	CatalogRpc       catalogClient.Catalog       //资产目录（Phase 1）
+	QualityRpc       qualityClient.Quality       //数据质量（Phase 2）
+	MetricRpc        metricsvc.MetricSvc         //数据指标（Phase 2）
+	TagRpc           tagClient.Tag               //数据标签（Phase 2）
 	Cache            cache.Cache
 	RedisConn        *redis.Redis
 }
@@ -67,6 +73,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	mr := metadataClient.NewMetadata(zrpc.MustNewClient(c.MetadataRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	dvr := dataSvcClient.NewDataSvc(zrpc.MustNewClient(c.DataSvcRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	cr2 := catalogClient.NewCatalog(zrpc.MustNewClient(c.CatalogRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
+	qr2 := qualityClient.NewQuality(zrpc.MustNewClient(c.QualityRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
+	mr2 := metricsvc.NewMetricSvc(zrpc.MustNewClient(c.MetricRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
+	tr2 := tagClient.NewTag(zrpc.MustNewClient(c.TagRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	//缓存
 	ca := cache.New(c.CacheRedis, syncx.NewSingleFlight(), cache.NewStat("dc"), shared.ErrNotFound)
 	rcon := redis.MustNewRedis(c.CacheRedis[0].RedisConf)
@@ -85,6 +94,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		MetadataRpc:      mr,
 		DataSvcRpc:       dvr,
 		CatalogRpc:       cr2,
+		QualityRpc:       qr2,
+		MetricRpc:        mr2,
+		TagRpc:           tr2,
 		Cache:            ca,
 		RedisConn:        rcon,
 	}

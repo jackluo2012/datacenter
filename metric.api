@@ -1,0 +1,103 @@
+syntax = "v1"
+
+//数据指标（Phase 2）
+type MetricInfo {
+	Id            int64  `json:"id,optional"`
+	NameEn        string `json:"name_en,optional"`
+	NameCn        string `json:"name_cn,optional"`
+	MetricType    string `json:"metric_type,optional"`
+	BizField      string `json:"biz_field,optional"`
+	AggType       string `json:"agg_type,optional"`
+	Expr          string `json:"expr,optional"`
+	DimensionJson string `json:"dimension_json,optional"`
+	Comment       string `json:"comment,optional"`
+	Owner         string `json:"owner,optional"`
+	Status        int32  `json:"status,optional"`
+}
+
+type CreateMetricReq {
+	NameEn        string `json:"name_en"`
+	NameCn        string `json:"name_cn"`
+	MetricType    string `json:"metric_type"`
+	BizField      string `json:"biz_field,optional"`
+	AggType       string `json:"agg_type,optional"`
+	Expr          string `json:"expr,optional"`
+	DimensionJson string `json:"dimension_json,optional"`
+	Comment       string `json:"comment,optional"`
+	Owner         string `json:"owner,optional"`
+	Beid          int64  `json:"beid,optional"`
+}
+
+type UpdateMetricReq {
+	Id            int64  `json:"id"`
+	Beid          int64  `json:"beid,optional"`
+	NameCn        string `json:"name_cn,optional"`
+	Expr          string `json:"expr,optional"`
+	DimensionJson string `json:"dimension_json,optional"`
+	Comment       string `json:"comment,optional"`
+	Status        int32  `json:"status,optional"`
+}
+
+type MetricIdReq {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type MetricListReq {
+	Beid       int64  `json:"beid,optional" form:"beid,optional"`
+	MetricType string `json:"metric_type,optional" form:"metric_type,optional"`
+	Keyword    string `json:"keyword,optional" form:"keyword,optional"`
+	Page       int64  `json:"page,optional" form:"page,optional"`
+	Size       int64  `json:"size,optional" form:"size,optional"`
+}
+type MetricListResp {
+	List  []MetricInfo `json:"list"`
+	Total int64        `json:"total"`
+}
+
+type BindAtomsReq {
+	DeriveMetricId int64   `json:"derive_metric_id"`
+	AtomMetricIds  []int64 `json:"atom_metric_ids"`
+	Beid           int64   `json:"beid,optional"`
+}
+
+@server(
+	group: metric
+)
+service datacenter-api {
+	@doc(
+		summary: "创建指标"
+	)
+	@handler createMetric
+	post /metric/create (CreateMetricReq) returns (MetricInfo)
+	@doc(
+		summary: "更新指标"
+	)
+	@handler updateMetric
+	post /metric/update (UpdateMetricReq)
+	@doc(
+		summary: "删除指标"
+	)
+	@handler deleteMetric
+	post /metric/delete (MetricIdReq)
+	@doc(
+		summary: "指标详情"
+	)
+	@handler metricInfo
+	get /metric/info (MetricIdReq) returns (MetricInfo)
+	@doc(
+		summary: "指标列表"
+	)
+	@handler metricList
+	get /metric/list (MetricListReq) returns (MetricListResp)
+	@doc(
+		summary: "派生指标绑定原子指标"
+	)
+	@handler bindAtoms
+	post /metric/bind/atoms (BindAtomsReq)
+	@doc(
+		summary: "派生指标引用的原子指标"
+	)
+	@handler metricAtoms
+	get /metric/atoms (MetricIdReq) returns (MetricListResp)
+}

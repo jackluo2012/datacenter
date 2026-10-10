@@ -23,9 +23,14 @@ func NewListMetricsByIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 	}
 }
 
-// 按 id 批量取指标
+// 按 id 批量取指标（model 内自动去重并分片，total 返回实际命中条数）
 func (l *ListMetricsByIdsLogic) ListMetricsByIds(in *metric.MetricListByIdsReq) (*metric.MetricListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &metric.MetricListReply{}, nil
+	if in.Beid <= 0 {
+		return nil, ErrBeidRequired
+	}
+	list, err := l.svcCtx.MetricModel.FindListByIds(l.ctx, in.Beid, in.Ids)
+	if err != nil {
+		return nil, err
+	}
+	return &metric.MetricListReply{List: metricListToPb(list), Total: int64(len(list))}, nil
 }

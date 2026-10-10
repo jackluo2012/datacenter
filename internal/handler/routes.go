@@ -11,8 +11,11 @@ import (
 	datasource "datacenter/internal/handler/datasource"
 	datasvc "datacenter/internal/handler/datasvc"
 	metadata "datacenter/internal/handler/metadata"
+	metric "datacenter/internal/handler/metric"
+	quality "datacenter/internal/handler/quality"
 	questions "datacenter/internal/handler/questions"
 	search "datacenter/internal/handler/search"
+	tag "datacenter/internal/handler/tag"
 	user "datacenter/internal/handler/user"
 	votes "datacenter/internal/handler/votes"
 	"datacenter/internal/svc"
@@ -246,6 +249,100 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
+				// 派生指标引用的原子指标
+				Method:  http.MethodGet,
+				Path:    "/metric/atoms",
+				Handler: metric.MetricAtomsHandler(serverCtx),
+			},
+			{
+				// 派生指标绑定原子指标
+				Method:  http.MethodPost,
+				Path:    "/metric/bind/atoms",
+				Handler: metric.BindAtomsHandler(serverCtx),
+			},
+			{
+				// 创建指标
+				Method:  http.MethodPost,
+				Path:    "/metric/create",
+				Handler: metric.CreateMetricHandler(serverCtx),
+			},
+			{
+				// 删除指标
+				Method:  http.MethodPost,
+				Path:    "/metric/delete",
+				Handler: metric.DeleteMetricHandler(serverCtx),
+			},
+			{
+				// 指标详情
+				Method:  http.MethodGet,
+				Path:    "/metric/info",
+				Handler: metric.MetricInfoHandler(serverCtx),
+			},
+			{
+				// 指标列表
+				Method:  http.MethodGet,
+				Path:    "/metric/list",
+				Handler: metric.MetricListHandler(serverCtx),
+			},
+			{
+				// 更新指标
+				Method:  http.MethodPost,
+				Path:    "/metric/update",
+				Handler: metric.UpdateMetricHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 创建质量任务
+				Method:  http.MethodPost,
+				Path:    "/quality/job/create",
+				Handler: quality.CreateQualityJobHandler(serverCtx),
+			},
+			{
+				// 质量任务列表
+				Method:  http.MethodGet,
+				Path:    "/quality/job/list",
+				Handler: quality.QualityJobListHandler(serverCtx),
+			},
+			{
+				// 执行质量任务
+				Method:  http.MethodPost,
+				Path:    "/quality/job/run",
+				Handler: quality.RunQualityJobHandler(serverCtx),
+			},
+			{
+				// 质量结果列表
+				Method:  http.MethodGet,
+				Path:    "/quality/result/list",
+				Handler: quality.QualityResultListHandler(serverCtx),
+			},
+			{
+				// 创建质量规则
+				Method:  http.MethodPost,
+				Path:    "/quality/rule/create",
+				Handler: quality.CreateQualityRuleHandler(serverCtx),
+			},
+			{
+				// 删除质量规则
+				Method:  http.MethodPost,
+				Path:    "/quality/rule/delete",
+				Handler: quality.DeleteQualityRuleHandler(serverCtx),
+			},
+			{
+				// 质量规则列表
+				Method:  http.MethodGet,
+				Path:    "/quality/rule/list",
+				Handler: quality.QualityRuleListHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
 				// 获取活动的信息
 				Method:  http.MethodGet,
 				Path:    "/questions/activities/info",
@@ -326,6 +423,53 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				},
 			}...,
 		),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 创建标签定义
+				Method:  http.MethodPost,
+				Path:    "/tag/def/create",
+				Handler: tag.CreateTagDefHandler(serverCtx),
+			},
+			{
+				// 删除标签定义
+				Method:  http.MethodPost,
+				Path:    "/tag/def/delete",
+				Handler: tag.DeleteTagDefHandler(serverCtx),
+			},
+			{
+				// 标签定义列表
+				Method:  http.MethodGet,
+				Path:    "/tag/def/list",
+				Handler: tag.TagDefListHandler(serverCtx),
+			},
+			{
+				// 创建标签对象
+				Method:  http.MethodPost,
+				Path:    "/tag/object/create",
+				Handler: tag.CreateTagObjectHandler(serverCtx),
+			},
+			{
+				// 标签对象列表
+				Method:  http.MethodGet,
+				Path:    "/tag/object/list",
+				Handler: tag.TagObjectListHandler(serverCtx),
+			},
+			{
+				// 对象标签画像
+				Method:  http.MethodGet,
+				Path:    "/tag/object/tags",
+				Handler: tag.ObjectTagsHandler(serverCtx),
+			},
+			{
+				// 执行打标
+				Method:  http.MethodPost,
+				Path:    "/tag/tagging",
+				Handler: tag.TaggingHandler(serverCtx),
+			},
+		},
 	)
 
 	server.AddRoutes(

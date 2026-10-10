@@ -23,9 +23,14 @@ func NewListMetricsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListM
 	}
 }
 
-// 指标列表
+// 指标列表：分页 + metric_type 过滤 + keyword 对 name_en/name_cn 模糊匹配
 func (l *ListMetricsLogic) ListMetrics(in *metric.MetricListReq) (*metric.MetricListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &metric.MetricListReply{}, nil
+	if in.Beid <= 0 {
+		return nil, ErrBeidRequired
+	}
+	list, total, err := l.svcCtx.MetricModel.FindList(l.ctx, in.Beid, in.MetricType, in.Keyword, in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	return &metric.MetricListReply{List: metricListToPb(list), Total: total}, nil
 }

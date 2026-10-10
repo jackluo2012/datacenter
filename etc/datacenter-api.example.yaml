@@ -54,3 +54,18 @@ CatalogRpc:
     Hosts:
       - 127.0.0.1:2379
     Key: catalog.rpc
+QualityRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: quality.rpc
+MetricRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: metric.rpc
+TagRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: tag.rpc

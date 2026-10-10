@@ -59,6 +59,12 @@ RpcServerPlus ${getewayPath} metadata
 RpcServerPlus ${getewayPath} datasvc
 #资产目录服务（Phase 1）
 RpcServerPlus ${getewayPath} catalog
+#数据质量服务（Phase 2）
+RpcServerPlus ${getewayPath} quality
+#数据指标服务（Phase 2）
+RpcServerPlus ${getewayPath} metric
+#数据标签服务（Phase 2）
+RpcServerPlus ${getewayPath} tag
 #问答抽奖服务
 RpcServerPlus ${getewayPath} questions
 #Api服务
