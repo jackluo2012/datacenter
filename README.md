@@ -54,6 +54,7 @@ syslog查询、syslog实时查看、登录日志、审计日志
 后端：Java springboot2.7 springcloud/alibaba mybatis plus hutool 等常见技术    
 前端：vue elementui vite 等常见技术    
 中间件：doris，mysql，redis，rabbitmq，minio，zookeeper。    
+开源版后端：Go 1.26 + go-zero v1.10.3 + MySQL 8.4 + Redis 8 + etcd 3.5 + Elasticsearch 7.17    
  
 有演示环境和方案PPT，需要加V:jackluo1989    
 
@@ -94,6 +95,46 @@ syslog查询、syslog实时查看、登录日志、审计日志
 ### 未完成的        
 - [ ] 微信支付宝登陆
 - [ ] 微信支付宝支付
+
+## 数据中台能力（建设中）
+> 项目正从上面的活动业务中台向真正的数据中台演进，Phase 1 四服务已实测闭环，Phase 2 开发中。
+
+### Phase 1 已完成（datasource / metadata / datasvc / catalog）
+- **数据源管理**（datasource）：统一登记各类型数据源，凭证 AES-GCM 加密存储，支持连接探活（时延/错误信息）
+- **元数据管理**（metadata）：基于 information_schema 自动采集库表结构，表级血缘登记与查询，元数据定版快照与多版本对比
+- **数据服务 API**（datasvc，OneService 模式：配置出 API、统一管控）：HMAC 签名校验 → 应用限流 → 授权校验 → 参数白名单 → 结果缓存 → 出口字段脱敏
+- **资产目录**（catalog）：资产分类、资产登记、资产申请与审批
+
+### 快速体验
+```shell
+sh server.sh                  # 1. docker 起依赖（mysql 8.4 / redis 8 / etcd 3.5 / es 7.17）
+mysql -uroot -padmin          # 2. 导入 Phase 1 表结构：source docs/schema/phase1.sql
+sh restart.sh                 # 3. 重启全部服务（网关端口 8887，含 datasource/metadata/datasvc/catalog）
+```
+
+下面给出关键步骤的 curl 示例（网关 `http://127.0.0.1:8887`），完整流程为：登记数据源 → 采集元数据 → 建 API（`/datasvc/api/create`）→ 注册应用 → 授权（`/datasvc/grant`）→ 发布（`/datasvc/api/publish`）→ 执行：
+
+```shell
+# 登记数据源（凭证 AES-GCM 加密入库）
+curl -XPOST http://127.0.0.1:8887/datasource/create -d '{"name":"业务库","type":"mysql","host":"127.0.0.1","port":3306,"db_name":"datacenter","username":"root","password":"admin"}'
+
+# 采集元数据（information_schema → 元数据实体）
+curl -XPOST http://127.0.0.1:8887/metadata/collect -d '{"ds_id":1}'
+
+# 注册应用（返回 app_key/app_secret，secret 仅注册时返回一次）
+curl -XPOST http://127.0.0.1:8887/datasvc/app/register -d '{"name":"demo-app","rate_limit_qps":10}'
+
+# 执行 API（sign = hex(hmac-sha256(app_secret, app_key+ts))，返回 rows_json/cost_ms/cache_hit）
+curl -XPOST http://127.0.0.1:8887/datasvc/execute -d '{"app_key":"<app_key>","ts":"<unix秒>","sign":"<hex签名>","path":"/api/v1/demo","params_json":"{}"}'
+```
+
+### Phase 2 进行中（quality / metric / tag）
+- 数据质量（规则/任务/结果）、数据指标（指标定义/地图）、数据标签（对象/圈群/画像）三服务开发中，表结构见 `docs/schema/phase2.sql`
+
+### 相关文档
+- [docs/ROADMAP.md](docs/ROADMAP.md)：演进路线
+- [docs/UPGRADE.md](docs/UPGRADE.md)：升级记录（Go 1.26 / go-zero v1.10.3 全栈现代化）
+- [docs/PHASE1.md](docs/PHASE1.md)：Phase 1 开发契约（服务端口、表结构、架构约定）
 
 ## 如何运行
 
