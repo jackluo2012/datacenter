@@ -36,14 +36,14 @@ jobs:
       - name: go build
         run: go build ./...
 
-      # 静态检查：过滤存量 pb 值传递（lock by value）告警后判断退出码
+      # 静态检查：过滤存量 pb 值传递（copylocks）告警后判断退出码
       # - 存量 24 处告警见 issue #18，随 pb 重生成一并修复；
-      # - 过滤规则：剔除 "lock by value" 告警行与 "# 包名" 标题行，
-      #   其余任何输出（即新增告警）都视为失败。
+      # - 过滤规则：剔除 copylocks 两类措辞（"lock by value"/"copies lock"）的
+      #   告警行与 "# 包名" 标题行，其余任何输出（即新增告警）都视为失败。
       - name: go vet（过滤存量 pb 值传递告警，见 issue #18）
         run: |
           vet_out=$(go vet ./... 2>&1) || true
-          filtered=$(printf '%s\n' "$vet_out" | grep -v "lock by value" | grep -v "^#" || true)
+          filtered=$(printf '%s\n' "$vet_out" | grep -v "lock by value" | grep -v "copies lock" | grep -v "^#" || true)
           if [ -n "$filtered" ]; then
             printf '%s\n' "$filtered"
             echo "::error::go vet 发现新增告警（存量 pb 值传递告警见 issue #18，不在拦截范围）"
