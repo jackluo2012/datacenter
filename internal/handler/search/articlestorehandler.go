@@ -25,7 +25,7 @@ func ArticleStoreHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 			NewsTitle: req.NewsTitle,
 		}
 		l := logic.NewArticleStoreLogic(r.Context(), ctx)
-		resp, err := l.ArticleStore(sreq)
+		resp, err := l.ArticleStore(&sreq)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

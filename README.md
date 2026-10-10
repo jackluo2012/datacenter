@@ -60,7 +60,7 @@ syslog查询、syslog实时查看、登录日志、审计日志
 
 # 以下为本开源项目正文
 
-# 基于go-zero 框架写的一个数据中台中心
+# datacenter：基于 go-zero 的开源数据中台
 
 > **2026-10 全栈升级**：Go 1.26 + go-zero v1.10.3 + MySQL 8.4 + Redis 8 + etcd 3.5 + ES 7.17，升级明细见 [docs/UPGRADE.md](docs/UPGRADE.md)。
 > 项目正在从"活动业务中台"向真正的数据中台演进，路线图见 [docs/ROADMAP.md](docs/ROADMAP.md)。
@@ -91,13 +91,14 @@ syslog查询、syslog实时查看、登录日志、审计日志
     - [x] 填写中奖人信息    
 - [x] 搜索
     - [x] 基于elasticsearch
+- [x] 数据中台十服务（数据源 / 元数据 / 数据服务 API / 资产目录 / 质量 / 指标 / 标签 / 调度 / SQL IDE / AI 问数），详见 [数据中台能力](#数据中台能力)
 
 ### 未完成的        
 - [ ] 微信支付宝登陆
 - [ ] 微信支付宝支付
 
-## 数据中台能力（建设中）
-> 项目正从上面的活动业务中台向真正的数据中台演进，Phase 1 四服务已实测闭环，Phase 2 开发中。
+## 数据中台能力
+> 项目正从上面的活动业务中台向真正的数据中台演进，Phase 1-4 共 10 个服务已交付。
 
 ### Phase 1 已完成（datasource / metadata / datasvc / catalog）
 - **数据源管理**（datasource）：统一登记各类型数据源，凭证 AES-GCM 加密存储，支持连接探活（时延/错误信息）
@@ -108,8 +109,8 @@ syslog查询、syslog实时查看、登录日志、审计日志
 ### 快速体验
 ```shell
 sh server.sh                  # 1. docker 起依赖（mysql 8.4 / redis 8 / etcd 3.5 / es 7.17）
-mysql -uroot -padmin          # 2. 导入 Phase 1 表结构：source docs/schema/phase1.sql
-sh restart.sh                 # 3. 重启全部服务（网关端口 8887，含 datasource/metadata/datasvc/catalog）
+mysql -uroot -padmin          # 2. 导入表结构：source sql.sql 后依次 source docs/schema/phase1.sql ~ phase3.sql
+sh restart.sh                 # 3. 编译并重启全部服务（网关端口 8887）
 ```
 
 下面给出关键步骤的 curl 示例（网关 `http://127.0.0.1:8887`），完整流程为：登记数据源 → 采集元数据 → 建 API（`/datasvc/api/create`）→ 注册应用 → 授权（`/datasvc/grant`）→ 发布（`/datasvc/api/publish`）→ 执行：
@@ -128,17 +129,54 @@ curl -XPOST http://127.0.0.1:8887/datasvc/app/register -d '{"name":"demo-app","r
 curl -XPOST http://127.0.0.1:8887/datasvc/execute -d '{"app_key":"<app_key>","ts":"<unix秒>","sign":"<hex签名>","path":"/api/v1/demo","params_json":"{}"}'
 ```
 
-### Phase 2 进行中（quality / metric / tag）
-- 数据质量（规则/任务/结果）、数据指标（指标定义/地图）、数据标签（对象/圈群/画像）三服务开发中，表结构见 `docs/schema/phase2.sql`
+### Phase 2 已完成（quality / metric / tag）
+- **数据质量**（quality）：规则定义、质量任务执行、结果查看（`docs/schema/phase2.sql`）
+- **数据指标**（metric）：原子/派生指标定义与指标关系，指标可被数据服务引用成 API
+- **数据标签**（tag）：标签对象、标签定义、标签值（规则圈群、画像）
+
+### Phase 3/4 已交付（job / ide / ai）
+- **调度集成**（job）：同步任务登记与 DolphinScheduler 管控面对接，真实环境联调见 [#21](https://github.com/jackluo2012/datacenter/issues/21)
+- **SQL IDE**（ide）：SQL 脚本在线开发与版本管理
+- **AI 问数**（ai）：语义层（NL2Metric）问数编排与问数日志，LLM 对接待真实环境联调，见 [#23](https://github.com/jackluo2012/datacenter/issues/23)；表结构见 `docs/schema/phase3.sql`
 
 ### 相关文档
 - [docs/ROADMAP.md](docs/ROADMAP.md)：演进路线
 - [docs/UPGRADE.md](docs/UPGRADE.md)：升级记录（Go 1.26 / go-zero v1.10.3 全栈现代化）
 - [docs/PHASE1.md](docs/PHASE1.md)：Phase 1 开发契约（服务端口、表结构、架构约定）
 
+## 项目结构
+
+| 目录 | 职责 |
+|---|---|
+| `datacenter.go` + `internal/` | 网关（:8887）：路由聚合、JWT 登录校验、防越权中间件、跨服务编排 |
+| `datasource/` | 数据源管理：登记、凭证 AES-GCM 加密、连接探活 |
+| `metadata/` | 元数据：库表自动采集、表级血缘、定版快照与版本对比 |
+| `datasvc/` | 数据服务 API（OneService）：配置出 API，签名/限流/授权/缓存/脱敏 |
+| `catalog/` | 资产目录：资产分类、登记、申请与审批 |
+| `quality/` | 数据质量：规则、任务执行、结果 |
+| `metric/` | 数据指标：原子/派生指标定义与关系 |
+| `tag/` | 数据标签：标签对象、定义、圈群画像 |
+| `job/` | 调度集成：同步任务登记、对接 DolphinScheduler 管控面 |
+| `ide/` | SQL IDE：脚本在线开发与版本管理 |
+| `ai/` | AI 问数：语义层（NL2Metric）问数编排 |
+| `user/` `common/` `votes/` `search/` `questions/` | 遗留业务 RPC：登录、公共、投票、搜索、问答抽奖 |
+| `docs/` | [ROADMAP](docs/ROADMAP.md)（路线图）、[UPGRADE](docs/UPGRADE.md)（升级记录）、[PHASE1](docs/PHASE1.md)（开发契约）、[schema](docs/schema/phase1.sql)（phase1~3 表结构） |
+
 ## 如何运行
 
-### 先启动mysql redis etcd 服务
+### 方式一（推荐）：docker compose 一键编排
+```shell
+docker compose build          # 首次构建镜像，比较久
+docker compose up -d          # 4 个依赖（mysql/redis/etcd/es）+ 11 个服务，mysql 健康后按序启动
+docker compose ps             # 查看状态；日志：docker compose logs -f datacenter-api
+```
+- 仅网关 `8887` 对外（http://localhost:8887），其余容器网络内互通；
+- 首次启动空库时自动按文件名顺序执行初始化 SQL：`sql.sql` → `docs/schema/phase1.sql` → `phase2.sql` → `phase3.sql`，无需手工导入；
+- `user/common/votes/search/questions` 五个遗留 RPC 不在编排内（etcd 懒加载，网关可正常启动）：需要 `/user/login` 等接口时，按方式二另起对应服务后再调用。
+
+### 方式二：restart.sh 本地编译启动
+
+先用 docker 启动 mysql redis etcd elasticsearch 服务
 ```shell
 sh server.sh
 ```
@@ -166,10 +204,13 @@ es
     接着导入 sql.sql到 mysql数据中 ,如果有工具自行导入,下面仅参考
 ```
 mysql -uroot -padmin
-mysql > set name utf8
-mysql > create databse datacenter
+mysql > set names utf8
+mysql > create database datacenter
 mysql > use datacenter
 mysql > source sql.sql
+mysql > source docs/schema/phase1.sql
+mysql > source docs/schema/phase2.sql
+mysql > source docs/schema/phase3.sql
 ```
 ### 然后分别把配置文件 ,文件下面分别对应了一个rpc.example.yaml的文件，复制，基本就没有问题
 
@@ -206,3 +247,8 @@ tail -F questions/rpc/nohup.out #问答抽奖
 ```
 
 ### 在postman 导入数据 数据中台中心.postman_collection.json  就可以很愉快的玩耍了
+
+### 登录与鉴权（受保护接口需要 JWT）
+- 先调 `POST /user/login` 获取 `access_token`（登录返回 `access_token` / `access_expire`）；
+- 请求受保护接口时请求头带 `Authorization: Bearer <access_token>`；
+- 防越权接口还需带请求头 `x-user-id: <用户ID>`，且必须与 token 中的 uid 一致（见 `internal/middleware/usercheckmiddleware.go`）。

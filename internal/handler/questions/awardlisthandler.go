@@ -20,7 +20,7 @@ func AwardListHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := logic.NewAwardListLogic(r.Context(), ctx)
-		resp, err := l.AwardList(activitReq)
+		resp, err := l.AwardList(&activitReq)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

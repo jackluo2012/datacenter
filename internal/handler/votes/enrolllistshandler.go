@@ -31,7 +31,7 @@ func EnrollListsHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 			},
 		}
 		l := logic.NewEnrollListsLogic(r.Context(), ctx)
-		resp, err := l.EnrollLists(actreq)
+		resp, err := l.EnrollLists(&actreq)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

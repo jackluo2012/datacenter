@@ -55,13 +55,16 @@ func (l *ArticleInitLogic) ArticleRecursion(gourl string, form url.Values, once 
 		return err
 	}
 	if len(data.Data.Header) > 0 {
-		for _, art := range data.Data.Header {
-			l.svcCtx.ArticeEs.Index(&art)
+		// pb message 内含 sync.Mutex，range 值切片会拷贝锁（copylocks），
+		// 改为索引遍历取元素地址（issue #18）
+		for i := range data.Data.Header {
+			l.svcCtx.ArticeEs.Index(&data.Data.Header[i])
 		}
 	}
 	if len(data.Data.Normal) > 0 {
-		for _, art := range data.Data.Normal {
-			id, err := l.svcCtx.ArticeEs.Index(&art)
+		// 同上：索引遍历避免 range 拷贝 pb message（issue #18）
+		for i := range data.Data.Normal {
+			id, err := l.svcCtx.ArticeEs.Index(&data.Data.Normal[i])
 			if err != nil {
 				logx.Info("err==", err)
 			}

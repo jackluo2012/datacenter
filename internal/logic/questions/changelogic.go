@@ -23,8 +23,9 @@ func NewChangeLogic(ctx context.Context, svcCtx *svc.ServiceContext) ChangeLogic
 	}
 }
 
-func (l *ChangeLogic) Change(in questions.QuestionsAnswerReq) (*questions.QuestionsAnswerResp, error) {
+// pb message 内含 sync.Mutex，按值拷贝不安全（copylocks），统一改为指针传递（issue #18）
+func (l *ChangeLogic) Change(in *questions.QuestionsAnswerReq) (*questions.QuestionsAnswerResp, error) {
 
-	return l.svcCtx.QuestionsRpc.PostQuestionsChange(l.ctx, &in)
+	return l.svcCtx.QuestionsRpc.PostQuestionsChange(l.ctx, in)
 
 }

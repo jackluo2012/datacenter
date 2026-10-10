@@ -22,7 +22,7 @@ func ActivityInfoHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 
 		l := logic.NewActivityInfoLogic(r.Context(), ctx)
 
-		resp, err := l.ActivityInfo(activitReq)
+		resp, err := l.ActivityInfo(&activitReq)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

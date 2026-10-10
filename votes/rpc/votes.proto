@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package votes;
 
+option go_package = "./votes";
+
 message ActidReq{
   int64 actid=1;
   LimitReq limit=2;

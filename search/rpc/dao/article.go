@@ -104,11 +104,13 @@ func (aes *ArticelES) Search(search *searchclient.SearchReq) ([]*searchclient.Ar
 	if err != nil {
 		return searcharticleLists, err
 	}
-	var articel searchclient.ArticleReq
-	for _, item := range searchResult.Each(reflect.TypeOf(articel)) {
-		t, ok := item.(searchclient.ArticleReq)
-		if ok {
-			searcharticleLists = append(searcharticleLists, &t)
+	// pb message 内含 sync.Mutex，不能按值反射取类型，也不能按值断言（copylocks）：
+	// 给 Each 传指针类型（其内部用 json 解码到 **T，会自动分配中间指针），
+	// 返回元素即为 *ArticleReq，断言取指针即可，全程无锁拷贝（issue #18）
+	eachType := reflect.TypeOf((*searchclient.ArticleReq)(nil))
+	for _, item := range searchResult.Each(eachType) {
+		if t, ok := item.(*searchclient.ArticleReq); ok && t != nil {
+			searcharticleLists = append(searcharticleLists, t)
 		}
 	}
 

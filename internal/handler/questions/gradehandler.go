@@ -25,7 +25,7 @@ func GradeHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 			Auid:  auid,
 		}
 		l := logic.NewGradeLogic(r.Context(), ctx)
-		resp, err := l.Grade(in)
+		resp, err := l.Grade(&in)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

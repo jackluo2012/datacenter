@@ -24,11 +24,12 @@ func NewEnrollListsLogic(ctx context.Context, svcCtx *svc.ServiceContext) Enroll
 	}
 }
 
-func (l *EnrollListsLogic) EnrollLists(req votesclient.ActidReq) ([]*votes.EnrollResp, error) {
+// pb message 内含 sync.Mutex，按值拷贝不安全（copylocks），统一改为指针传递（issue #18）
+func (l *EnrollListsLogic) EnrollLists(req *votesclient.ActidReq) ([]*votes.EnrollResp, error) {
 
 	// todo: add your logic here and delete this line
 
-	repl, err := l.svcCtx.VotesRpc.GetEnrollList(l.ctx, &req)
+	repl, err := l.svcCtx.VotesRpc.GetEnrollList(l.ctx, req)
 	if err != nil {
 		return nil, err
 	}

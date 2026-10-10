@@ -23,6 +23,7 @@ func NewActivityIcrViewLogic(ctx context.Context, svcCtx *svc.ServiceContext) Ac
 	}
 }
 
-func (l *ActivityIcrViewLogic) ActivityIcrView(req votes.ActInfoReq) (*votes.ActInfoResp, error) {
-	return l.svcCtx.VotesRpc.IncrActiviView(l.ctx, &req)
+// pb message 内含 sync.Mutex，按值拷贝不安全（copylocks），统一改为指针传递（issue #18）
+func (l *ActivityIcrViewLogic) ActivityIcrView(req *votes.ActInfoReq) (*votes.ActInfoResp, error) {
+	return l.svcCtx.VotesRpc.IncrActiviView(l.ctx, req)
 }

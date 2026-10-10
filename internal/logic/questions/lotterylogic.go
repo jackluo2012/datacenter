@@ -23,6 +23,7 @@ func NewLotteryLogic(ctx context.Context, svcCtx *svc.ServiceContext) LotteryLog
 	}
 }
 
-func (l *LotteryLogic) Lottery(in questionsclient.ConvertReq) (*questionsclient.ConvertResp, error) {
-	return l.svcCtx.QuestionsRpc.PostConvert(l.ctx, &in)
+// pb message 内含 sync.Mutex，按值拷贝不安全（copylocks），统一改为指针传递（issue #18）
+func (l *LotteryLogic) Lottery(in *questionsclient.ConvertReq) (*questionsclient.ConvertResp, error) {
+	return l.svcCtx.QuestionsRpc.PostConvert(l.ctx, in)
 }

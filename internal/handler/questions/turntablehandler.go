@@ -37,7 +37,7 @@ func TurntableHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := logic.NewTurntableLogic(r.Context(), ctx)
-		resp, err := l.Turntable(in)
+		resp, err := l.Turntable(&in)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

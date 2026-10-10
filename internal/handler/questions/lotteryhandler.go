@@ -26,7 +26,7 @@ func LotteryHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 		ptyid, _ := json.Number(fmt.Sprintf("%v", r.Context().Value("ptyid"))).Int64()
 		beid, _ := json.Number(fmt.Sprintf("%v", r.Context().Value("beid"))).Int64()
 		l := logic.NewLotteryLogic(r.Context(), ctx)
-		resp, err := l.Lottery(questionsclient.ConvertReq{
+		resp, err := l.Lottery(&questionsclient.ConvertReq{
 			Uid:       uid,
 			Auid:      auid,
 			LotteryId: req.LotteryId,

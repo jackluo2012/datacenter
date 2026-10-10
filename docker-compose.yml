@@ -1,9 +1,12 @@
 # ============================================================
 # 数据中台一键编排：4 个依赖（mysql/redis/etcd/elasticsearch）+ 11 个服务
+#                 + 2 个外挂 profile 服务（viz=DataEase / ds=DolphinScheduler）
 #
 # 用法：
 #   docker compose build          # 首次构建镜像（见 Dockerfile）
-#   docker compose up -d          # 启动全部（mysql 健康后才会起服务）
+#   docker compose up -d          # 启动全部（mysql 健康后才会起服务，不含外挂）
+#   docker compose --profile viz up -d dataease        # 外挂：可视化 DataEase
+#   docker compose --profile ds  up -d dolphinscheduler # 外挂：调度联调 DS
 #   docker compose ps / logs -f datacenter-api
 #
 # 访问：仅网关 8887 对外（http://localhost:8887），其余容器网络内互通；
@@ -18,6 +21,20 @@
 # 4. 网关还注册了 user/common/votes/search/questions 五个遗留 RPC，
 #    不在本编排内（etcd 发现懒加载，网关可正常启动）；如需 /user/login
 #    等接口请按 restart.sh 另起对应服务后再调用。
+# 5. 外挂 DataEase（profiles: viz，Phase 4）：可视化不自研（ROADMAP 决策），
+#    外挂官方镜像。登录入口 http://localhost:8088（默认 admin/DataEase@123456，
+#    首次登录后改密）。把本平台数据接入 DataEase 的路径：
+#      a) 直连库（v1.18 推荐）：数据源类型选 MySQL，主机名 mysql、端口 3306
+#         （dataease 与平台同在 datacenter 网络，直接填服务名即可）；
+#      b) API 数据源：把数据服务 API（dc_api）当数据源，指向网关
+#         http://datacenter-api:8887/datasvc/execute（POST JSON：
+#         app_key/ts/sign/path/params_json，sign=hex(hmac-sha256(app_secret,
+#         app_key+ts))，返回 rows_json）。注意 API 类型数据源为 DataEase
+#         v2.x 内置能力，v1.18 需走 a) 直连或 SQL 数据集。
+# 6. 外挂 DolphinScheduler（profiles: ds，Phase 3 联调）：standalone 镜像内嵌
+#    zookeeper + H2 库，登录 http://localhost:12345/dolphinscheduler/ui
+#    （admin/dolphinscheduler123），供 job-rpc 经 OpenAPI 部署/触发同步任务，
+#    联调环境变量见下方 job 服务注释。
 # ============================================================
 name: datacenter
 
@@ -163,6 +180,23 @@ services:
     command: ["./tag-server", "-f", "/app/etc/tag.yaml"]
 
   # -------------------- Phase 3 --------------------
+  # job-rpc（job-server）联调 DolphinScheduler 说明（先 --profile ds 启动 dolphinscheduler）：
+  #   - DS 集成不走 yaml 配置（脚手架生成的 config 结构体不可改），从环境变量读取
+  #     （见 job/rpc/internal/logic/dsclient.go）：
+  #       DS_BASE_URL  DS OpenAPI 基址 = http://dolphinscheduler:12345/dolphinscheduler
+  #       DS_TOKEN     DS「安全中心 -> 令牌管理」创建的 API Token
+  #       DS_PROJECT   目标项目（项目编码或项目名，如 datacenter）
+  #   - 联调时给本服务追加 environment（覆盖模板的 environment 时需保留 TZ），例如：
+  #       environment:
+  #         TZ: Asia/Shanghai
+  #         DS_BASE_URL: http://dolphinscheduler:12345/dolphinscheduler
+  #         DS_TOKEN: <在 DS UI 创建的 token>
+  #         DS_PROJECT: datacenter
+  #     然后 `docker compose up -d job` 重建生效（环境变量在容器创建时固化）。
+  #   - 网络：job 与 dolphinscheduler 同在 datacenter 网络，容器内用服务名
+  #     dolphinscheduler:12345 即可直连。若希望 job 随 ds profile 一起启停，
+  #     给本服务加 profiles: ["ds"] 即可（与本注释等效，同网络服务名互通）；
+  #     默认编排保持 job 常驻、不改服务定义结构。
   job:
     <<: *go-service
     container_name: datacenter-job
@@ -214,6 +248,118 @@ services:
         condition: service_started
       ai:
         condition: service_started
+
+  # -------------------- 外挂 1：DataEase 可视化（Phase 4，--profile viz 激活） --------------------
+  # 可视化不自研：外挂 DataEase 官方镜像（v1.18 稳定线最后一版 v1.18.27）。
+  # 注意：官方镜像仅发布在 DataEase 阿里云镜像仓库（Docker Hub 无 dataease/dataease
+  # 官方库，2026-10 已核实），故 image 用完整仓库地址。
+  # 端口：宿主机 8088 -> 容器 8081（DataEase 固定监听 8081，镜像自带
+  # HEALTHCHECK nc 8081，无需在此重复定义）；登录入口 http://localhost:8088。
+  # 元数据库：v1.18 官方镜像不内嵌库（官方安装器配套独立 mysql 容器），本编排
+  # 复用平台 mysql，库名 dataease（首次需一次性 CREATE DATABASE，见
+  # docs/INTEGRATION.md）；连接配置经容器内 conf/dataease.properties
+  # （官方安装器同款机制，见 entrypoint）+ Spring 环境变量双通道注入。
+  dataease:
+    image: registry.cn-qingdao.aliyuncs.com/dataease/dataease:v1.18.27
+    container_name: datacenter-dataease
+    profiles: ["viz"]
+    restart: unless-stopped
+    ports:
+      - "8088:8081"
+    environment:
+      TZ: Asia/Shanghai
+      # Spring Boot 环境变量注入（与下方 dataease.properties 内容一致，双保险：
+      # 即使配置文件加载机制变化，环境变量仍生效）
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dataease?useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: admin
+      ENGINE_MODE: simple
+      LOGGER_LEVEL: INFO
+      # Kettle(carte)/Doris 仅"抽取数据集/引擎加速"用，纯直连可视化不需要，
+      # 先给占位值避免启动期缺配置；后续接 Doris 时改 DORIS_HOST 即可
+      CARTE_HOST: 127.0.0.1
+      CARTE_PORT: "18080"
+      CARTE_USER: cluster
+      CARTE_PASSWORD: cluster
+      DORIS_HOST: 127.0.0.1
+      DORIS_PORT: "9030"
+      DORIS_HTTPPORT: "8030"
+      DORIS_DB: dataease
+      DORIS_USER: root
+      DORIS_PASSWORD: ""
+      DATAEASE_INIT_PASSWORD: DataEase123456
+      DATAEASE_LOGIN_TIMEOUT: "480"
+    # 启动前生成安装器同款 conf/dataease.properties（数据面配置落盘可查），
+    # 完成后交还原镜像启动脚本
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        mkdir -p /opt/dataease/conf /opt/dataease/logs /opt/dataease/data
+        cat > /opt/dataease/conf/dataease.properties <<'EOF'
+        spring.datasource.url=jdbc:mysql://mysql:3306/dataease?useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+        spring.datasource.username=root
+        spring.datasource.password=admin
+        engine_mode=simple
+        logger.level=INFO
+        carte.host=127.0.0.1
+        carte.port=18080
+        carte.user=cluster
+        carte.passwd=cluster
+        doris.db=dataease
+        doris.user=root
+        doris.password=
+        doris.host=127.0.0.1
+        doris.port=9030
+        doris.httpPort=8030
+        dataease.init_password=DataEase123456
+        dataease.login_timeout=480
+        EOF
+        exec /deployments/run-java.sh
+    volumes:
+      # 配置/日志/业务数据持久化到宿主机 ./data/dataease（子目录挂载对齐官方安装器，
+      # 保留镜像内 /opt/dataease/data/feature 等内置内容不被覆盖）
+      - ./data/dataease/conf:/opt/dataease/conf
+      - ./data/dataease/logs:/opt/dataease/logs
+      - ./data/dataease/data/kettle:/opt/dataease/data/kettle
+      - ./data/dataease/data/static-resource:/opt/dataease/data/static-resource
+      - ./data/dataease/data/custom:/opt/dataease/data/custom
+      - ./data/dataease/data/business:/opt/dataease/data/business
+      - ./data/dataease/data/ehcache:/opt/dataease/data/ehcache
+      - ./data/dataease/custom-drivers:/opt/dataease/custom-drivers
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - datacenter
+
+  # -------------------- 外挂 2：DolphinScheduler 联调（Phase 3，--profile ds 激活） --------------------
+  # standalone 镜像：单进程内置 master/worker/api/alert + 内嵌 zookeeper + 内嵌 H2
+  # （因此无需 POSTGRESQL_* 等外部数据库环境变量）。登录入口：
+  #   http://localhost:12345/dolphinscheduler/ui （admin/dolphinscheduler123）
+  # OpenAPI 基址（容器网络内）：http://dolphinscheduler:12345/dolphinscheduler
+  # 注意：standalone 元数据为 H2 内存库，容器重启即丢失（项目/工作流/令牌需重建）；
+  # 下挂 volume 仅持久化运行日志/临时文件。生产化请另用 DB 持久化部署（非本联调范围）。
+  dolphinscheduler:
+    image: apache/dolphinscheduler-standalone-server:3.2.1
+    container_name: datacenter-dolphinscheduler
+    profiles: ["ds"]
+    restart: unless-stopped
+    ports:
+      - "12345:12345"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./data/dolphinscheduler:/opt/dolphinscheduler/logs
+    healthcheck:
+      # 镜像基于 JDK8（无 curl），用 bash /dev/tcp 探 API 端口（官方 compose 同款思路）
+      test: ["CMD-SHELL", "cat < /dev/null > /dev/tcp/127.0.0.1/12345"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+    networks:
+      - datacenter
 
 networks:
   datacenter:

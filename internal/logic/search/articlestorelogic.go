@@ -24,8 +24,9 @@ func NewArticleStoreLogic(ctx context.Context, svcCtx *svc.ServiceContext) Artic
 	}
 }
 
-func (l *ArticleStoreLogic) ArticleStore(req searchclient.ArticleReq) (*types.ArticleReq, error) {
-	_, err := l.svcCtx.SearchRpc.ArticleStore(l.ctx, &req)
+// pb message 内含 sync.Mutex，按值拷贝不安全（copylocks），统一改为指针传递（issue #18）
+func (l *ArticleStoreLogic) ArticleStore(req *searchclient.ArticleReq) (*types.ArticleReq, error) {
+	_, err := l.svcCtx.SearchRpc.ArticleStore(l.ctx, req)
 	if err != nil {
 		return nil, err
 	}

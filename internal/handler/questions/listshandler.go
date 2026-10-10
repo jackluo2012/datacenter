@@ -20,7 +20,7 @@ func ListsHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := logic.NewListsLogic(r.Context(), ctx)
-		resp, err := l.Lists(activitReq)
+		resp, err := l.Lists(&activitReq)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

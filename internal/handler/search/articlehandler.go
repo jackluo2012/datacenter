@@ -24,7 +24,7 @@ func ArticleHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 			Keyword: query.Get("keyword"),
 		}
 		l := logic.NewArticleLogic(r.Context(), ctx)
-		resp, err := l.Article(req)
+		resp, err := l.Article(&req)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

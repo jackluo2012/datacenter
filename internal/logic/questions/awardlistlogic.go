@@ -23,8 +23,9 @@ func NewAwardListLogic(ctx context.Context, svcCtx *svc.ServiceContext) AwardLis
 	}
 }
 
-func (l *AwardListLogic) AwardList(in questionsclient.ActivitiesReq) (*questionsclient.AwardListResp, error) {
+// pb message 内含 sync.Mutex，按值拷贝不安全（copylocks），统一改为指针传递（issue #18）
+func (l *AwardListLogic) AwardList(in *questionsclient.ActivitiesReq) (*questionsclient.AwardListResp, error) {
 
-	return l.svcCtx.QuestionsRpc.GetAwardList(l.ctx, &in)
+	return l.svcCtx.QuestionsRpc.GetAwardList(l.ctx, in)
 
 }

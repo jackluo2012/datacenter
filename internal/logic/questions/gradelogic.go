@@ -24,8 +24,9 @@ func NewGradeLogic(ctx context.Context, svcCtx *svc.ServiceContext) GradeLogic {
 	}
 }
 
-func (l *GradeLogic) Grade(in questionsclient.GradeReq) (*questions.QuestionsAnswerResp, error) {
+// pb message 内含 sync.Mutex，按值拷贝不安全（copylocks），统一改为指针传递（issue #18）
+func (l *GradeLogic) Grade(in *questionsclient.GradeReq) (*questions.QuestionsAnswerResp, error) {
 	// todo: add your logic here and delete this line
-	return l.svcCtx.QuestionsRpc.GetQuestionsGrade(l.ctx, &in)
+	return l.svcCtx.QuestionsRpc.GetQuestionsGrade(l.ctx, in)
 
 }

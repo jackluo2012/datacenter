@@ -20,7 +20,7 @@ func ActivityIcrViewHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := logic.NewActivityIcrViewLogic(r.Context(), ctx)
-		resp, err := l.ActivityIcrView(activitReq)
+		resp, err := l.ActivityIcrView(&activitReq)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

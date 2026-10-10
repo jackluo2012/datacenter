@@ -37,7 +37,7 @@ func ChangeHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := logic.NewChangeLogic(r.Context(), ctx)
-		resp, err := l.Change(in)
+		resp, err := l.Change(&in)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {
