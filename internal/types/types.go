@@ -97,6 +97,28 @@ type ArticleReq struct {
 	ImageUrl  string `json:"ImageUrl"`
 }
 
+type AskAndRunReq struct {
+	Question      string `json:"question"`
+	Beid          int64  `json:"beid,optional"`
+	MaxCandidates int32  `json:"max_candidates,optional"`
+	AutoRun       bool   `json:"auto_run,optional"`      //生成 SQL 后经 ide 安全闸自动执行
+	DatasourceId  int64  `json:"datasource_id,optional"` //auto_run 时必填：执行目标库
+	MaxRows       int32  `json:"max_rows,optional"`      //默认 20,上限 100
+}
+
+type AskAndRunResp struct {
+	Candidates   []Candidate `json:"candidates"`
+	LlmEnabled   bool        `json:"llm_enabled"`
+	GeneratedSql string      `json:"generated_sql,optional"`
+	Answer       string      `json:"answer"`
+	CostMs       int64       `json:"cost_ms"`
+	Executed     bool        `json:"executed"`
+	ColumnsJson  string      `json:"columns_json,optional"`
+	RowsJson     string      `json:"rows_json,optional"`
+	RowCount     int64       `json:"row_count"`
+	RunError     string      `json:"run_error,optional"`
+}
+
 type AskReq struct {
 	Question      string `json:"question"`
 	Beid          int64  `json:"beid,optional"`

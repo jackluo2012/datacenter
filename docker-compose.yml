@@ -1,0 +1,220 @@
+# ============================================================
+# 数据中台一键编排：4 个依赖（mysql/redis/etcd/elasticsearch）+ 11 个服务
+#
+# 用法：
+#   docker compose build          # 首次构建镜像（见 Dockerfile）
+#   docker compose up -d          # 启动全部（mysql 健康后才会起服务）
+#   docker compose ps / logs -f datacenter-api
+#
+# 访问：仅网关 8887 对外（http://localhost:8887），其余容器网络内互通；
+#       数据库等依赖如需从宿主机直连，可临时 `docker compose port` 或
+#       自行加端口映射。
+#
+# 说明：
+# 1. 全部服务共用 Dockerfile 构建出的同一镜像，靠不同 command 启动；
+# 2. 各服务配置来自 deploy/docker/*.yaml（主机名即 compose 服务名）；
+# 3. 初始化 SQL 首次启动空库时按文件名顺序自动执行：
+#      01-schema.sql(./sql.sql) -> 02-phase1 -> 03-phase2 -> 04-phase3；
+# 4. 网关还注册了 user/common/votes/search/questions 五个遗留 RPC，
+#    不在本编排内（etcd 发现懒加载，网关可正常启动）；如需 /user/login
+#    等接口请按 restart.sh 另起对应服务后再调用。
+# ============================================================
+name: datacenter
+
+# Go 服务公共模板：同镜像 + 等依赖健康后启动
+x-go-service: &go-service
+  image: datacenter:latest
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  environment:
+    TZ: Asia/Shanghai
+  depends_on:
+    mysql:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+    etcd:
+      condition: service_healthy
+  networks:
+    - datacenter
+
+services:
+  # -------------------- 依赖 --------------------
+  mysql:
+    image: mysql:8.4
+    container_name: datacenter-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      # initdb 脚本默认落在该库（sql.sql/phase*.sql 内无 CREATE DATABASE）
+      MYSQL_DATABASE: datacenter
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    volumes:
+      # 数据持久化到宿主机 ./data/mysql
+      - ./data/mysql:/var/lib/mysql
+      # 初始化 SQL：docker-entrypoint-initdb.d 按文件名顺序自动执行
+      - ./sql.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./docs/schema/phase1.sql:/docker-entrypoint-initdb.d/02-phase1.sql:ro
+      - ./docs/schema/phase2.sql:/docker-entrypoint-initdb.d/03-phase2.sql:ro
+      - ./docs/schema/phase3.sql:/docker-entrypoint-initdb.d/04-phase3.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-padmin"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - datacenter
+
+  redis:
+    image: redis:8-alpine
+    container_name: datacenter-redis
+    command: ["redis-server", "--requirepass", "admin"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "admin", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - datacenter
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.21
+    container_name: datacenter-etcd
+    environment:
+      ETCDCTL_API: "3"
+    command:
+      - /usr/local/bin/etcd
+      - --name=s1
+      - --data-dir=/etcd-data
+      # 单节点：client 口对所有网卡，advertise 用服务名（容器内互访）
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://etcd:2379
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-advertise-peer-urls=http://etcd:2380
+      - --initial-cluster=s1=http://etcd:2380
+      - --initial-cluster-state=new
+      - --initial-cluster-token=datacenter-etcd
+    healthcheck:
+      test: ["CMD", "etcdctl", "--endpoints=http://127.0.0.1:2379", "endpoint", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - datacenter
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.28
+    container_name: datacenter-es
+    environment:
+      # 单节点 + 开启安全（elastic/admin），供数据源/检索类场景使用
+      discovery.type: single-node
+      xpack.security.enabled: "true"
+      ELASTIC_PASSWORD: admin
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -u elastic:admin http://127.0.0.1:9200/_cluster/health | grep -q status"]
+      interval: 15s
+      timeout: 10s
+      retries: 12
+      start_period: 60s
+    networks:
+      - datacenter
+
+  # -------------------- Phase 1：数据中台服务 --------------------
+  datasource:
+    <<: *go-service
+    container_name: datacenter-datasource
+    command: ["./datasource-server", "-f", "/app/etc/datasource.yaml"]
+
+  metadata:
+    <<: *go-service
+    container_name: datacenter-metadata
+    command: ["./metadata-server", "-f", "/app/etc/metadata.yaml"]
+
+  datasvc:
+    <<: *go-service
+    container_name: datacenter-datasvc
+    command: ["./datasvc-server", "-f", "/app/etc/datasvc.yaml"]
+
+  catalog:
+    <<: *go-service
+    container_name: datacenter-catalog
+    command: ["./catalog-server", "-f", "/app/etc/catalog.yaml"]
+
+  # -------------------- Phase 2 --------------------
+  quality:
+    <<: *go-service
+    container_name: datacenter-quality
+    command: ["./quality-server", "-f", "/app/etc/quality.yaml"]
+
+  metric:
+    <<: *go-service
+    container_name: datacenter-metric
+    command: ["./metric-server", "-f", "/app/etc/metric.yaml"]
+
+  tag:
+    <<: *go-service
+    container_name: datacenter-tag
+    command: ["./tag-server", "-f", "/app/etc/tag.yaml"]
+
+  # -------------------- Phase 3 --------------------
+  job:
+    <<: *go-service
+    container_name: datacenter-job
+    command: ["./job-server", "-f", "/app/etc/job.yaml"]
+
+  ide:
+    <<: *go-service
+    container_name: datacenter-ide
+    command: ["./ide-server", "-f", "/app/etc/ide.yaml"]
+
+  # -------------------- Phase 4 --------------------
+  ai:
+    <<: *go-service
+    container_name: datacenter-ai
+    command: ["./ai-server", "-f", "/app/etc/ai.yaml"]
+
+  # -------------------- 网关（唯一对外端口） --------------------
+  datacenter-api:
+    <<: *go-service
+    container_name: datacenter-api
+    command: ["./datacenter-api", "-f", "/app/etc/datacenter-api.docker.yaml"]
+    ports:
+      - "8887:8887"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      etcd:
+        condition: service_healthy
+      # 10 个 RPC 注册到 etcd 后再起网关（服务发现懒加载，此为顺序优化）
+      datasource:
+        condition: service_started
+      metadata:
+        condition: service_started
+      datasvc:
+        condition: service_started
+      catalog:
+        condition: service_started
+      quality:
+        condition: service_started
+      metric:
+        condition: service_started
+      tag:
+        condition: service_started
+      job:
+        condition: service_started
+      ide:
+        condition: service_started
+      ai:
+        condition: service_started
+
+networks:
+  datacenter:
+    driver: bridge

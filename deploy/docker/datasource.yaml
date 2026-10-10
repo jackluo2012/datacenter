@@ -1,0 +1,17 @@
+# ============================================================
+# 数据源服务容器化配置（docker compose 专用）
+# 与 datasource/rpc/etc/datasource.example.yaml 对齐，主机名改为 compose 服务名：
+#   127.0.0.1 -> mysql / etcd（容器网络内服务名互访）
+# ============================================================
+Name: datasource.rpc
+Log:
+  Mode: console
+ListenOn: 0.0.0.0:8085
+Etcd:
+  Hosts:
+    - etcd:2379
+  Key: datasource.rpc
+Mysql:
+  DataSource: root:admin@tcp(mysql:3306)/datacenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+# AES-GCM 密钥（32 字节），数据源连接口令加密存储
+EncryptKey: 0123456789abcdef0123456789abcdef

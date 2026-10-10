@@ -28,3 +28,9 @@ func (s *AiServer) Ask(ctx context.Context, in *ai.AskReq) (*ai.AskReply, error)
 	l := logic.NewAskLogic(ctx, s.svcCtx)
 	return l.Ask(in)
 }
+
+// 问数并执行：Ask 全流程复用，auto_run=true 时把生成 SQL 先存为临时脚本，
+func (s *AiServer) AskAndRun(ctx context.Context, in *ai.AskAndRunReq) (*ai.AskAndRunReply, error) {
+	l := logic.NewAskAndRunLogic(ctx, s.svcCtx)
+	return l.AskAndRun(in)
+}

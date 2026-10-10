@@ -14,13 +14,17 @@ import (
 )
 
 type (
-	AskReply  = ai.AskReply
-	AskReq    = ai.AskReq
-	Candidate = ai.Candidate
+	AskAndRunReply = ai.AskAndRunReply
+	AskAndRunReq   = ai.AskAndRunReq
+	AskReply       = ai.AskReply
+	AskReq         = ai.AskReq
+	Candidate      = ai.Candidate
 
 	Ai interface {
 		// AI 问数：语义检索(元数据+指标) → 命中候选 → (可选 LLM) 生成 SQL 与回答，全程审计
 		Ask(ctx context.Context, in *AskReq, opts ...grpc.CallOption) (*AskReply, error)
+		// 问数并执行：Ask 全流程复用，auto_run=true 时把生成 SQL 先存为临时脚本，
+		AskAndRun(ctx context.Context, in *AskAndRunReq, opts ...grpc.CallOption) (*AskAndRunReply, error)
 	}
 
 	defaultAi struct {
@@ -38,4 +42,10 @@ func NewAi(cli zrpc.Client) Ai {
 func (m *defaultAi) Ask(ctx context.Context, in *AskReq, opts ...grpc.CallOption) (*AskReply, error) {
 	client := ai.NewAiClient(m.cli.Conn())
 	return client.Ask(ctx, in, opts...)
+}
+
+// 问数并执行：Ask 全流程复用，auto_run=true 时把生成 SQL 先存为临时脚本，
+func (m *defaultAi) AskAndRun(ctx context.Context, in *AskAndRunReq, opts ...grpc.CallOption) (*AskAndRunReply, error) {
+	client := ai.NewAiClient(m.cli.Conn())
+	return client.AskAndRun(ctx, in, opts...)
 }

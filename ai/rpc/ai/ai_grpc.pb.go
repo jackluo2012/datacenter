@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Ai_Ask_FullMethodName = "/ai.Ai/Ask"
+	Ai_Ask_FullMethodName       = "/ai.Ai/Ask"
+	Ai_AskAndRun_FullMethodName = "/ai.Ai/AskAndRun"
 )
 
 // AiClient is the client API for Ai service.
@@ -28,6 +29,9 @@ const (
 type AiClient interface {
 	//AI 问数：语义检索(元数据+指标) → 命中候选 → (可选 LLM) 生成 SQL 与回答，全程审计
 	Ask(ctx context.Context, in *AskReq, opts ...grpc.CallOption) (*AskReply, error)
+	//问数并执行：Ask 全流程复用，auto_run=true 时把生成 SQL 先存为临时脚本，
+	//再经 ide-rpc 安全闸(仅 SELECT、行数截断)真实执行并返回数据；执行失败降级写入 run_error
+	AskAndRun(ctx context.Context, in *AskAndRunReq, opts ...grpc.CallOption) (*AskAndRunReply, error)
 }
 
 type aiClient struct {
@@ -48,12 +52,25 @@ func (c *aiClient) Ask(ctx context.Context, in *AskReq, opts ...grpc.CallOption)
 	return out, nil
 }
 
+func (c *aiClient) AskAndRun(ctx context.Context, in *AskAndRunReq, opts ...grpc.CallOption) (*AskAndRunReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AskAndRunReply)
+	err := c.cc.Invoke(ctx, Ai_AskAndRun_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AiServer is the server API for Ai service.
 // All implementations must embed UnimplementedAiServer
 // for forward compatibility.
 type AiServer interface {
 	//AI 问数：语义检索(元数据+指标) → 命中候选 → (可选 LLM) 生成 SQL 与回答，全程审计
 	Ask(context.Context, *AskReq) (*AskReply, error)
+	//问数并执行：Ask 全流程复用，auto_run=true 时把生成 SQL 先存为临时脚本，
+	//再经 ide-rpc 安全闸(仅 SELECT、行数截断)真实执行并返回数据；执行失败降级写入 run_error
+	AskAndRun(context.Context, *AskAndRunReq) (*AskAndRunReply, error)
 	mustEmbedUnimplementedAiServer()
 }
 
@@ -66,6 +83,9 @@ type UnimplementedAiServer struct{}
 
 func (UnimplementedAiServer) Ask(context.Context, *AskReq) (*AskReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method Ask not implemented")
+}
+func (UnimplementedAiServer) AskAndRun(context.Context, *AskAndRunReq) (*AskAndRunReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method AskAndRun not implemented")
 }
 func (UnimplementedAiServer) mustEmbedUnimplementedAiServer() {}
 func (UnimplementedAiServer) testEmbeddedByValue()            {}
@@ -106,6 +126,24 @@ func _Ai_Ask_Handler(srv interface{}, ctx context.Context, dec func(interface{})
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Ai_AskAndRun_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AskAndRunReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AiServer).AskAndRun(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ai_AskAndRun_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AiServer).AskAndRun(ctx, req.(*AskAndRunReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Ai_ServiceDesc is the grpc.ServiceDesc for Ai service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -116,6 +154,10 @@ var Ai_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Ask",
 			Handler:    _Ai_Ask_Handler,
+		},
+		{
+			MethodName: "AskAndRun",
+			Handler:    _Ai_AskAndRun_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

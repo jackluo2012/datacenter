@@ -1,0 +1,21 @@
+# ============================================================
+# AI 问数服务容器化配置（docker compose 专用）
+# 与 ai/rpc/etc/ai.example.yaml 对齐，主机名改为 compose 服务名：
+#   127.0.0.1 -> mysql / etcd（容器网络内服务名互访）
+# LLM 默认关闭（语义检索可用）；如需生成 SQL，改 Enabled 为 true 并填 ApiKey
+# ============================================================
+Name: ai.rpc
+Log:
+  Mode: console
+ListenOn: 0.0.0.0:8094
+Etcd:
+  Hosts:
+    - etcd:2379
+  Key: ai.rpc
+Mysql:
+  DataSource: root:admin@tcp(mysql:3306)/datacenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+Llm:
+  Enabled: false
+  BaseUrl: https://api.openai.com/v1
+  ApiKey: sk-xxxx
+  Model: gpt-4o-mini

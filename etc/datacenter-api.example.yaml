@@ -34,7 +34,8 @@ QuestionsRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: questions.rpc                 DataSourceRpc:
+    Key: questions.rpc
+DataSourceRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379

@@ -234,6 +234,206 @@ func (x *AskReply) GetCostMs() int64 {
 	return 0
 }
 
+type AskAndRunReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Question      string                 `protobuf:"bytes,1,opt,name=question,proto3" json:"question,omitempty"`
+	Beid          int64                  `protobuf:"varint,2,opt,name=beid,proto3" json:"beid,omitempty"`
+	MaxCandidates int32                  `protobuf:"varint,3,opt,name=max_candidates,json=maxCandidates,proto3" json:"max_candidates,omitempty"`
+	AutoRun       bool                   `protobuf:"varint,4,opt,name=auto_run,json=autoRun,proto3" json:"auto_run,omitempty"`                //生成 SQL 后自动经 ide 安全闸执行
+	MaxRows       int32                  `protobuf:"varint,5,opt,name=max_rows,json=maxRows,proto3" json:"max_rows,omitempty"`                //执行返回行数上限,默认 20
+	DatasourceId  int64                  `protobuf:"varint,6,opt,name=datasource_id,json=datasourceId,proto3" json:"datasource_id,omitempty"` //执行目标数据源(AI 无法确定生成 SQL 的目标库,由调用方指定;auto_run=true 时必填)
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AskAndRunReq) Reset() {
+	*x = AskAndRunReq{}
+	mi := &file_ai_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AskAndRunReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AskAndRunReq) ProtoMessage() {}
+
+func (x *AskAndRunReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ai_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AskAndRunReq.ProtoReflect.Descriptor instead.
+func (*AskAndRunReq) Descriptor() ([]byte, []int) {
+	return file_ai_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AskAndRunReq) GetQuestion() string {
+	if x != nil {
+		return x.Question
+	}
+	return ""
+}
+
+func (x *AskAndRunReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+func (x *AskAndRunReq) GetMaxCandidates() int32 {
+	if x != nil {
+		return x.MaxCandidates
+	}
+	return 0
+}
+
+func (x *AskAndRunReq) GetAutoRun() bool {
+	if x != nil {
+		return x.AutoRun
+	}
+	return false
+}
+
+func (x *AskAndRunReq) GetMaxRows() int32 {
+	if x != nil {
+		return x.MaxRows
+	}
+	return 0
+}
+
+func (x *AskAndRunReq) GetDatasourceId() int64 {
+	if x != nil {
+		return x.DatasourceId
+	}
+	return 0
+}
+
+type AskAndRunReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Candidates    []*Candidate           `protobuf:"bytes,1,rep,name=candidates,proto3" json:"candidates,omitempty"`
+	LlmEnabled    bool                   `protobuf:"varint,2,opt,name=llm_enabled,json=llmEnabled,proto3" json:"llm_enabled,omitempty"`
+	GeneratedSql  string                 `protobuf:"bytes,3,opt,name=generated_sql,json=generatedSql,proto3" json:"generated_sql,omitempty"`
+	Answer        string                 `protobuf:"bytes,4,opt,name=answer,proto3" json:"answer,omitempty"`
+	CostMs        int64                  `protobuf:"varint,5,opt,name=cost_ms,json=costMs,proto3" json:"cost_ms,omitempty"`
+	Executed      bool                   `protobuf:"varint,6,opt,name=executed,proto3" json:"executed,omitempty"` //是否实际执行
+	ColumnsJson   string                 `protobuf:"bytes,7,opt,name=columns_json,json=columnsJson,proto3" json:"columns_json,omitempty"`
+	RowsJson      string                 `protobuf:"bytes,8,opt,name=rows_json,json=rowsJson,proto3" json:"rows_json,omitempty"`
+	RowCount      int64                  `protobuf:"varint,9,opt,name=row_count,json=rowCount,proto3" json:"row_count,omitempty"`
+	RunError      string                 `protobuf:"bytes,10,opt,name=run_error,json=runError,proto3" json:"run_error,omitempty"` //执行失败原因(LLM SQL 不合法/超时等,业务态不返回 error)
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AskAndRunReply) Reset() {
+	*x = AskAndRunReply{}
+	mi := &file_ai_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AskAndRunReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AskAndRunReply) ProtoMessage() {}
+
+func (x *AskAndRunReply) ProtoReflect() protoreflect.Message {
+	mi := &file_ai_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AskAndRunReply.ProtoReflect.Descriptor instead.
+func (*AskAndRunReply) Descriptor() ([]byte, []int) {
+	return file_ai_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *AskAndRunReply) GetCandidates() []*Candidate {
+	if x != nil {
+		return x.Candidates
+	}
+	return nil
+}
+
+func (x *AskAndRunReply) GetLlmEnabled() bool {
+	if x != nil {
+		return x.LlmEnabled
+	}
+	return false
+}
+
+func (x *AskAndRunReply) GetGeneratedSql() string {
+	if x != nil {
+		return x.GeneratedSql
+	}
+	return ""
+}
+
+func (x *AskAndRunReply) GetAnswer() string {
+	if x != nil {
+		return x.Answer
+	}
+	return ""
+}
+
+func (x *AskAndRunReply) GetCostMs() int64 {
+	if x != nil {
+		return x.CostMs
+	}
+	return 0
+}
+
+func (x *AskAndRunReply) GetExecuted() bool {
+	if x != nil {
+		return x.Executed
+	}
+	return false
+}
+
+func (x *AskAndRunReply) GetColumnsJson() string {
+	if x != nil {
+		return x.ColumnsJson
+	}
+	return ""
+}
+
+func (x *AskAndRunReply) GetRowsJson() string {
+	if x != nil {
+		return x.RowsJson
+	}
+	return ""
+}
+
+func (x *AskAndRunReply) GetRowCount() int64 {
+	if x != nil {
+		return x.RowCount
+	}
+	return 0
+}
+
+func (x *AskAndRunReply) GetRunError() string {
+	if x != nil {
+		return x.RunError
+	}
+	return ""
+}
+
 var File_ai_proto protoreflect.FileDescriptor
 
 const file_ai_proto_rawDesc = "" +
@@ -257,10 +457,33 @@ const file_ai_proto_rawDesc = "" +
 	"llmEnabled\x12#\n" +
 	"\rgenerated_sql\x18\x03 \x01(\tR\fgeneratedSql\x12\x16\n" +
 	"\x06answer\x18\x04 \x01(\tR\x06answer\x12\x17\n" +
-	"\acost_ms\x18\x05 \x01(\x03R\x06costMs2%\n" +
+	"\acost_ms\x18\x05 \x01(\x03R\x06costMs\"\xc0\x01\n" +
+	"\fAskAndRunReq\x12\x1a\n" +
+	"\bquestion\x18\x01 \x01(\tR\bquestion\x12\x12\n" +
+	"\x04beid\x18\x02 \x01(\x03R\x04beid\x12%\n" +
+	"\x0emax_candidates\x18\x03 \x01(\x05R\rmaxCandidates\x12\x19\n" +
+	"\bauto_run\x18\x04 \x01(\bR\aautoRun\x12\x19\n" +
+	"\bmax_rows\x18\x05 \x01(\x05R\amaxRows\x12#\n" +
+	"\rdatasource_id\x18\x06 \x01(\x03R\fdatasourceId\"\xcc\x02\n" +
+	"\x0eAskAndRunReply\x12-\n" +
+	"\n" +
+	"candidates\x18\x01 \x03(\v2\r.ai.CandidateR\n" +
+	"candidates\x12\x1f\n" +
+	"\vllm_enabled\x18\x02 \x01(\bR\n" +
+	"llmEnabled\x12#\n" +
+	"\rgenerated_sql\x18\x03 \x01(\tR\fgeneratedSql\x12\x16\n" +
+	"\x06answer\x18\x04 \x01(\tR\x06answer\x12\x17\n" +
+	"\acost_ms\x18\x05 \x01(\x03R\x06costMs\x12\x1a\n" +
+	"\bexecuted\x18\x06 \x01(\bR\bexecuted\x12!\n" +
+	"\fcolumns_json\x18\a \x01(\tR\vcolumnsJson\x12\x1b\n" +
+	"\trows_json\x18\b \x01(\tR\browsJson\x12\x1b\n" +
+	"\trow_count\x18\t \x01(\x03R\browCount\x12\x1b\n" +
+	"\trun_error\x18\n" +
+	" \x01(\tR\brunError2X\n" +
 	"\x02Ai\x12\x1f\n" +
 	"\x03Ask\x12\n" +
-	".ai.AskReq\x1a\f.ai.AskReplyB\x06Z\x04./aib\x06proto3"
+	".ai.AskReq\x1a\f.ai.AskReply\x121\n" +
+	"\tAskAndRun\x12\x10.ai.AskAndRunReq\x1a\x12.ai.AskAndRunReplyB\x06Z\x04./aib\x06proto3"
 
 var (
 	file_ai_proto_rawDescOnce sync.Once
@@ -274,21 +497,26 @@ func file_ai_proto_rawDescGZIP() []byte {
 	return file_ai_proto_rawDescData
 }
 
-var file_ai_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_ai_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_ai_proto_goTypes = []any{
-	(*Candidate)(nil), // 0: ai.Candidate
-	(*AskReq)(nil),    // 1: ai.AskReq
-	(*AskReply)(nil),  // 2: ai.AskReply
+	(*Candidate)(nil),      // 0: ai.Candidate
+	(*AskReq)(nil),         // 1: ai.AskReq
+	(*AskReply)(nil),       // 2: ai.AskReply
+	(*AskAndRunReq)(nil),   // 3: ai.AskAndRunReq
+	(*AskAndRunReply)(nil), // 4: ai.AskAndRunReply
 }
 var file_ai_proto_depIdxs = []int32{
 	0, // 0: ai.AskReply.candidates:type_name -> ai.Candidate
-	1, // 1: ai.Ai.Ask:input_type -> ai.AskReq
-	2, // 2: ai.Ai.Ask:output_type -> ai.AskReply
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	0, // 1: ai.AskAndRunReply.candidates:type_name -> ai.Candidate
+	1, // 2: ai.Ai.Ask:input_type -> ai.AskReq
+	3, // 3: ai.Ai.AskAndRun:input_type -> ai.AskAndRunReq
+	2, // 4: ai.Ai.Ask:output_type -> ai.AskReply
+	4, // 5: ai.Ai.AskAndRun:output_type -> ai.AskAndRunReply
+	4, // [4:6] is the sub-list for method output_type
+	2, // [2:4] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_ai_proto_init() }
@@ -302,7 +530,7 @@ func file_ai_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ai_proto_rawDesc), len(file_ai_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

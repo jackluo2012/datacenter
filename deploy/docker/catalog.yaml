@@ -1,0 +1,15 @@
+# ============================================================
+# 资产目录服务容器化配置（docker compose 专用，镜像内由网关同镜发起）
+# 与 catalog/rpc/etc/catalog.example.yaml 对齐，主机名改为 compose 服务名：
+#   127.0.0.1 -> mysql / etcd（容器网络内服务名互访）
+# ============================================================
+Name: catalog.rpc
+Log:
+  Mode: console
+ListenOn: 0.0.0.0:8088
+Etcd:
+  Hosts:
+    - etcd:2379
+  Key: catalog.rpc
+Mysql:
+  DataSource: root:admin@tcp(mysql:3306)/datacenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai

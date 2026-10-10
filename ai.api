@@ -22,6 +22,27 @@ type AskResp {
 	CostMs       int64       `json:"cost_ms"`
 }
 
+type AskAndRunReq {
+	Question      string `json:"question"`
+	Beid          int64  `json:"beid,optional"`
+	MaxCandidates int32  `json:"max_candidates,optional"`
+	AutoRun       bool   `json:"auto_run,optional"`      //生成 SQL 后经 ide 安全闸自动执行
+	DatasourceId  int64  `json:"datasource_id,optional"` //auto_run 时必填：执行目标库
+	MaxRows       int32  `json:"max_rows,optional"`      //默认 20,上限 100
+}
+type AskAndRunResp {
+	Candidates   []Candidate `json:"candidates"`
+	LlmEnabled   bool        `json:"llm_enabled"`
+	GeneratedSql string      `json:"generated_sql,optional"`
+	Answer       string      `json:"answer"`
+	CostMs       int64       `json:"cost_ms"`
+	Executed     bool        `json:"executed"`
+	ColumnsJson  string      `json:"columns_json,optional"`
+	RowsJson     string      `json:"rows_json,optional"`
+	RowCount     int64       `json:"row_count"`
+	RunError     string      `json:"run_error,optional"`
+}
+
 @server(
 	jwt: Auth
 	group: ai
@@ -32,4 +53,9 @@ service datacenter-api {
 	)
 	@handler ask
 	post /ai/ask (AskReq) returns (AskResp)
+	@doc(
+		summary: "AI 问数并执行（LLM 生成 SQL 后经 ide 安全闸自动执行）"
+	)
+	@handler askAndRun
+	post /ai/ask_and_run (AskAndRunReq) returns (AskAndRunResp)
 }

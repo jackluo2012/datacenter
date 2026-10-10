@@ -1,0 +1,99 @@
+# ============================================================
+# 数据中台网关（API）容器化配置（docker compose 专用）
+# 与 etc/datacenter-api.example.yaml 对齐，主机名改为 compose 服务名：
+#   redis -> redis 服务, etcd -> etcd 服务（容器网络内互访）
+# 命名说明：仓库 .gitignore 全局忽略 datacenter-api.yaml（无路径模式），
+#           为保证该协作资产可入库，文件名加 .docker 后缀区分。
+# 注意：UserRpc/CommonRpc/VotesRpc/SearchRpc/QuestionsRpc 五个遗留 RPC
+#       不在 compose 编排内（go-zero etcd 发现为懒加载，网关可正常启动），
+#       如需 /user/login 等接口请按 restart.sh 另起对应服务。
+# ============================================================
+Name: datacenter-api
+Log:
+  Mode: console
+Host: 0.0.0.0
+Port: 8887
+Auth:
+  AccessSecret: ad87xxxxxxx5d54b7d
+  AccessExpire: 86400
+CacheRedis:
+  - Host: redis:6379
+    Pass: admin
+    Type: node
+UserRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: user.rpc
+CommonRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: common.rpc
+VotesRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: votes.rpc
+SearchRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: search.rpc
+QuestionsRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: questions.rpc
+# ---------- Phase 1 数据中台服务 ----------
+DataSourceRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: datasource.rpc
+MetadataRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: metadata.rpc
+DataSvcRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: datasvc.rpc
+CatalogRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: catalog.rpc
+QualityRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: quality.rpc
+MetricRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: metric.rpc
+TagRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: tag.rpc
+# ---------- Phase 3/4 数据中台服务 ----------
+JobRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: job.rpc
+IdeRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: ide.rpc
+AiRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: ai.rpc

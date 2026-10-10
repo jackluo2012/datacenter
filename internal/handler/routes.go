@@ -35,6 +35,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/ai/ask",
 				Handler: ai.AskHandler(serverCtx),
 			},
+			{
+				// AI 问数并执行（LLM 生成 SQL 后经 ide 安全闸自动执行）
+				Method:  http.MethodPost,
+				Path:    "/ai/ask_and_run",
+				Handler: ai.AskAndRunHandler(serverCtx),
+			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)

@@ -36,72 +36,111 @@ func NewAskLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AskLogic {
 	}
 }
 
+// askCoreResult Ask 主流程（检索→LLM 生成）的中间产物，Ask 与 AskAndRun 共用：
+// AskAndRun 在此基础上追加执行结果，并把最终 answer/耗时回填后再落审计
+type askCoreResult struct {
+	question     string          //清洗后的问句
+	candidates   []*ai.Candidate //语义检索候选（永不为 nil，空结果为空数组）
+	llmEnabled   bool            //LLM 是否生成成功
+	generatedSql string          //LLM 生成的 SQL（未启用/失败为空）
+	answer       string          //回答（含降级说明）
+	costMs       int64           //本阶段耗时
+}
+
 // AI 问数：语义检索(元数据+指标) → 命中候选 → (可选 LLM) 生成 SQL 与回答，全程审计
 func (l *AskLogic) Ask(in *ai.AskReq) (*ai.AskReply, error) {
-	start := time.Now()
-
 	//1. question 非空校验
 	question := strings.TrimSpace(in.Question)
 	if question == "" {
 		return nil, fmt.Errorf("question 不能为空")
 	}
 
-	maxCand := int(in.MaxCandidates)
-	if maxCand <= 0 {
-		maxCand = defaultMaxCandidates
-	}
-	if maxCand > maxCandidatesLimit {
-		maxCand = maxCandidatesLimit
-	}
-
-	//2. 关键词提取（MVP 分词降级法：去停用词 → 整句 + 分词）
-	keywords := ExtractKeywords(question)
-
-	//3. 语义检索 + 打分排序：元数据实体 + 指标合并候选，截取 top max_candidates
-	candidates := RankCandidates(l.searchCandidates(l.ctx, in.Beid, keywords, maxCand), keywords, maxCand)
+	//2. 复用主流程：检索 → 可选 LLM 生成
+	core := l.askCore(question, in.Beid, normalizeMaxCandidates(in.MaxCandidates))
 
 	reply := &ai.AskReply{
-		Candidates: candidates,
+		Candidates:   core.candidates,
+		LlmEnabled:   core.llmEnabled,
+		GeneratedSql: core.generatedSql,
+		Answer:       core.answer,
+		CostMs:       core.costMs,
 	}
 	if reply.Candidates == nil {
 		reply.Candidates = []*ai.Candidate{}
 	}
 
-	//4. 生成回答：LLM 可选路径（Config.Llm.Enabled），失败降级为纯检索，不返回 error
+	//3. 审计：无论成败写 dc_ask_log
+	l.writeAskAudit(core, in.Beid)
+	return reply, nil
+}
+
+// askCore 问数主体（检索→候选打分→可选 LLM 生成 SQL），Ask 与 AskAndRun 共用；
+// 检索失败降级、LLM 失败降级均为常见业务态，不返回 error
+func (l *AskLogic) askCore(question string, beid int64, maxCand int) *askCoreResult {
+	start := time.Now()
+
+	//1. 关键词提取（MVP 分词降级法：去停用词 → 整句 + 分词）
+	keywords := ExtractKeywords(question)
+
+	//2. 语义检索 + 打分排序：元数据实体 + 指标合并候选，截取 top max_candidates
+	candidates := RankCandidates(l.searchCandidates(l.ctx, beid, keywords, maxCand), keywords, maxCand)
+
+	core := &askCoreResult{
+		question:   question,
+		candidates: candidates,
+	}
+	if core.candidates == nil {
+		core.candidates = []*ai.Candidate{}
+	}
+
+	//3. 生成回答：LLM 可选路径（Config.Llm.Enabled），失败降级为纯检索，不返回 error
 	if l.svcCtx.Config.Llm.Enabled {
 		// TODO(联调): 需配置真实 LLM ApiKey 验证生成质量
 		client := llm.NewClient(l.svcCtx.Config.Llm.BaseUrl, l.svcCtx.Config.Llm.ApiKey,
 			l.svcCtx.Config.Llm.Model, l.svcCtx.HttpClient)
-		content, err := client.ChatCompletion(l.ctx, buildAskPrompt(question, candidates))
+		content, err := client.ChatCompletion(l.ctx, buildAskPrompt(question, core.candidates))
 		if err != nil {
 			//降级：answer 写明降级原因 + 错误摘要，llm_enabled=false
 			l.Errorf("LLM 调用失败已降级为纯检索: %v", err)
-			reply.Answer = fmt.Sprintf("%s\n\n[LLM 调用失败已降级为纯检索] 错误摘要: %v", buildSearchSummary(candidates), err)
+			core.answer = fmt.Sprintf("%s\n\n[LLM 调用失败已降级为纯检索] 错误摘要: %v", buildSearchSummary(candidates), err)
 		} else {
-			reply.LlmEnabled = true
-			reply.GeneratedSql = extractSQLBlock(content)
-			reply.Answer = content
+			core.llmEnabled = true
+			core.generatedSql = extractSQLBlock(content)
+			core.answer = content
 		}
 	} else {
-		reply.Answer = buildSearchSummary(candidates)
+		core.answer = buildSearchSummary(candidates)
 	}
-	reply.CostMs = time.Since(start).Milliseconds()
+	core.costMs = time.Since(start).Milliseconds()
+	return core
+}
 
-	//5. 审计：无论成败写 dc_ask_log；审计写失败仅记日志，不阻断返回
+// writeAskAudit 落 dc_ask_log 审计（Ask 与 AskAndRun 共用）：写失败仅记日志，不阻断返回；
+// AskAndRun 在执行完成后回填 core.answer（尾部带执行摘要）/core.costMs 再调用，执行信息随 answer 落审计
+func (l *AskLogic) writeAskAudit(r *askCoreResult, beid int64) {
 	askLog := &model.AskLog{
-		Question:       truncateRunes(question, maxQuestionRunes),
-		CandidatesJson: truncateBytes(marshalCandidates(candidates), maxTextBytes),
-		GeneratedSql:   truncateBytes(reply.GeneratedSql, maxTextBytes),
-		Answer:         truncateBytes(reply.Answer, maxTextBytes),
-		LlmEnabled:     boolToInt64(reply.LlmEnabled),
-		CostMs:         reply.CostMs,
-		Beid:           in.Beid,
+		Question:       truncateRunes(r.question, maxQuestionRunes),
+		CandidatesJson: truncateBytes(marshalCandidates(r.candidates), maxTextBytes),
+		GeneratedSql:   truncateBytes(r.generatedSql, maxTextBytes),
+		Answer:         truncateBytes(r.answer, maxTextBytes),
+		LlmEnabled:     boolToInt64(r.llmEnabled),
+		CostMs:         r.costMs,
+		Beid:           beid,
 	}
 	if _, err := l.svcCtx.AskLogModel.Insert(l.ctx, askLog); err != nil {
 		l.Errorf("写 dc_ask_log 审计失败(不阻断返回): %v", err)
 	}
+}
 
-	return reply, nil
+// normalizeMaxCandidates 候选数归一化（Ask 与 AskAndRun 共用，纯函数）：<=0 取默认，超上限截断
+func normalizeMaxCandidates(n int32) int {
+	if n <= 0 {
+		return defaultMaxCandidates
+	}
+	if int(n) > maxCandidatesLimit {
+		return maxCandidatesLimit
+	}
+	return int(n)
 }
 
 // buildSearchSummary 无 LLM（或降级）时的检索摘要回答：命中候选清单 + 引导提示
