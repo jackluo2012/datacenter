@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+package security;
+
+option go_package = "./security";
+
+//分级目录（L1-L4 及自定义级别）
+message SecLevel {
+  int64  id      = 1;
+  string code    = 2;  //L1/L2/L3/L4
+  string name    = 3;  //公开/内部/敏感/机密
+  string comment = 4;
+  int64  beid    = 5;
+}
+message LevelReply { SecLevel level = 1; }
+message LevelListReply { repeated SecLevel list = 1; }
+
+message SaveLevelReq {
+  int64  id      = 1;
+  string code    = 2;
+  string name    = 3;
+  string comment = 4;
+  int64  beid    = 5;
+}
+message IdReq { int64 id = 1; int64 beid = 2; }
+
+//实体分级打标（元数据实体 ← 分级）
+message EntityTag {
+  int64  id              = 1;
+  int64  entity_id       = 2;
+  string entity_name     = 3;
+  string level_code      = 4;
+  string mask_rule_code  = 5; //绑定脱敏规则
+  int64  beid            = 6;
+}
+message TagEntityReq {
+  int64  entity_id      = 1;
+  string entity_name    = 2;
+  string level_code     = 3;
+  string mask_rule_code = 4;
+  int64  beid           = 5;
+}
+message EntityTagReply { EntityTag tag = 1; }
+message EntityTagListReply { repeated EntityTag list = 1; int64 total = 2; }
+message EntityTagListReq { int64 beid = 1; string level_code = 2; int64 page = 3; int64 size = 4; }
+
+//脱敏规则库
+message MaskRule {
+  int64  id         = 1;
+  string rule_code  = 2;  //如 mask_phone
+  string rule_name  = 3;
+  string algorithm  = 4;  //mask(保留前 n 后 m)/hash/replace/null
+  string params_json = 5; //{"prefix":3,"suffix":2,"mask_char":"*"} / {"replace":""}
+  int64  beid       = 6;
+}
+message MaskRuleReply { MaskRule rule = 1; }
+message MaskRuleListReply { repeated MaskRule list = 1; int64 total = 2; }
+
+message SaveMaskRuleReq {
+  int64  id          = 1;
+  string rule_code   = 2;
+  string rule_name   = 3;
+  string algorithm   = 4;
+  string params_json = 5;
+  int64  beid        = 6;
+}
+message MaskRuleListReq { int64 beid = 1; int64 page = 2; int64 size = 3; }
+
+//脱敏预览（按规则对样例值执行）
+message MaskPreviewReq {
+  int64  rule_id = 1;
+  string sample  = 2;
+}
+message MaskPreviewReply {
+  string masked  = 1;
+  string rule_code = 2;
+}
+
+//授权矩阵（主体→资源→许可级别）
+message SecGrant {
+  int64  id         = 1;
+  string subject    = 2;  //user:1 / app:app_key / role:admin
+  string resource   = 3;  //datasource/api/table/asset
+  string resource_id = 4;
+  string level_code = 5;  //许可的最高密级
+  int64  expire_at  = 6;
+  int64  beid       = 7;
+}
+message GrantReply { SecGrant grant = 1; }
+message GrantListReply { repeated SecGrant list = 1; int64 total = 2; }
+
+message SaveGrantReq {
+  string subject     = 1;
+  string resource    = 2;
+  string resource_id = 3;
+  string level_code  = 4;
+  int64  expire_at   = 5;
+  int64  beid        = 6;
+}
+message GrantListReq {
+  int64  beid     = 1;
+  string subject  = 2;
+  string resource = 3;
+  int64  page     = 4;
+  int64  size     = 5;
+}
+//鉴权检查（subject 对 resource_id 的许可是否覆盖其密级）
+message CheckPermReq {
+  string subject     = 1;
+  string resource    = 2;
+  string resource_id = 3;
+  string level_code  = 4;  //被访问数据的密级
+  int64  beid        = 5;
+}
+message CheckPermReply {
+  bool allowed = 1;
+  string reason = 2;
+}
+
+service Security {
+  //分级目录
+  rpc SaveLevel(SaveLevelReq) returns (LevelReply);
+  rpc ListLevels(IdReq) returns (LevelListReply);
+  //实体打标
+  rpc TagEntity(TagEntityReq) returns (EntityTagReply);
+  rpc ListEntityTags(EntityTagListReq) returns (EntityTagListReply);
+  //脱敏规则
+  rpc SaveMaskRule(SaveMaskRuleReq) returns (MaskRuleReply);
+  rpc DeleteMaskRule(IdReq) returns (IdReq);
+  rpc ListMaskRules(MaskRuleListReq) returns (MaskRuleListReply);
+  //脱敏预览
+  rpc MaskPreview(MaskPreviewReq) returns (MaskPreviewReply);
+  //授权矩阵
+  rpc SaveGrant(SaveGrantReq) returns (GrantReply);
+  rpc DeleteGrant(IdReq) returns (IdReq);
+  rpc ListGrants(GrantListReq) returns (GrantListReply);
+  //权限检查
+  rpc CheckPerm(CheckPermReq) returns (CheckPermReply);
+}

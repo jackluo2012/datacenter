@@ -14,22 +14,32 @@ import (
 )
 
 type (
-	CreateObjectReq = tag.CreateObjectReq
-	CreateTagReq    = tag.CreateTagReq
-	IdReq           = tag.IdReq
-	ObjectListReply = tag.ObjectListReply
-	ObjectListReq   = tag.ObjectListReq
-	ObjectReply     = tag.ObjectReply
-	ObjectTagsReply = tag.ObjectTagsReply
-	ObjectTagsReq   = tag.ObjectTagsReq
-	TagDef          = tag.TagDef
-	TagDefListReply = tag.TagDefListReply
-	TagDefListReq   = tag.TagDefListReq
-	TagDefReply     = tag.TagDefReply
-	TagObject       = tag.TagObject
-	TagValueItem    = tag.TagValueItem
-	TaggingReply    = tag.TaggingReply
-	TaggingReq      = tag.TaggingReq
+	CreateGroupReq    = tag.CreateGroupReq
+	CreateObjectReq   = tag.CreateObjectReq
+	CreateTagReq      = tag.CreateTagReq
+	GroupListReply    = tag.GroupListReply
+	GroupListReq      = tag.GroupListReq
+	GroupMember       = tag.GroupMember
+	GroupMembersReply = tag.GroupMembersReply
+	GroupMembersReq   = tag.GroupMembersReq
+	GroupReply        = tag.GroupReply
+	IdReq             = tag.IdReq
+	ObjectListReply   = tag.ObjectListReply
+	ObjectListReq     = tag.ObjectListReq
+	ObjectReply       = tag.ObjectReply
+	ObjectTagsReply   = tag.ObjectTagsReply
+	ObjectTagsReq     = tag.ObjectTagsReq
+	RunCircleReply    = tag.RunCircleReply
+	RunCircleReq      = tag.RunCircleReq
+	TagDef            = tag.TagDef
+	TagDefListReply   = tag.TagDefListReply
+	TagDefListReq     = tag.TagDefListReq
+	TagDefReply       = tag.TagDefReply
+	TagGroup          = tag.TagGroup
+	TagObject         = tag.TagObject
+	TagValueItem      = tag.TagValueItem
+	TaggingReply      = tag.TaggingReply
+	TaggingReq        = tag.TaggingReq
 
 	Tag interface {
 		// 创建标签对象
@@ -46,6 +56,16 @@ type (
 		Tagging(ctx context.Context, in *TaggingReq, opts ...grpc.CallOption) (*TaggingReply, error)
 		// 查对象标签画像
 		GetObjectTags(ctx context.Context, in *ObjectTagsReq, opts ...grpc.CallOption) (*ObjectTagsReply, error)
+		// 创建人群（圈群定义）
+		CreateGroup(ctx context.Context, in *CreateGroupReq, opts ...grpc.CallOption) (*GroupReply, error)
+		// 人群列表
+		ListGroups(ctx context.Context, in *GroupListReq, opts ...grpc.CallOption) (*GroupListReply, error)
+		// 删除人群
+		DeleteGroup(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
+		// 执行圈选（跑圈选 SQL 物化人群到 dc_tag_group_member）
+		RunCircle(ctx context.Context, in *RunCircleReq, opts ...grpc.CallOption) (*RunCircleReply, error)
+		// 人群成员查询
+		ListGroupMembers(ctx context.Context, in *GroupMembersReq, opts ...grpc.CallOption) (*GroupMembersReply, error)
 	}
 
 	defaultTag struct {
@@ -99,4 +119,34 @@ func (m *defaultTag) Tagging(ctx context.Context, in *TaggingReq, opts ...grpc.C
 func (m *defaultTag) GetObjectTags(ctx context.Context, in *ObjectTagsReq, opts ...grpc.CallOption) (*ObjectTagsReply, error) {
 	client := tag.NewTagClient(m.cli.Conn())
 	return client.GetObjectTags(ctx, in, opts...)
+}
+
+// 创建人群（圈群定义）
+func (m *defaultTag) CreateGroup(ctx context.Context, in *CreateGroupReq, opts ...grpc.CallOption) (*GroupReply, error) {
+	client := tag.NewTagClient(m.cli.Conn())
+	return client.CreateGroup(ctx, in, opts...)
+}
+
+// 人群列表
+func (m *defaultTag) ListGroups(ctx context.Context, in *GroupListReq, opts ...grpc.CallOption) (*GroupListReply, error) {
+	client := tag.NewTagClient(m.cli.Conn())
+	return client.ListGroups(ctx, in, opts...)
+}
+
+// 删除人群
+func (m *defaultTag) DeleteGroup(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	client := tag.NewTagClient(m.cli.Conn())
+	return client.DeleteGroup(ctx, in, opts...)
+}
+
+// 执行圈选（跑圈选 SQL 物化人群到 dc_tag_group_member）
+func (m *defaultTag) RunCircle(ctx context.Context, in *RunCircleReq, opts ...grpc.CallOption) (*RunCircleReply, error) {
+	client := tag.NewTagClient(m.cli.Conn())
+	return client.RunCircle(ctx, in, opts...)
+}
+
+// 人群成员查询
+func (m *defaultTag) ListGroupMembers(ctx context.Context, in *GroupMembersReq, opts ...grpc.CallOption) (*GroupMembersReply, error) {
+	client := tag.NewTagClient(m.cli.Conn())
+	return client.ListGroupMembers(ctx, in, opts...)
 }

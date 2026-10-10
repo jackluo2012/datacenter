@@ -1077,6 +1077,607 @@ func (x *ObjectTagsReply) GetTags() []*TagValueItem {
 	return nil
 }
 
+// ============ 标签圈群（Phase 6 补齐）============
+type TagGroup struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Id                int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name              string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	ObjectId          int64                  `protobuf:"varint,3,opt,name=object_id,json=objectId,proto3" json:"object_id,omitempty"`
+	CircleRuleSql     string                 `protobuf:"bytes,4,opt,name=circle_rule_sql,json=circleRuleSql,proto3" json:"circle_rule_sql,omitempty"` //圈选 SQL: select <pk> as object_id from <tag/join> where <标签条件>
+	EstCount          int64                  `protobuf:"varint,5,opt,name=est_count,json=estCount,proto3" json:"est_count,omitempty"`
+	MaterializedTable string                 `protobuf:"bytes,6,opt,name=materialized_table,json=materializedTable,proto3" json:"materialized_table,omitempty"` //人群物化表
+	LastRunAt         int64                  `protobuf:"varint,7,opt,name=last_run_at,json=lastRunAt,proto3" json:"last_run_at,omitempty"`
+	Beid              int64                  `protobuf:"varint,8,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *TagGroup) Reset() {
+	*x = TagGroup{}
+	mi := &file_tag_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TagGroup) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TagGroup) ProtoMessage() {}
+
+func (x *TagGroup) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TagGroup.ProtoReflect.Descriptor instead.
+func (*TagGroup) Descriptor() ([]byte, []int) {
+	return file_tag_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *TagGroup) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *TagGroup) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *TagGroup) GetObjectId() int64 {
+	if x != nil {
+		return x.ObjectId
+	}
+	return 0
+}
+
+func (x *TagGroup) GetCircleRuleSql() string {
+	if x != nil {
+		return x.CircleRuleSql
+	}
+	return ""
+}
+
+func (x *TagGroup) GetEstCount() int64 {
+	if x != nil {
+		return x.EstCount
+	}
+	return 0
+}
+
+func (x *TagGroup) GetMaterializedTable() string {
+	if x != nil {
+		return x.MaterializedTable
+	}
+	return ""
+}
+
+func (x *TagGroup) GetLastRunAt() int64 {
+	if x != nil {
+		return x.LastRunAt
+	}
+	return 0
+}
+
+func (x *TagGroup) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+type GroupReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Group         *TagGroup              `protobuf:"bytes,1,opt,name=group,proto3" json:"group,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GroupReply) Reset() {
+	*x = GroupReply{}
+	mi := &file_tag_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GroupReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GroupReply) ProtoMessage() {}
+
+func (x *GroupReply) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GroupReply.ProtoReflect.Descriptor instead.
+func (*GroupReply) Descriptor() ([]byte, []int) {
+	return file_tag_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *GroupReply) GetGroup() *TagGroup {
+	if x != nil {
+		return x.Group
+	}
+	return nil
+}
+
+type GroupListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	List          []*TagGroup            `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GroupListReply) Reset() {
+	*x = GroupListReply{}
+	mi := &file_tag_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GroupListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GroupListReply) ProtoMessage() {}
+
+func (x *GroupListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GroupListReply.ProtoReflect.Descriptor instead.
+func (*GroupListReply) Descriptor() ([]byte, []int) {
+	return file_tag_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *GroupListReply) GetList() []*TagGroup {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+func (x *GroupListReply) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type CreateGroupReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	ObjectId      int64                  `protobuf:"varint,2,opt,name=object_id,json=objectId,proto3" json:"object_id,omitempty"`
+	CircleRuleSql string                 `protobuf:"bytes,3,opt,name=circle_rule_sql,json=circleRuleSql,proto3" json:"circle_rule_sql,omitempty"`
+	Beid          int64                  `protobuf:"varint,4,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateGroupReq) Reset() {
+	*x = CreateGroupReq{}
+	mi := &file_tag_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateGroupReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateGroupReq) ProtoMessage() {}
+
+func (x *CreateGroupReq) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateGroupReq.ProtoReflect.Descriptor instead.
+func (*CreateGroupReq) Descriptor() ([]byte, []int) {
+	return file_tag_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *CreateGroupReq) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateGroupReq) GetObjectId() int64 {
+	if x != nil {
+		return x.ObjectId
+	}
+	return 0
+}
+
+func (x *CreateGroupReq) GetCircleRuleSql() string {
+	if x != nil {
+		return x.CircleRuleSql
+	}
+	return ""
+}
+
+func (x *CreateGroupReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+type GroupListReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Beid          int64                  `protobuf:"varint,1,opt,name=beid,proto3" json:"beid,omitempty"`
+	Page          int64                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int64                  `protobuf:"varint,3,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GroupListReq) Reset() {
+	*x = GroupListReq{}
+	mi := &file_tag_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GroupListReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GroupListReq) ProtoMessage() {}
+
+func (x *GroupListReq) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GroupListReq.ProtoReflect.Descriptor instead.
+func (*GroupListReq) Descriptor() ([]byte, []int) {
+	return file_tag_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *GroupListReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+func (x *GroupListReq) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GroupListReq) GetSize() int64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+type RunCircleReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GroupId       int64                  `protobuf:"varint,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	Beid          int64                  `protobuf:"varint,2,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunCircleReq) Reset() {
+	*x = RunCircleReq{}
+	mi := &file_tag_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunCircleReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunCircleReq) ProtoMessage() {}
+
+func (x *RunCircleReq) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunCircleReq.ProtoReflect.Descriptor instead.
+func (*RunCircleReq) Descriptor() ([]byte, []int) {
+	return file_tag_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *RunCircleReq) GetGroupId() int64 {
+	if x != nil {
+		return x.GroupId
+	}
+	return 0
+}
+
+func (x *RunCircleReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+type RunCircleReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MemberCount   int64                  `protobuf:"varint,1,opt,name=member_count,json=memberCount,proto3" json:"member_count,omitempty"`
+	Msg           string                 `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunCircleReply) Reset() {
+	*x = RunCircleReply{}
+	mi := &file_tag_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunCircleReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunCircleReply) ProtoMessage() {}
+
+func (x *RunCircleReply) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunCircleReply.ProtoReflect.Descriptor instead.
+func (*RunCircleReply) Descriptor() ([]byte, []int) {
+	return file_tag_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *RunCircleReply) GetMemberCount() int64 {
+	if x != nil {
+		return x.MemberCount
+	}
+	return 0
+}
+
+func (x *RunCircleReply) GetMsg() string {
+	if x != nil {
+		return x.Msg
+	}
+	return ""
+}
+
+type GroupMembersReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GroupId       int64                  `protobuf:"varint,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	Beid          int64                  `protobuf:"varint,2,opt,name=beid,proto3" json:"beid,omitempty"`
+	Page          int64                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int64                  `protobuf:"varint,4,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GroupMembersReq) Reset() {
+	*x = GroupMembersReq{}
+	mi := &file_tag_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GroupMembersReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GroupMembersReq) ProtoMessage() {}
+
+func (x *GroupMembersReq) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GroupMembersReq.ProtoReflect.Descriptor instead.
+func (*GroupMembersReq) Descriptor() ([]byte, []int) {
+	return file_tag_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *GroupMembersReq) GetGroupId() int64 {
+	if x != nil {
+		return x.GroupId
+	}
+	return 0
+}
+
+func (x *GroupMembersReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+func (x *GroupMembersReq) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GroupMembersReq) GetSize() int64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+type GroupMember struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ObjectPk      string                 `protobuf:"bytes,1,opt,name=object_pk,json=objectPk,proto3" json:"object_pk,omitempty"`
+	TagValue      string                 `protobuf:"bytes,2,opt,name=tag_value,json=tagValue,proto3" json:"tag_value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GroupMember) Reset() {
+	*x = GroupMember{}
+	mi := &file_tag_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GroupMember) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GroupMember) ProtoMessage() {}
+
+func (x *GroupMember) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GroupMember.ProtoReflect.Descriptor instead.
+func (*GroupMember) Descriptor() ([]byte, []int) {
+	return file_tag_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *GroupMember) GetObjectPk() string {
+	if x != nil {
+		return x.ObjectPk
+	}
+	return ""
+}
+
+func (x *GroupMember) GetTagValue() string {
+	if x != nil {
+		return x.TagValue
+	}
+	return ""
+}
+
+type GroupMembersReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Members       []*GroupMember         `protobuf:"bytes,1,rep,name=members,proto3" json:"members,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GroupMembersReply) Reset() {
+	*x = GroupMembersReply{}
+	mi := &file_tag_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GroupMembersReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GroupMembersReply) ProtoMessage() {}
+
+func (x *GroupMembersReply) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GroupMembersReply.ProtoReflect.Descriptor instead.
+func (*GroupMembersReply) Descriptor() ([]byte, []int) {
+	return file_tag_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *GroupMembersReply) GetMembers() []*GroupMember {
+	if x != nil {
+		return x.Members
+	}
+	return nil
+}
+
+func (x *GroupMembersReply) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
 var File_tag_proto protoreflect.FileDescriptor
 
 const file_tag_proto_rawDesc = "" +
@@ -1164,7 +1765,48 @@ const file_tag_proto_rawDesc = "" +
 	"\ttag_value\x18\x03 \x01(\tR\btagValue\x12\x1b\n" +
 	"\ttagged_at\x18\x04 \x01(\x03R\btaggedAt\"8\n" +
 	"\x0fObjectTagsReply\x12%\n" +
-	"\x04tags\x18\x01 \x03(\v2\x11.tag.TagValueItemR\x04tags2\xed\x02\n" +
+	"\x04tags\x18\x01 \x03(\v2\x11.tag.TagValueItemR\x04tags\"\xf3\x01\n" +
+	"\bTagGroup\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1b\n" +
+	"\tobject_id\x18\x03 \x01(\x03R\bobjectId\x12&\n" +
+	"\x0fcircle_rule_sql\x18\x04 \x01(\tR\rcircleRuleSql\x12\x1b\n" +
+	"\test_count\x18\x05 \x01(\x03R\bestCount\x12-\n" +
+	"\x12materialized_table\x18\x06 \x01(\tR\x11materializedTable\x12\x1e\n" +
+	"\vlast_run_at\x18\a \x01(\x03R\tlastRunAt\x12\x12\n" +
+	"\x04beid\x18\b \x01(\x03R\x04beid\"1\n" +
+	"\n" +
+	"GroupReply\x12#\n" +
+	"\x05group\x18\x01 \x01(\v2\r.tag.TagGroupR\x05group\"I\n" +
+	"\x0eGroupListReply\x12!\n" +
+	"\x04list\x18\x01 \x03(\v2\r.tag.TagGroupR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"}\n" +
+	"\x0eCreateGroupReq\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
+	"\tobject_id\x18\x02 \x01(\x03R\bobjectId\x12&\n" +
+	"\x0fcircle_rule_sql\x18\x03 \x01(\tR\rcircleRuleSql\x12\x12\n" +
+	"\x04beid\x18\x04 \x01(\x03R\x04beid\"J\n" +
+	"\fGroupListReq\x12\x12\n" +
+	"\x04beid\x18\x01 \x01(\x03R\x04beid\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\x03R\x04page\x12\x12\n" +
+	"\x04size\x18\x03 \x01(\x03R\x04size\"=\n" +
+	"\fRunCircleReq\x12\x19\n" +
+	"\bgroup_id\x18\x01 \x01(\x03R\agroupId\x12\x12\n" +
+	"\x04beid\x18\x02 \x01(\x03R\x04beid\"E\n" +
+	"\x0eRunCircleReply\x12!\n" +
+	"\fmember_count\x18\x01 \x01(\x03R\vmemberCount\x12\x10\n" +
+	"\x03msg\x18\x02 \x01(\tR\x03msg\"h\n" +
+	"\x0fGroupMembersReq\x12\x19\n" +
+	"\bgroup_id\x18\x01 \x01(\x03R\agroupId\x12\x12\n" +
+	"\x04beid\x18\x02 \x01(\x03R\x04beid\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x03R\x04page\x12\x12\n" +
+	"\x04size\x18\x04 \x01(\x03R\x04size\"G\n" +
+	"\vGroupMember\x12\x1b\n" +
+	"\tobject_pk\x18\x01 \x01(\tR\bobjectPk\x12\x1b\n" +
+	"\ttag_value\x18\x02 \x01(\tR\btagValue\"U\n" +
+	"\x11GroupMembersReply\x12*\n" +
+	"\amembers\x18\x01 \x03(\v2\x10.tag.GroupMemberR\amembers\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total2\xf6\x04\n" +
 	"\x03Tag\x126\n" +
 	"\fCreateObject\x12\x14.tag.CreateObjectReq\x1a\x10.tag.ObjectReply\x127\n" +
 	"\vListObjects\x12\x12.tag.ObjectListReq\x1a\x14.tag.ObjectListReply\x120\n" +
@@ -1174,7 +1816,15 @@ const file_tag_proto_rawDesc = "" +
 	".tag.IdReq\x1a\n" +
 	".tag.IdReq\x12-\n" +
 	"\aTagging\x12\x0f.tag.TaggingReq\x1a\x11.tag.TaggingReply\x129\n" +
-	"\rGetObjectTags\x12\x12.tag.ObjectTagsReq\x1a\x14.tag.ObjectTagsReplyB\aZ\x05./tagb\x06proto3"
+	"\rGetObjectTags\x12\x12.tag.ObjectTagsReq\x1a\x14.tag.ObjectTagsReply\x123\n" +
+	"\vCreateGroup\x12\x13.tag.CreateGroupReq\x1a\x0f.tag.GroupReply\x124\n" +
+	"\n" +
+	"ListGroups\x12\x11.tag.GroupListReq\x1a\x13.tag.GroupListReply\x12%\n" +
+	"\vDeleteGroup\x12\n" +
+	".tag.IdReq\x1a\n" +
+	".tag.IdReq\x123\n" +
+	"\tRunCircle\x12\x11.tag.RunCircleReq\x1a\x13.tag.RunCircleReply\x12@\n" +
+	"\x10ListGroupMembers\x12\x14.tag.GroupMembersReq\x1a\x16.tag.GroupMembersReplyB\aZ\x05./tagb\x06proto3"
 
 var (
 	file_tag_proto_rawDescOnce sync.Once
@@ -1188,24 +1838,34 @@ func file_tag_proto_rawDescGZIP() []byte {
 	return file_tag_proto_rawDescData
 }
 
-var file_tag_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_tag_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
 var file_tag_proto_goTypes = []any{
-	(*TagObject)(nil),       // 0: tag.TagObject
-	(*ObjectReply)(nil),     // 1: tag.ObjectReply
-	(*ObjectListReply)(nil), // 2: tag.ObjectListReply
-	(*CreateObjectReq)(nil), // 3: tag.CreateObjectReq
-	(*ObjectListReq)(nil),   // 4: tag.ObjectListReq
-	(*IdReq)(nil),           // 5: tag.IdReq
-	(*TagDef)(nil),          // 6: tag.TagDef
-	(*TagDefReply)(nil),     // 7: tag.TagDefReply
-	(*TagDefListReply)(nil), // 8: tag.TagDefListReply
-	(*CreateTagReq)(nil),    // 9: tag.CreateTagReq
-	(*TagDefListReq)(nil),   // 10: tag.TagDefListReq
-	(*TaggingReq)(nil),      // 11: tag.TaggingReq
-	(*TaggingReply)(nil),    // 12: tag.TaggingReply
-	(*ObjectTagsReq)(nil),   // 13: tag.ObjectTagsReq
-	(*TagValueItem)(nil),    // 14: tag.TagValueItem
-	(*ObjectTagsReply)(nil), // 15: tag.ObjectTagsReply
+	(*TagObject)(nil),         // 0: tag.TagObject
+	(*ObjectReply)(nil),       // 1: tag.ObjectReply
+	(*ObjectListReply)(nil),   // 2: tag.ObjectListReply
+	(*CreateObjectReq)(nil),   // 3: tag.CreateObjectReq
+	(*ObjectListReq)(nil),     // 4: tag.ObjectListReq
+	(*IdReq)(nil),             // 5: tag.IdReq
+	(*TagDef)(nil),            // 6: tag.TagDef
+	(*TagDefReply)(nil),       // 7: tag.TagDefReply
+	(*TagDefListReply)(nil),   // 8: tag.TagDefListReply
+	(*CreateTagReq)(nil),      // 9: tag.CreateTagReq
+	(*TagDefListReq)(nil),     // 10: tag.TagDefListReq
+	(*TaggingReq)(nil),        // 11: tag.TaggingReq
+	(*TaggingReply)(nil),      // 12: tag.TaggingReply
+	(*ObjectTagsReq)(nil),     // 13: tag.ObjectTagsReq
+	(*TagValueItem)(nil),      // 14: tag.TagValueItem
+	(*ObjectTagsReply)(nil),   // 15: tag.ObjectTagsReply
+	(*TagGroup)(nil),          // 16: tag.TagGroup
+	(*GroupReply)(nil),        // 17: tag.GroupReply
+	(*GroupListReply)(nil),    // 18: tag.GroupListReply
+	(*CreateGroupReq)(nil),    // 19: tag.CreateGroupReq
+	(*GroupListReq)(nil),      // 20: tag.GroupListReq
+	(*RunCircleReq)(nil),      // 21: tag.RunCircleReq
+	(*RunCircleReply)(nil),    // 22: tag.RunCircleReply
+	(*GroupMembersReq)(nil),   // 23: tag.GroupMembersReq
+	(*GroupMember)(nil),       // 24: tag.GroupMember
+	(*GroupMembersReply)(nil), // 25: tag.GroupMembersReply
 }
 var file_tag_proto_depIdxs = []int32{
 	0,  // 0: tag.ObjectReply.object:type_name -> tag.TagObject
@@ -1213,25 +1873,38 @@ var file_tag_proto_depIdxs = []int32{
 	6,  // 2: tag.TagDefReply.def:type_name -> tag.TagDef
 	6,  // 3: tag.TagDefListReply.list:type_name -> tag.TagDef
 	14, // 4: tag.ObjectTagsReply.tags:type_name -> tag.TagValueItem
-	3,  // 5: tag.Tag.CreateObject:input_type -> tag.CreateObjectReq
-	4,  // 6: tag.Tag.ListObjects:input_type -> tag.ObjectListReq
-	9,  // 7: tag.Tag.CreateTag:input_type -> tag.CreateTagReq
-	10, // 8: tag.Tag.ListTags:input_type -> tag.TagDefListReq
-	5,  // 9: tag.Tag.DeleteTag:input_type -> tag.IdReq
-	11, // 10: tag.Tag.Tagging:input_type -> tag.TaggingReq
-	13, // 11: tag.Tag.GetObjectTags:input_type -> tag.ObjectTagsReq
-	1,  // 12: tag.Tag.CreateObject:output_type -> tag.ObjectReply
-	2,  // 13: tag.Tag.ListObjects:output_type -> tag.ObjectListReply
-	7,  // 14: tag.Tag.CreateTag:output_type -> tag.TagDefReply
-	8,  // 15: tag.Tag.ListTags:output_type -> tag.TagDefListReply
-	5,  // 16: tag.Tag.DeleteTag:output_type -> tag.IdReq
-	12, // 17: tag.Tag.Tagging:output_type -> tag.TaggingReply
-	15, // 18: tag.Tag.GetObjectTags:output_type -> tag.ObjectTagsReply
-	12, // [12:19] is the sub-list for method output_type
-	5,  // [5:12] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	16, // 5: tag.GroupReply.group:type_name -> tag.TagGroup
+	16, // 6: tag.GroupListReply.list:type_name -> tag.TagGroup
+	24, // 7: tag.GroupMembersReply.members:type_name -> tag.GroupMember
+	3,  // 8: tag.Tag.CreateObject:input_type -> tag.CreateObjectReq
+	4,  // 9: tag.Tag.ListObjects:input_type -> tag.ObjectListReq
+	9,  // 10: tag.Tag.CreateTag:input_type -> tag.CreateTagReq
+	10, // 11: tag.Tag.ListTags:input_type -> tag.TagDefListReq
+	5,  // 12: tag.Tag.DeleteTag:input_type -> tag.IdReq
+	11, // 13: tag.Tag.Tagging:input_type -> tag.TaggingReq
+	13, // 14: tag.Tag.GetObjectTags:input_type -> tag.ObjectTagsReq
+	19, // 15: tag.Tag.CreateGroup:input_type -> tag.CreateGroupReq
+	20, // 16: tag.Tag.ListGroups:input_type -> tag.GroupListReq
+	5,  // 17: tag.Tag.DeleteGroup:input_type -> tag.IdReq
+	21, // 18: tag.Tag.RunCircle:input_type -> tag.RunCircleReq
+	23, // 19: tag.Tag.ListGroupMembers:input_type -> tag.GroupMembersReq
+	1,  // 20: tag.Tag.CreateObject:output_type -> tag.ObjectReply
+	2,  // 21: tag.Tag.ListObjects:output_type -> tag.ObjectListReply
+	7,  // 22: tag.Tag.CreateTag:output_type -> tag.TagDefReply
+	8,  // 23: tag.Tag.ListTags:output_type -> tag.TagDefListReply
+	5,  // 24: tag.Tag.DeleteTag:output_type -> tag.IdReq
+	12, // 25: tag.Tag.Tagging:output_type -> tag.TaggingReply
+	15, // 26: tag.Tag.GetObjectTags:output_type -> tag.ObjectTagsReply
+	17, // 27: tag.Tag.CreateGroup:output_type -> tag.GroupReply
+	18, // 28: tag.Tag.ListGroups:output_type -> tag.GroupListReply
+	5,  // 29: tag.Tag.DeleteGroup:output_type -> tag.IdReq
+	22, // 30: tag.Tag.RunCircle:output_type -> tag.RunCircleReply
+	25, // 31: tag.Tag.ListGroupMembers:output_type -> tag.GroupMembersReply
+	20, // [20:32] is the sub-list for method output_type
+	8,  // [8:20] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_tag_proto_init() }
@@ -1245,7 +1918,7 @@ func file_tag_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tag_proto_rawDesc), len(file_tag_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

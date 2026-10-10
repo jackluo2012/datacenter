@@ -19,13 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Tag_CreateObject_FullMethodName  = "/tag.Tag/CreateObject"
-	Tag_ListObjects_FullMethodName   = "/tag.Tag/ListObjects"
-	Tag_CreateTag_FullMethodName     = "/tag.Tag/CreateTag"
-	Tag_ListTags_FullMethodName      = "/tag.Tag/ListTags"
-	Tag_DeleteTag_FullMethodName     = "/tag.Tag/DeleteTag"
-	Tag_Tagging_FullMethodName       = "/tag.Tag/Tagging"
-	Tag_GetObjectTags_FullMethodName = "/tag.Tag/GetObjectTags"
+	Tag_CreateObject_FullMethodName     = "/tag.Tag/CreateObject"
+	Tag_ListObjects_FullMethodName      = "/tag.Tag/ListObjects"
+	Tag_CreateTag_FullMethodName        = "/tag.Tag/CreateTag"
+	Tag_ListTags_FullMethodName         = "/tag.Tag/ListTags"
+	Tag_DeleteTag_FullMethodName        = "/tag.Tag/DeleteTag"
+	Tag_Tagging_FullMethodName          = "/tag.Tag/Tagging"
+	Tag_GetObjectTags_FullMethodName    = "/tag.Tag/GetObjectTags"
+	Tag_CreateGroup_FullMethodName      = "/tag.Tag/CreateGroup"
+	Tag_ListGroups_FullMethodName       = "/tag.Tag/ListGroups"
+	Tag_DeleteGroup_FullMethodName      = "/tag.Tag/DeleteGroup"
+	Tag_RunCircle_FullMethodName        = "/tag.Tag/RunCircle"
+	Tag_ListGroupMembers_FullMethodName = "/tag.Tag/ListGroupMembers"
 )
 
 // TagClient is the client API for Tag service.
@@ -46,6 +51,16 @@ type TagClient interface {
 	Tagging(ctx context.Context, in *TaggingReq, opts ...grpc.CallOption) (*TaggingReply, error)
 	//查对象标签画像
 	GetObjectTags(ctx context.Context, in *ObjectTagsReq, opts ...grpc.CallOption) (*ObjectTagsReply, error)
+	//创建人群（圈群定义）
+	CreateGroup(ctx context.Context, in *CreateGroupReq, opts ...grpc.CallOption) (*GroupReply, error)
+	//人群列表
+	ListGroups(ctx context.Context, in *GroupListReq, opts ...grpc.CallOption) (*GroupListReply, error)
+	//删除人群
+	DeleteGroup(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
+	//执行圈选（跑圈选 SQL 物化人群到 dc_tag_group_member）
+	RunCircle(ctx context.Context, in *RunCircleReq, opts ...grpc.CallOption) (*RunCircleReply, error)
+	//人群成员查询
+	ListGroupMembers(ctx context.Context, in *GroupMembersReq, opts ...grpc.CallOption) (*GroupMembersReply, error)
 }
 
 type tagClient struct {
@@ -126,6 +141,56 @@ func (c *tagClient) GetObjectTags(ctx context.Context, in *ObjectTagsReq, opts .
 	return out, nil
 }
 
+func (c *tagClient) CreateGroup(ctx context.Context, in *CreateGroupReq, opts ...grpc.CallOption) (*GroupReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GroupReply)
+	err := c.cc.Invoke(ctx, Tag_CreateGroup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tagClient) ListGroups(ctx context.Context, in *GroupListReq, opts ...grpc.CallOption) (*GroupListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GroupListReply)
+	err := c.cc.Invoke(ctx, Tag_ListGroups_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tagClient) DeleteGroup(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IdReq)
+	err := c.cc.Invoke(ctx, Tag_DeleteGroup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tagClient) RunCircle(ctx context.Context, in *RunCircleReq, opts ...grpc.CallOption) (*RunCircleReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RunCircleReply)
+	err := c.cc.Invoke(ctx, Tag_RunCircle_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tagClient) ListGroupMembers(ctx context.Context, in *GroupMembersReq, opts ...grpc.CallOption) (*GroupMembersReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GroupMembersReply)
+	err := c.cc.Invoke(ctx, Tag_ListGroupMembers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TagServer is the server API for Tag service.
 // All implementations must embed UnimplementedTagServer
 // for forward compatibility.
@@ -144,6 +209,16 @@ type TagServer interface {
 	Tagging(context.Context, *TaggingReq) (*TaggingReply, error)
 	//查对象标签画像
 	GetObjectTags(context.Context, *ObjectTagsReq) (*ObjectTagsReply, error)
+	//创建人群（圈群定义）
+	CreateGroup(context.Context, *CreateGroupReq) (*GroupReply, error)
+	//人群列表
+	ListGroups(context.Context, *GroupListReq) (*GroupListReply, error)
+	//删除人群
+	DeleteGroup(context.Context, *IdReq) (*IdReq, error)
+	//执行圈选（跑圈选 SQL 物化人群到 dc_tag_group_member）
+	RunCircle(context.Context, *RunCircleReq) (*RunCircleReply, error)
+	//人群成员查询
+	ListGroupMembers(context.Context, *GroupMembersReq) (*GroupMembersReply, error)
 	mustEmbedUnimplementedTagServer()
 }
 
@@ -174,6 +249,21 @@ func (UnimplementedTagServer) Tagging(context.Context, *TaggingReq) (*TaggingRep
 }
 func (UnimplementedTagServer) GetObjectTags(context.Context, *ObjectTagsReq) (*ObjectTagsReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetObjectTags not implemented")
+}
+func (UnimplementedTagServer) CreateGroup(context.Context, *CreateGroupReq) (*GroupReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateGroup not implemented")
+}
+func (UnimplementedTagServer) ListGroups(context.Context, *GroupListReq) (*GroupListReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListGroups not implemented")
+}
+func (UnimplementedTagServer) DeleteGroup(context.Context, *IdReq) (*IdReq, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteGroup not implemented")
+}
+func (UnimplementedTagServer) RunCircle(context.Context, *RunCircleReq) (*RunCircleReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method RunCircle not implemented")
+}
+func (UnimplementedTagServer) ListGroupMembers(context.Context, *GroupMembersReq) (*GroupMembersReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListGroupMembers not implemented")
 }
 func (UnimplementedTagServer) mustEmbedUnimplementedTagServer() {}
 func (UnimplementedTagServer) testEmbeddedByValue()             {}
@@ -322,6 +412,96 @@ func _Tag_GetObjectTags_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Tag_CreateGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGroupReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TagServer).CreateGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Tag_CreateGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TagServer).CreateGroup(ctx, req.(*CreateGroupReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Tag_ListGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GroupListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TagServer).ListGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Tag_ListGroups_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TagServer).ListGroups(ctx, req.(*GroupListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Tag_DeleteGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TagServer).DeleteGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Tag_DeleteGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TagServer).DeleteGroup(ctx, req.(*IdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Tag_RunCircle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunCircleReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TagServer).RunCircle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Tag_RunCircle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TagServer).RunCircle(ctx, req.(*RunCircleReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Tag_ListGroupMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GroupMembersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TagServer).ListGroupMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Tag_ListGroupMembers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TagServer).ListGroupMembers(ctx, req.(*GroupMembersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Tag_ServiceDesc is the grpc.ServiceDesc for Tag service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -356,6 +536,26 @@ var Tag_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetObjectTags",
 			Handler:    _Tag_GetObjectTags_Handler,
+		},
+		{
+			MethodName: "CreateGroup",
+			Handler:    _Tag_CreateGroup_Handler,
+		},
+		{
+			MethodName: "ListGroups",
+			Handler:    _Tag_ListGroups_Handler,
+		},
+		{
+			MethodName: "DeleteGroup",
+			Handler:    _Tag_DeleteGroup_Handler,
+		},
+		{
+			MethodName: "RunCircle",
+			Handler:    _Tag_RunCircle_Handler,
+		},
+		{
+			MethodName: "ListGroupMembers",
+			Handler:    _Tag_ListGroupMembers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

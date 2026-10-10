@@ -26,3 +26,5 @@ ai/rpc/etc/ai.yaml
 standard/rpc/etc/standard.yaml
 mdm/rpc/etc/mdm.yaml
 ops/rpc/etc/ops.yaml
+theme/rpc/etc/theme.yaml
+security/rpc/etc/security.yaml

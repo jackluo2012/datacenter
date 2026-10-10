@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package theme;
+
+option go_package = "./theme";
+
+message ThemeDomain {
+  int64  id      = 1;
+  string code    = 2;  //域编码(如 trade)
+  string name    = 3;  //域名(如 交易域)
+  string comment = 4;
+  int64  beid    = 5;
+}
+message DomainReply { ThemeDomain domain = 1; }
+message DomainListReply { repeated ThemeDomain list = 1; int64 total = 2; }
+
+message SaveDomainReq {
+  int64  id      = 1;
+  string code    = 2;
+  string name    = 3;
+  string comment = 4;
+  int64  beid    = 5;
+}
+message IdReq { int64 id = 1; int64 beid = 2; }
+
+message ThemeInfo {
+  int64  id       = 1;
+  int64  domain_id = 2;
+  string code     = 3;
+  string name     = 4;
+  string comment  = 5;
+  int64  beid     = 6;
+}
+message ThemeReply { Theme theme = 1; }
+message ThemeListReply { repeated Theme list = 1; int64 total = 2; }
+
+message SaveThemeReq {
+  int64  id        = 1;
+  int64  domain_id = 2;
+  string code      = 3;
+  string name      = 4;
+  string comment   = 5;
+  int64  beid      = 6;
+}
+message ThemeListReq { int64 beid = 1; int64 domain_id = 2; int64 page = 3; int64 size = 4; }
+
+//数仓模型（主题下的分层表：ods/dwd/dws/ads + 维度声明）
+message ThemeModel {
+  int64  id            = 1;
+  int64  theme_id      = 2;
+  string layer         = 3;  //ods/dwd/dws/ads/dim
+  string table_name    = 4;
+  string model_name    = 5;
+  string fields_json   = 6;  //[{name,type,comment,pk,dim}]
+  string dim_json      = 7;  //维度声明[{dim_table,join_key}]
+  string create_sql    = 8;  //建表 DDL(可从 fields 生成)
+  int64  datasource_id = 9;
+  string db_name       = 10;
+  int64  beid          = 11;
+}
+message ModelReply { ThemeModel model = 1; }
+message ModelListReply { repeated ThemeModel list = 1; int64 total = 2; }
+
+message SaveThemeModelReq {
+  int64  id            = 1;
+  int64  theme_id      = 2;
+  string layer         = 3;
+  string table_name    = 4;
+  string model_name    = 5;
+  string fields_json   = 6;
+  string dim_json      = 7;
+  int64  datasource_id = 8;
+  string db_name       = 9;
+  int64  beid          = 10;
+}
+message ModelListReq {
+  int64  beid     = 1;
+  int64  theme_id = 2;
+  string layer    = 3;
+  int64  page     = 4;
+  int64  size     = 5;
+}
+
+//物化视图
+message MaterializedView {
+  int64  id            = 1;
+  string name          = 2;
+  int64  datasource_id = 3;
+  string db_name       = 4;
+  string view_name     = 5;
+  string select_sql    = 6;
+  string refresh_mode  = 7;  //manual/schedule(存档)
+  string last_status   = 8;
+  int64  last_refresh_at = 9;
+  int64  beid          = 10;
+}
+message MvReply { MaterializedView mv = 1; }
+message MvListReply { repeated MaterializedView list = 1; int64 total = 2; }
+
+message SaveMvReq {
+  string name          = 1;
+  int64  datasource_id = 2;
+  string db_name       = 3;
+  string view_name     = 4;
+  string select_sql    = 5;
+  string refresh_mode  = 6;
+  int64  beid          = 7;
+}
+message MvListReq { int64 beid = 1; int64 page = 2; int64 size = 3; }
+message RefreshReply { bool ok = 1; string msg = 2; int64 cost_ms = 3; }
+
+service Theme {
+  //主题域
+  rpc SaveDomain(SaveDomainReq) returns (DomainReply);
+  rpc DeleteDomain(IdReq) returns (IdReq);
+  rpc ListDomains(IdReq) returns (DomainListReply);
+  //主题
+  rpc SaveTheme(SaveThemeReq) returns (ThemeReply);
+  rpc DeleteTheme(IdReq) returns (IdReq);
+  rpc ListThemes(ThemeListReq) returns (ThemeListReply);
+  //数仓模型（可在目标库自动建表）
+  rpc SaveThemeModel(SaveThemeModelReq) returns (ModelReply);
+  rpc DeleteThemeModel(IdReq) returns (IdReq);
+  rpc ListThemeModels(ModelListReq) returns (ModelListReply);
+  //按模型在目标库生成建表 DDL 并执行
+  rpc DeployThemeModel(IdReq) returns (RefreshReply);
+  //物化视图
+  rpc SaveMaterializedView(SaveMvReq) returns (MvReply);
+  rpc DeleteMaterializedView(IdReq) returns (IdReq);
+  rpc ListMaterializedViews(MvListReq) returns (MvListReply);
+  //刷新物化视图（drop+create as select 真实执行）
+  rpc RefreshMaterializedView(IdReq) returns (RefreshReply);
+}

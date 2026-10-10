@@ -64,3 +64,33 @@ func (s *TagServer) GetObjectTags(ctx context.Context, in *tag.ObjectTagsReq) (*
 	l := logic.NewGetObjectTagsLogic(ctx, s.svcCtx)
 	return l.GetObjectTags(in)
 }
+
+// 创建人群（圈群定义）
+func (s *TagServer) CreateGroup(ctx context.Context, in *tag.CreateGroupReq) (*tag.GroupReply, error) {
+	l := logic.NewCreateGroupLogic(ctx, s.svcCtx)
+	return l.CreateGroup(in)
+}
+
+// 人群列表
+func (s *TagServer) ListGroups(ctx context.Context, in *tag.GroupListReq) (*tag.GroupListReply, error) {
+	l := logic.NewListGroupsLogic(ctx, s.svcCtx)
+	return l.ListGroups(in)
+}
+
+// 删除人群
+func (s *TagServer) DeleteGroup(ctx context.Context, in *tag.IdReq) (*tag.IdReq, error) {
+	l := logic.NewDeleteGroupLogic(ctx, s.svcCtx)
+	return l.DeleteGroup(in)
+}
+
+// 执行圈选（跑圈选 SQL 物化人群到 dc_tag_group_member）
+func (s *TagServer) RunCircle(ctx context.Context, in *tag.RunCircleReq) (*tag.RunCircleReply, error) {
+	l := logic.NewRunCircleLogic(ctx, s.svcCtx)
+	return l.RunCircle(in)
+}
+
+// 人群成员查询
+func (s *TagServer) ListGroupMembers(ctx context.Context, in *tag.GroupMembersReq) (*tag.GroupMembersReply, error) {
+	l := logic.NewListGroupMembersLogic(ctx, s.svcCtx)
+	return l.ListGroupMembers(in)
+}

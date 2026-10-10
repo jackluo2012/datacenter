@@ -88,6 +88,52 @@ message TagValueItem {
 }
 message ObjectTagsReply { repeated TagValueItem tags = 1; }
 
+
+// ============ 标签圈群（Phase 6 补齐）============
+message TagGroup {
+  int64  id                  = 1;
+  string name                = 2;
+  int64  object_id           = 3;
+  string circle_rule_sql     = 4;  //圈选 SQL: select <pk> as object_id from <tag/join> where <标签条件>
+  int64  est_count           = 5;
+  string materialized_table  = 6;  //人群物化表
+  int64  last_run_at         = 7;
+  int64  beid                = 8;
+}
+message GroupReply { TagGroup group = 1; }
+message GroupListReply { repeated TagGroup list = 1; int64 total = 2; }
+
+message CreateGroupReq {
+  string name              = 1;
+  int64  object_id         = 2;
+  string circle_rule_sql   = 3;
+  int64  beid              = 4;
+}
+message GroupListReq { int64 beid = 1; int64 page = 2; int64 size = 3; }
+
+message RunCircleReq {
+  int64 group_id = 1;
+  int64 beid     = 2;
+}
+message RunCircleReply {
+  int64  member_count = 1;
+  string msg          = 2;
+}
+message GroupMembersReq {
+  int64  group_id = 1;
+  int64  beid     = 2;
+  int64  page     = 3;
+  int64  size     = 4;
+}
+message GroupMember {
+  string object_pk = 1;
+  string tag_value = 2;
+}
+message GroupMembersReply {
+  repeated GroupMember members = 1;
+  int64 total = 2;
+}
+
 service Tag {
   //创建标签对象
   rpc CreateObject(CreateObjectReq) returns (ObjectReply);
@@ -103,4 +149,14 @@ service Tag {
   rpc Tagging(TaggingReq) returns (TaggingReply);
   //查对象标签画像
   rpc GetObjectTags(ObjectTagsReq) returns (ObjectTagsReply);
+  //创建人群（圈群定义）
+  rpc CreateGroup(CreateGroupReq) returns (GroupReply);
+  //人群列表
+  rpc ListGroups(GroupListReq) returns (GroupListReply);
+  //删除人群
+  rpc DeleteGroup(IdReq) returns (IdReq);
+  //执行圈选（跑圈选 SQL 物化人群到 dc_tag_group_member）
+  rpc RunCircle(RunCircleReq) returns (RunCircleReply);
+  //人群成员查询
+  rpc ListGroupMembers(GroupMembersReq) returns (GroupMembersReply);
 }
