@@ -91,6 +91,7 @@ type ExecuteApiResp {
 }
 
 @server(
+	jwt: Auth
 	group: datasvc
 )
 service datacenter-api {
@@ -139,6 +140,12 @@ service datacenter-api {
 	)
 	@handler grantApi
 	post /datasvc/grant (GrantApiReq)
+}
+//对外执行入口：不走 JWT，由 app_key+签名 鉴权
+@server(
+	group: datasvc
+)
+service datacenter-api {
 	@doc(
 		summary: "执行数据API（外部统一入口）"
 	)

@@ -62,6 +62,7 @@ type BindAtomsReq {
 }
 
 @server(
+	jwt: Auth
 	group: metric
 )
 service datacenter-api {

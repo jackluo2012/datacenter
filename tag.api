@@ -97,6 +97,7 @@ type ObjectTagsResp {
 }
 
 @server(
+	jwt: Auth
 	group: tag
 )
 service datacenter-api {

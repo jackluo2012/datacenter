@@ -23,6 +23,7 @@ type AskResp {
 }
 
 @server(
+	jwt: Auth
 	group: ai
 )
 service datacenter-api {

@@ -67,6 +67,7 @@ type TestConnResp {
 }
 
 @server(
+	jwt: Auth
 	group: datasource
 )
 service datacenter-api {

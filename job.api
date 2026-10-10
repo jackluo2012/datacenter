@@ -64,6 +64,7 @@ type SchedulerInfoResp {
 }
 
 @server(
+	jwt: Auth
 	group: job
 )
 service datacenter-api {

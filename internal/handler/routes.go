@@ -36,6 +36,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: ai.AskHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(
@@ -65,6 +66,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: catalog.CategoryListHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(
@@ -140,6 +142,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: datasource.UpdateDataSourceHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(
@@ -193,16 +196,22 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: datasvc.RegisterAppHandler(serverCtx),
 			},
 			{
-				// 执行数据API（外部统一入口）
-				Method:  http.MethodPost,
-				Path:    "/datasvc/execute",
-				Handler: datasvc.ExecuteApiHandler(serverCtx),
-			},
-			{
 				// 授权API给应用
 				Method:  http.MethodPost,
 				Path:    "/datasvc/grant",
 				Handler: datasvc.GrantApiHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 执行数据API（外部统一入口）
+				Method:  http.MethodPost,
+				Path:    "/datasvc/execute",
+				Handler: datasvc.ExecuteApiHandler(serverCtx),
 			},
 		},
 	)
@@ -240,6 +249,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: ide.SaveScriptHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(
@@ -287,6 +297,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: job.TriggerTaskHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(
@@ -340,6 +351,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: metadata.VersionListHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(
@@ -387,6 +399,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: metric.UpdateMetricHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(
@@ -434,6 +447,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: quality.QualityRuleListHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(
@@ -566,6 +580,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: tag.TaggingHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(

@@ -98,6 +98,7 @@ type ResultListResp {
 }
 
 @server(
+	jwt: Auth
 	group: quality
 )
 service datacenter-api {

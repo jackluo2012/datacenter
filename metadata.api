@@ -95,6 +95,7 @@ type CompareReq {
 type DiffResp { DiffJson string `json:"diff_json"` }
 
 @server(
+	jwt: Auth
 	group: metadata
 )
 service datacenter-api {

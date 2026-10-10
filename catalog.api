@@ -55,6 +55,7 @@ type AssetListResp {
 }
 
 @server(
+	jwt: Auth
 	group: catalog
 )
 service datacenter-api {

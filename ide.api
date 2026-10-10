@@ -51,6 +51,7 @@ type RunScriptResp {
 }
 
 @server(
+	jwt: Auth
 	group: ide
 )
 service datacenter-api {
