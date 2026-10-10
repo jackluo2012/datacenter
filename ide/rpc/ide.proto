@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package ide;
+
+option go_package = "./ide";
+
+message Script {
+  int64  id            = 1;
+  string name          = 2;
+  string sql_text      = 3;
+  int32  version       = 4;  //每次保存+1
+  int64  datasource_id = 5;
+  string db_name       = 6;
+  int64  last_run_at   = 7;
+  int64  beid          = 8;
+}
+message ScriptReply { Script script = 1; }
+message ScriptListReply {
+  repeated Script list = 1;
+  int64 total = 2;
+}
+
+message SaveScriptReq {
+  int64  id            = 1;  //0=新建,>0=更新(version+1)
+  string name          = 2;
+  string sql_text      = 3;
+  int64  datasource_id = 4;
+  string db_name       = 5;
+  int64  beid          = 6;
+}
+message ScriptListReq {
+  int64  beid    = 1;
+  string keyword = 2;
+  int64  page    = 3;
+  int64  size    = 4;
+}
+message IdReq { int64 id = 1; int64 beid = 2; }
+
+message RunScriptReq {
+  int64 id      = 1;
+  int64 beid    = 2;
+  int32 max_rows = 3;  //默认 100,保护性截断
+}
+message RunScriptReply {
+  string columns_json = 1;
+  string rows_json    = 2;
+  int64  row_count    = 3;
+  int64  cost_ms      = 4;
+  bool   truncated    = 5;
+}
+
+service Ide {
+  //保存脚本（新建或更新，更新自动 version+1）
+  rpc SaveScript(SaveScriptReq) returns (ScriptReply);
+  //脚本列表
+  rpc ListScripts(ScriptListReq) returns (ScriptListReply);
+  //脚本详情
+  rpc GetScript(IdReq) returns (ScriptReply);
+  //删除脚本
+  rpc DeleteScript(IdReq) returns (IdReq);
+  //执行脚本（开发调试：仅 SELECT，行数保护截断）
+  rpc RunScript(RunScriptReq) returns (RunScriptReply);
+}

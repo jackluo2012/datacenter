@@ -20,3 +20,6 @@ catalog/rpc/etc/catalog.yaml
 quality/rpc/etc/quality.yaml
 metric/rpc/etc/metric.yaml
 tag/rpc/etc/tag.yaml
+job/rpc/etc/job.yaml
+ide/rpc/etc/ide.yaml
+ai/rpc/etc/ai.yaml
