@@ -27,6 +27,7 @@ type ServiceContext struct {
 	ApiModel      model.ApiModel
 	AppModel      model.AppModel
 	GrantModel    model.GrantModel
+	CallLogModel  model.CallLogModel          //API 调用日志（Phase 7 可观测埋点）
 	ResultCache   cache.Cache                 //API 结果缓存（CacheRedis）
 	DataSourceRpc dataSourceClient.DataSource //数据源 rpc（ExecuteApi 获取目标库 DSN）
 
@@ -53,6 +54,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		ApiModel:      model.NewApiModel(conn),
 		AppModel:      model.NewAppModel(conn),
 		GrantModel:    model.NewGrantModel(conn),
+		CallLogModel:  model.NewCallLogModel(conn),
 		ResultCache:   cache.New(c.CacheRedis, syncx.NewSingleFlight(), cache.NewStat("dsvc"), ErrCacheNotFound),
 		DataSourceRpc: dsRpc,
 		limiters:      make(map[int64]*rate.Limiter),

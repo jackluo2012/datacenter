@@ -93,6 +93,60 @@ message ExecuteReply {
   int64  affected   = 4; //写语句受影响行数
 }
 
+
+// ============ API 可观测（Phase 7） ============
+message ApiCallLog {
+  int64  id         = 1;
+  int64  api_id     = 2;
+  int64  app_id     = 3;
+  string path       = 4;
+  string status     = 5;  //ok/error/denied
+  string error_code = 6;
+  int64  rows_cnt   = 7;
+  int32  cost_ms    = 8;
+  bool   cache_hit  = 9;
+  string ip         = 10;
+  int64  created_at = 11;
+}
+message CallLogListReply { repeated ApiCallLog list = 1; int64 total = 2; }
+message CallLogListReq {
+  int64  beid    = 1;
+  int64  api_id  = 2;
+  int64  app_id  = 3;
+  string status  = 4;
+  int64  page    = 5;
+  int64  size    = 6;
+}
+message ApiCallStats {
+  int64  total_calls  = 1;
+  int64  ok_calls     = 2;
+  int64  error_calls  = 3;
+  int64  denied_calls = 4;
+  double success_rate = 5;
+  double avg_cost_ms  = 6;
+  int64  cache_hits   = 7;
+}
+message TopApi {
+  int64  api_id = 1;
+  string path   = 2;
+  int64  calls  = 3;
+  double avg_cost_ms = 4;
+}
+message StatsReq { int64 beid = 1; int32 days = 2; }
+message StatsReply {
+  ApiCallStats overall = 1;
+  repeated TopApi top_apis = 2;
+  repeated int64 daily_calls = 3;   //近 N 天调用量（升序）
+  repeated string daily_dates = 4;  //对应日期 YYYY-MM-DD
+}
+message ApiDocReply {
+  string api_name  = 1;
+  string path      = 2;
+  string markdown  = 3;  //Markdown 文档（含参数表/调用示例/签名说明）
+  string openapi_json = 4; //OpenAPI 3.0 片段
+}
+
+
 service DataSvc {
   //创建API
   rpc CreateApi(CreateApiReq) returns (ApiReply);
@@ -113,6 +167,12 @@ service DataSvc {
   rpc GrantApi(GrantApiReq) returns (OkReply);
   //执行 API（核心：鉴权→限流→缓存→执行→脱敏）
   rpc ExecuteApi(ExecuteReq) returns (ExecuteReply);
+  //调用日志
+  rpc ListCallLogs(CallLogListReq) returns (CallLogListReply);
+  //调用统计（成功率/耗时/TopN/日趋势）
+  rpc GetCallStats(StatsReq) returns (StatsReply);
+  //API 文档导出（Markdown + OpenAPI 片段）
+  rpc GetApiDoc(PathReq) returns (ApiDocReply);
 }
 
 message IdReq { int64 id = 1; int64 beid = 2; }

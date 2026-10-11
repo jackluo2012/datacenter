@@ -1089,6 +1089,923 @@ func (x *ResultListReq) GetSize() int64 {
 	return 0
 }
 
+// ============ 落地深化（Phase 7）：告警/错误数据/健康分 ============
+type AlertChannel struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"` //dingtalk/feishu
+	WebhookUrl    string                 `protobuf:"bytes,4,opt,name=webhook_url,json=webhookUrl,proto3" json:"webhook_url,omitempty"`
+	Secret        string                 `protobuf:"bytes,5,opt,name=secret,proto3" json:"secret,omitempty"`
+	MinLevel      string                 `protobuf:"bytes,6,opt,name=min_level,json=minLevel,proto3" json:"min_level,omitempty"` //failed/partial
+	Status        int32                  `protobuf:"varint,7,opt,name=status,proto3" json:"status,omitempty"`
+	Beid          int64                  `protobuf:"varint,8,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AlertChannel) Reset() {
+	*x = AlertChannel{}
+	mi := &file_quality_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AlertChannel) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AlertChannel) ProtoMessage() {}
+
+func (x *AlertChannel) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AlertChannel.ProtoReflect.Descriptor instead.
+func (*AlertChannel) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *AlertChannel) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *AlertChannel) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AlertChannel) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *AlertChannel) GetWebhookUrl() string {
+	if x != nil {
+		return x.WebhookUrl
+	}
+	return ""
+}
+
+func (x *AlertChannel) GetSecret() string {
+	if x != nil {
+		return x.Secret
+	}
+	return ""
+}
+
+func (x *AlertChannel) GetMinLevel() string {
+	if x != nil {
+		return x.MinLevel
+	}
+	return ""
+}
+
+func (x *AlertChannel) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *AlertChannel) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+type SaveAlertChannelReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
+	WebhookUrl    string                 `protobuf:"bytes,4,opt,name=webhook_url,json=webhookUrl,proto3" json:"webhook_url,omitempty"`
+	Secret        string                 `protobuf:"bytes,5,opt,name=secret,proto3" json:"secret,omitempty"`
+	MinLevel      string                 `protobuf:"bytes,6,opt,name=min_level,json=minLevel,proto3" json:"min_level,omitempty"`
+	Beid          int64                  `protobuf:"varint,7,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SaveAlertChannelReq) Reset() {
+	*x = SaveAlertChannelReq{}
+	mi := &file_quality_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SaveAlertChannelReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SaveAlertChannelReq) ProtoMessage() {}
+
+func (x *SaveAlertChannelReq) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SaveAlertChannelReq.ProtoReflect.Descriptor instead.
+func (*SaveAlertChannelReq) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *SaveAlertChannelReq) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *SaveAlertChannelReq) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *SaveAlertChannelReq) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *SaveAlertChannelReq) GetWebhookUrl() string {
+	if x != nil {
+		return x.WebhookUrl
+	}
+	return ""
+}
+
+func (x *SaveAlertChannelReq) GetSecret() string {
+	if x != nil {
+		return x.Secret
+	}
+	return ""
+}
+
+func (x *SaveAlertChannelReq) GetMinLevel() string {
+	if x != nil {
+		return x.MinLevel
+	}
+	return ""
+}
+
+func (x *SaveAlertChannelReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+type AlertChannelListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	List          []*AlertChannel        `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AlertChannelListReply) Reset() {
+	*x = AlertChannelListReply{}
+	mi := &file_quality_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AlertChannelListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AlertChannelListReply) ProtoMessage() {}
+
+func (x *AlertChannelListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AlertChannelListReply.ProtoReflect.Descriptor instead.
+func (*AlertChannelListReply) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *AlertChannelListReply) GetList() []*AlertChannel {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+func (x *AlertChannelListReply) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type AlertChannelListReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Beid          int64                  `protobuf:"varint,1,opt,name=beid,proto3" json:"beid,omitempty"`
+	Page          int64                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int64                  `protobuf:"varint,3,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AlertChannelListReq) Reset() {
+	*x = AlertChannelListReq{}
+	mi := &file_quality_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AlertChannelListReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AlertChannelListReq) ProtoMessage() {}
+
+func (x *AlertChannelListReq) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AlertChannelListReq.ProtoReflect.Descriptor instead.
+func (*AlertChannelListReq) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *AlertChannelListReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+func (x *AlertChannelListReq) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *AlertChannelListReq) GetSize() int64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+type TestAlertReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Ok            bool                   `protobuf:"varint,1,opt,name=ok,proto3" json:"ok,omitempty"`
+	Msg           string                 `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TestAlertReply) Reset() {
+	*x = TestAlertReply{}
+	mi := &file_quality_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TestAlertReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestAlertReply) ProtoMessage() {}
+
+func (x *TestAlertReply) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestAlertReply.ProtoReflect.Descriptor instead.
+func (*TestAlertReply) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *TestAlertReply) GetOk() bool {
+	if x != nil {
+		return x.Ok
+	}
+	return false
+}
+
+func (x *TestAlertReply) GetMsg() string {
+	if x != nil {
+		return x.Msg
+	}
+	return ""
+}
+
+type ErrorData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RuleId        int64                  `protobuf:"varint,1,opt,name=rule_id,json=ruleId,proto3" json:"rule_id,omitempty"`
+	JobId         int64                  `protobuf:"varint,2,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
+	RowsJson      string                 `protobuf:"bytes,3,opt,name=rows_json,json=rowsJson,proto3" json:"rows_json,omitempty"`
+	SampleCount   int32                  `protobuf:"varint,4,opt,name=sample_count,json=sampleCount,proto3" json:"sample_count,omitempty"`
+	RunAt         int64                  `protobuf:"varint,5,opt,name=run_at,json=runAt,proto3" json:"run_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ErrorData) Reset() {
+	*x = ErrorData{}
+	mi := &file_quality_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ErrorData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ErrorData) ProtoMessage() {}
+
+func (x *ErrorData) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ErrorData.ProtoReflect.Descriptor instead.
+func (*ErrorData) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *ErrorData) GetRuleId() int64 {
+	if x != nil {
+		return x.RuleId
+	}
+	return 0
+}
+
+func (x *ErrorData) GetJobId() int64 {
+	if x != nil {
+		return x.JobId
+	}
+	return 0
+}
+
+func (x *ErrorData) GetRowsJson() string {
+	if x != nil {
+		return x.RowsJson
+	}
+	return ""
+}
+
+func (x *ErrorData) GetSampleCount() int32 {
+	if x != nil {
+		return x.SampleCount
+	}
+	return 0
+}
+
+func (x *ErrorData) GetRunAt() int64 {
+	if x != nil {
+		return x.RunAt
+	}
+	return 0
+}
+
+type ErrorDataListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	List          []*ErrorData           `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ErrorDataListReply) Reset() {
+	*x = ErrorDataListReply{}
+	mi := &file_quality_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ErrorDataListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ErrorDataListReply) ProtoMessage() {}
+
+func (x *ErrorDataListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ErrorDataListReply.ProtoReflect.Descriptor instead.
+func (*ErrorDataListReply) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *ErrorDataListReply) GetList() []*ErrorData {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+func (x *ErrorDataListReply) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type ErrorDataListReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	JobId         int64                  `protobuf:"varint,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
+	RuleId        int64                  `protobuf:"varint,2,opt,name=rule_id,json=ruleId,proto3" json:"rule_id,omitempty"`
+	Page          int64                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int64                  `protobuf:"varint,4,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ErrorDataListReq) Reset() {
+	*x = ErrorDataListReq{}
+	mi := &file_quality_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ErrorDataListReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ErrorDataListReq) ProtoMessage() {}
+
+func (x *ErrorDataListReq) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ErrorDataListReq.ProtoReflect.Descriptor instead.
+func (*ErrorDataListReq) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *ErrorDataListReq) GetJobId() int64 {
+	if x != nil {
+		return x.JobId
+	}
+	return 0
+}
+
+func (x *ErrorDataListReq) GetRuleId() int64 {
+	if x != nil {
+		return x.RuleId
+	}
+	return 0
+}
+
+func (x *ErrorDataListReq) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ErrorDataListReq) GetSize() int64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+type TableProfile struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	DatasourceId  int64                  `protobuf:"varint,2,opt,name=datasource_id,json=datasourceId,proto3" json:"datasource_id,omitempty"`
+	TableName     string                 `protobuf:"bytes,3,opt,name=table_name,json=tableName,proto3" json:"table_name,omitempty"`
+	RowsCnt       int64                  `protobuf:"varint,4,opt,name=rows_cnt,json=rowsCnt,proto3" json:"rows_cnt,omitempty"`
+	ColsCnt       int32                  `protobuf:"varint,5,opt,name=cols_cnt,json=colsCnt,proto3" json:"cols_cnt,omitempty"`
+	NullRate      float64                `protobuf:"fixed64,6,opt,name=null_rate,json=nullRate,proto3" json:"null_rate,omitempty"`
+	DupPkCnt      int64                  `protobuf:"varint,7,opt,name=dup_pk_cnt,json=dupPkCnt,proto3" json:"dup_pk_cnt,omitempty"`
+	HealthScore   int32                  `protobuf:"varint,8,opt,name=health_score,json=healthScore,proto3" json:"health_score,omitempty"`
+	ProfileJson   string                 `protobuf:"bytes,9,opt,name=profile_json,json=profileJson,proto3" json:"profile_json,omitempty"`
+	RanAt         int64                  `protobuf:"varint,10,opt,name=ran_at,json=ranAt,proto3" json:"ran_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TableProfile) Reset() {
+	*x = TableProfile{}
+	mi := &file_quality_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TableProfile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TableProfile) ProtoMessage() {}
+
+func (x *TableProfile) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TableProfile.ProtoReflect.Descriptor instead.
+func (*TableProfile) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *TableProfile) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *TableProfile) GetDatasourceId() int64 {
+	if x != nil {
+		return x.DatasourceId
+	}
+	return 0
+}
+
+func (x *TableProfile) GetTableName() string {
+	if x != nil {
+		return x.TableName
+	}
+	return ""
+}
+
+func (x *TableProfile) GetRowsCnt() int64 {
+	if x != nil {
+		return x.RowsCnt
+	}
+	return 0
+}
+
+func (x *TableProfile) GetColsCnt() int32 {
+	if x != nil {
+		return x.ColsCnt
+	}
+	return 0
+}
+
+func (x *TableProfile) GetNullRate() float64 {
+	if x != nil {
+		return x.NullRate
+	}
+	return 0
+}
+
+func (x *TableProfile) GetDupPkCnt() int64 {
+	if x != nil {
+		return x.DupPkCnt
+	}
+	return 0
+}
+
+func (x *TableProfile) GetHealthScore() int32 {
+	if x != nil {
+		return x.HealthScore
+	}
+	return 0
+}
+
+func (x *TableProfile) GetProfileJson() string {
+	if x != nil {
+		return x.ProfileJson
+	}
+	return ""
+}
+
+func (x *TableProfile) GetRanAt() int64 {
+	if x != nil {
+		return x.RanAt
+	}
+	return 0
+}
+
+type ProfileTableReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DatasourceId  int64                  `protobuf:"varint,1,opt,name=datasource_id,json=datasourceId,proto3" json:"datasource_id,omitempty"`
+	Beid          int64                  `protobuf:"varint,2,opt,name=beid,proto3" json:"beid,omitempty"`
+	DbName        string                 `protobuf:"bytes,3,opt,name=db_name,json=dbName,proto3" json:"db_name,omitempty"`
+	TableName     string                 `protobuf:"bytes,4,opt,name=table_name,json=tableName,proto3" json:"table_name,omitempty"`
+	PkColumn      string                 `protobuf:"bytes,5,opt,name=pk_column,json=pkColumn,proto3" json:"pk_column,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProfileTableReq) Reset() {
+	*x = ProfileTableReq{}
+	mi := &file_quality_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileTableReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileTableReq) ProtoMessage() {}
+
+func (x *ProfileTableReq) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProfileTableReq.ProtoReflect.Descriptor instead.
+func (*ProfileTableReq) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *ProfileTableReq) GetDatasourceId() int64 {
+	if x != nil {
+		return x.DatasourceId
+	}
+	return 0
+}
+
+func (x *ProfileTableReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+func (x *ProfileTableReq) GetDbName() string {
+	if x != nil {
+		return x.DbName
+	}
+	return ""
+}
+
+func (x *ProfileTableReq) GetTableName() string {
+	if x != nil {
+		return x.TableName
+	}
+	return ""
+}
+
+func (x *ProfileTableReq) GetPkColumn() string {
+	if x != nil {
+		return x.PkColumn
+	}
+	return ""
+}
+
+type ProfileReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Profile       *TableProfile          `protobuf:"bytes,1,opt,name=profile,proto3" json:"profile,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProfileReply) Reset() {
+	*x = ProfileReply{}
+	mi := &file_quality_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileReply) ProtoMessage() {}
+
+func (x *ProfileReply) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProfileReply.ProtoReflect.Descriptor instead.
+func (*ProfileReply) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *ProfileReply) GetProfile() *TableProfile {
+	if x != nil {
+		return x.Profile
+	}
+	return nil
+}
+
+type ProfileListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	List          []*TableProfile        `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProfileListReply) Reset() {
+	*x = ProfileListReply{}
+	mi := &file_quality_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileListReply) ProtoMessage() {}
+
+func (x *ProfileListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProfileListReply.ProtoReflect.Descriptor instead.
+func (*ProfileListReply) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *ProfileListReply) GetList() []*TableProfile {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+func (x *ProfileListReply) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type ProfileListReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Beid          int64                  `protobuf:"varint,1,opt,name=beid,proto3" json:"beid,omitempty"`
+	DatasourceId  int64                  `protobuf:"varint,2,opt,name=datasource_id,json=datasourceId,proto3" json:"datasource_id,omitempty"`
+	TableName     string                 `protobuf:"bytes,3,opt,name=table_name,json=tableName,proto3" json:"table_name,omitempty"`
+	Page          int64                  `protobuf:"varint,4,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int64                  `protobuf:"varint,5,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProfileListReq) Reset() {
+	*x = ProfileListReq{}
+	mi := &file_quality_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileListReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileListReq) ProtoMessage() {}
+
+func (x *ProfileListReq) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProfileListReq.ProtoReflect.Descriptor instead.
+func (*ProfileListReq) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *ProfileListReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+func (x *ProfileListReq) GetDatasourceId() int64 {
+	if x != nil {
+		return x.DatasourceId
+	}
+	return 0
+}
+
+func (x *ProfileListReq) GetTableName() string {
+	if x != nil {
+		return x.TableName
+	}
+	return ""
+}
+
+func (x *ProfileListReq) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ProfileListReq) GetSize() int64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
 var File_quality_proto protoreflect.FileDescriptor
 
 const file_quality_proto_rawDesc = "" +
@@ -1185,7 +2102,83 @@ const file_quality_proto_rawDesc = "" +
 	"\vpass_filter\x18\x02 \x01(\x03R\n" +
 	"passFilter\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x03R\x04page\x12\x12\n" +
-	"\x04size\x18\x04 \x01(\x03R\x04size2\x8c\x03\n" +
+	"\x04size\x18\x04 \x01(\x03R\x04size\"\xc8\x01\n" +
+	"\fAlertChannel\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
+	"\x04type\x18\x03 \x01(\tR\x04type\x12\x1f\n" +
+	"\vwebhook_url\x18\x04 \x01(\tR\n" +
+	"webhookUrl\x12\x16\n" +
+	"\x06secret\x18\x05 \x01(\tR\x06secret\x12\x1b\n" +
+	"\tmin_level\x18\x06 \x01(\tR\bminLevel\x12\x16\n" +
+	"\x06status\x18\a \x01(\x05R\x06status\x12\x12\n" +
+	"\x04beid\x18\b \x01(\x03R\x04beid\"\xb7\x01\n" +
+	"\x13SaveAlertChannelReq\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
+	"\x04type\x18\x03 \x01(\tR\x04type\x12\x1f\n" +
+	"\vwebhook_url\x18\x04 \x01(\tR\n" +
+	"webhookUrl\x12\x16\n" +
+	"\x06secret\x18\x05 \x01(\tR\x06secret\x12\x1b\n" +
+	"\tmin_level\x18\x06 \x01(\tR\bminLevel\x12\x12\n" +
+	"\x04beid\x18\a \x01(\x03R\x04beid\"X\n" +
+	"\x15AlertChannelListReply\x12)\n" +
+	"\x04list\x18\x01 \x03(\v2\x15.quality.AlertChannelR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"Q\n" +
+	"\x13AlertChannelListReq\x12\x12\n" +
+	"\x04beid\x18\x01 \x01(\x03R\x04beid\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\x03R\x04page\x12\x12\n" +
+	"\x04size\x18\x03 \x01(\x03R\x04size\"2\n" +
+	"\x0eTestAlertReply\x12\x0e\n" +
+	"\x02ok\x18\x01 \x01(\bR\x02ok\x12\x10\n" +
+	"\x03msg\x18\x02 \x01(\tR\x03msg\"\x92\x01\n" +
+	"\tErrorData\x12\x17\n" +
+	"\arule_id\x18\x01 \x01(\x03R\x06ruleId\x12\x15\n" +
+	"\x06job_id\x18\x02 \x01(\x03R\x05jobId\x12\x1b\n" +
+	"\trows_json\x18\x03 \x01(\tR\browsJson\x12!\n" +
+	"\fsample_count\x18\x04 \x01(\x05R\vsampleCount\x12\x15\n" +
+	"\x06run_at\x18\x05 \x01(\x03R\x05runAt\"R\n" +
+	"\x12ErrorDataListReply\x12&\n" +
+	"\x04list\x18\x01 \x03(\v2\x12.quality.ErrorDataR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"j\n" +
+	"\x10ErrorDataListReq\x12\x15\n" +
+	"\x06job_id\x18\x01 \x01(\x03R\x05jobId\x12\x17\n" +
+	"\arule_id\x18\x02 \x01(\x03R\x06ruleId\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x03R\x04page\x12\x12\n" +
+	"\x04size\x18\x04 \x01(\x03R\x04size\"\xb0\x02\n" +
+	"\fTableProfile\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12#\n" +
+	"\rdatasource_id\x18\x02 \x01(\x03R\fdatasourceId\x12\x1d\n" +
+	"\n" +
+	"table_name\x18\x03 \x01(\tR\ttableName\x12\x19\n" +
+	"\brows_cnt\x18\x04 \x01(\x03R\arowsCnt\x12\x19\n" +
+	"\bcols_cnt\x18\x05 \x01(\x05R\acolsCnt\x12\x1b\n" +
+	"\tnull_rate\x18\x06 \x01(\x01R\bnullRate\x12\x1c\n" +
+	"\n" +
+	"dup_pk_cnt\x18\a \x01(\x03R\bdupPkCnt\x12!\n" +
+	"\fhealth_score\x18\b \x01(\x05R\vhealthScore\x12!\n" +
+	"\fprofile_json\x18\t \x01(\tR\vprofileJson\x12\x15\n" +
+	"\x06ran_at\x18\n" +
+	" \x01(\x03R\x05ranAt\"\x9f\x01\n" +
+	"\x0fProfileTableReq\x12#\n" +
+	"\rdatasource_id\x18\x01 \x01(\x03R\fdatasourceId\x12\x12\n" +
+	"\x04beid\x18\x02 \x01(\x03R\x04beid\x12\x17\n" +
+	"\adb_name\x18\x03 \x01(\tR\x06dbName\x12\x1d\n" +
+	"\n" +
+	"table_name\x18\x04 \x01(\tR\ttableName\x12\x1b\n" +
+	"\tpk_column\x18\x05 \x01(\tR\bpkColumn\"?\n" +
+	"\fProfileReply\x12/\n" +
+	"\aprofile\x18\x01 \x01(\v2\x15.quality.TableProfileR\aprofile\"S\n" +
+	"\x10ProfileListReply\x12)\n" +
+	"\x04list\x18\x01 \x03(\v2\x15.quality.TableProfileR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\x90\x01\n" +
+	"\x0eProfileListReq\x12\x12\n" +
+	"\x04beid\x18\x01 \x01(\x03R\x04beid\x12#\n" +
+	"\rdatasource_id\x18\x02 \x01(\x03R\fdatasourceId\x12\x1d\n" +
+	"\n" +
+	"table_name\x18\x03 \x01(\tR\ttableName\x12\x12\n" +
+	"\x04page\x18\x04 \x01(\x03R\x04page\x12\x12\n" +
+	"\x04size\x18\x05 \x01(\x03R\x04size2\xe9\x06\n" +
 	"\aQuality\x128\n" +
 	"\n" +
 	"CreateRule\x12\x16.quality.CreateRuleReq\x1a\x12.quality.RuleReply\x12,\n" +
@@ -1195,7 +2188,14 @@ const file_quality_proto_rawDesc = "" +
 	"\tCreateJob\x12\x15.quality.CreateJobReq\x1a\x11.quality.JobReply\x126\n" +
 	"\bListJobs\x12\x13.quality.JobListReq\x1a\x15.quality.JobListReply\x12.\n" +
 	"\x06RunJob\x12\x0e.quality.IdReq\x1a\x14.quality.RunJobReply\x12?\n" +
-	"\vListResults\x12\x16.quality.ResultListReq\x1a\x18.quality.ResultListReplyB\vZ\t./qualityb\x06proto3"
+	"\vListResults\x12\x16.quality.ResultListReq\x1a\x18.quality.ResultListReply\x12G\n" +
+	"\x10SaveAlertChannel\x12\x1c.quality.SaveAlertChannelReq\x1a\x15.quality.AlertChannel\x124\n" +
+	"\x12DeleteAlertChannel\x12\x0e.quality.IdReq\x1a\x0e.quality.IdReq\x12Q\n" +
+	"\x11ListAlertChannels\x12\x1c.quality.AlertChannelListReq\x1a\x1e.quality.AlertChannelListReply\x12;\n" +
+	"\x10TestAlertChannel\x12\x0e.quality.IdReq\x1a\x17.quality.TestAlertReply\x12G\n" +
+	"\rListErrorData\x12\x19.quality.ErrorDataListReq\x1a\x1b.quality.ErrorDataListReply\x12?\n" +
+	"\fProfileTable\x12\x18.quality.ProfileTableReq\x1a\x15.quality.ProfileReply\x12B\n" +
+	"\fListProfiles\x12\x17.quality.ProfileListReq\x1a\x19.quality.ProfileListReplyB\vZ\t./qualityb\x06proto3"
 
 var (
 	file_quality_proto_rawDescOnce sync.Once
@@ -1209,23 +2209,36 @@ func file_quality_proto_rawDescGZIP() []byte {
 	return file_quality_proto_rawDescData
 }
 
-var file_quality_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_quality_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
 var file_quality_proto_goTypes = []any{
-	(*QualityRule)(nil),     // 0: quality.QualityRule
-	(*RuleReply)(nil),       // 1: quality.RuleReply
-	(*RuleListReply)(nil),   // 2: quality.RuleListReply
-	(*CreateRuleReq)(nil),   // 3: quality.CreateRuleReq
-	(*IdReq)(nil),           // 4: quality.IdReq
-	(*RuleListReq)(nil),     // 5: quality.RuleListReq
-	(*CreateJobReq)(nil),    // 6: quality.CreateJobReq
-	(*QualityJob)(nil),      // 7: quality.QualityJob
-	(*JobReply)(nil),        // 8: quality.JobReply
-	(*JobListReply)(nil),    // 9: quality.JobListReply
-	(*JobListReq)(nil),      // 10: quality.JobListReq
-	(*QualityResult)(nil),   // 11: quality.QualityResult
-	(*RunJobReply)(nil),     // 12: quality.RunJobReply
-	(*ResultListReply)(nil), // 13: quality.ResultListReply
-	(*ResultListReq)(nil),   // 14: quality.ResultListReq
+	(*QualityRule)(nil),           // 0: quality.QualityRule
+	(*RuleReply)(nil),             // 1: quality.RuleReply
+	(*RuleListReply)(nil),         // 2: quality.RuleListReply
+	(*CreateRuleReq)(nil),         // 3: quality.CreateRuleReq
+	(*IdReq)(nil),                 // 4: quality.IdReq
+	(*RuleListReq)(nil),           // 5: quality.RuleListReq
+	(*CreateJobReq)(nil),          // 6: quality.CreateJobReq
+	(*QualityJob)(nil),            // 7: quality.QualityJob
+	(*JobReply)(nil),              // 8: quality.JobReply
+	(*JobListReply)(nil),          // 9: quality.JobListReply
+	(*JobListReq)(nil),            // 10: quality.JobListReq
+	(*QualityResult)(nil),         // 11: quality.QualityResult
+	(*RunJobReply)(nil),           // 12: quality.RunJobReply
+	(*ResultListReply)(nil),       // 13: quality.ResultListReply
+	(*ResultListReq)(nil),         // 14: quality.ResultListReq
+	(*AlertChannel)(nil),          // 15: quality.AlertChannel
+	(*SaveAlertChannelReq)(nil),   // 16: quality.SaveAlertChannelReq
+	(*AlertChannelListReply)(nil), // 17: quality.AlertChannelListReply
+	(*AlertChannelListReq)(nil),   // 18: quality.AlertChannelListReq
+	(*TestAlertReply)(nil),        // 19: quality.TestAlertReply
+	(*ErrorData)(nil),             // 20: quality.ErrorData
+	(*ErrorDataListReply)(nil),    // 21: quality.ErrorDataListReply
+	(*ErrorDataListReq)(nil),      // 22: quality.ErrorDataListReq
+	(*TableProfile)(nil),          // 23: quality.TableProfile
+	(*ProfileTableReq)(nil),       // 24: quality.ProfileTableReq
+	(*ProfileReply)(nil),          // 25: quality.ProfileReply
+	(*ProfileListReply)(nil),      // 26: quality.ProfileListReply
+	(*ProfileListReq)(nil),        // 27: quality.ProfileListReq
 }
 var file_quality_proto_depIdxs = []int32{
 	0,  // 0: quality.RuleReply.rule:type_name -> quality.QualityRule
@@ -1233,25 +2246,43 @@ var file_quality_proto_depIdxs = []int32{
 	7,  // 2: quality.JobReply.job:type_name -> quality.QualityJob
 	7,  // 3: quality.JobListReply.list:type_name -> quality.QualityJob
 	11, // 4: quality.ResultListReply.list:type_name -> quality.QualityResult
-	3,  // 5: quality.Quality.CreateRule:input_type -> quality.CreateRuleReq
-	4,  // 6: quality.Quality.DeleteRule:input_type -> quality.IdReq
-	5,  // 7: quality.Quality.ListRules:input_type -> quality.RuleListReq
-	6,  // 8: quality.Quality.CreateJob:input_type -> quality.CreateJobReq
-	10, // 9: quality.Quality.ListJobs:input_type -> quality.JobListReq
-	4,  // 10: quality.Quality.RunJob:input_type -> quality.IdReq
-	14, // 11: quality.Quality.ListResults:input_type -> quality.ResultListReq
-	1,  // 12: quality.Quality.CreateRule:output_type -> quality.RuleReply
-	4,  // 13: quality.Quality.DeleteRule:output_type -> quality.IdReq
-	2,  // 14: quality.Quality.ListRules:output_type -> quality.RuleListReply
-	8,  // 15: quality.Quality.CreateJob:output_type -> quality.JobReply
-	9,  // 16: quality.Quality.ListJobs:output_type -> quality.JobListReply
-	12, // 17: quality.Quality.RunJob:output_type -> quality.RunJobReply
-	13, // 18: quality.Quality.ListResults:output_type -> quality.ResultListReply
-	12, // [12:19] is the sub-list for method output_type
-	5,  // [5:12] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	15, // 5: quality.AlertChannelListReply.list:type_name -> quality.AlertChannel
+	20, // 6: quality.ErrorDataListReply.list:type_name -> quality.ErrorData
+	23, // 7: quality.ProfileReply.profile:type_name -> quality.TableProfile
+	23, // 8: quality.ProfileListReply.list:type_name -> quality.TableProfile
+	3,  // 9: quality.Quality.CreateRule:input_type -> quality.CreateRuleReq
+	4,  // 10: quality.Quality.DeleteRule:input_type -> quality.IdReq
+	5,  // 11: quality.Quality.ListRules:input_type -> quality.RuleListReq
+	6,  // 12: quality.Quality.CreateJob:input_type -> quality.CreateJobReq
+	10, // 13: quality.Quality.ListJobs:input_type -> quality.JobListReq
+	4,  // 14: quality.Quality.RunJob:input_type -> quality.IdReq
+	14, // 15: quality.Quality.ListResults:input_type -> quality.ResultListReq
+	16, // 16: quality.Quality.SaveAlertChannel:input_type -> quality.SaveAlertChannelReq
+	4,  // 17: quality.Quality.DeleteAlertChannel:input_type -> quality.IdReq
+	18, // 18: quality.Quality.ListAlertChannels:input_type -> quality.AlertChannelListReq
+	4,  // 19: quality.Quality.TestAlertChannel:input_type -> quality.IdReq
+	22, // 20: quality.Quality.ListErrorData:input_type -> quality.ErrorDataListReq
+	24, // 21: quality.Quality.ProfileTable:input_type -> quality.ProfileTableReq
+	27, // 22: quality.Quality.ListProfiles:input_type -> quality.ProfileListReq
+	1,  // 23: quality.Quality.CreateRule:output_type -> quality.RuleReply
+	4,  // 24: quality.Quality.DeleteRule:output_type -> quality.IdReq
+	2,  // 25: quality.Quality.ListRules:output_type -> quality.RuleListReply
+	8,  // 26: quality.Quality.CreateJob:output_type -> quality.JobReply
+	9,  // 27: quality.Quality.ListJobs:output_type -> quality.JobListReply
+	12, // 28: quality.Quality.RunJob:output_type -> quality.RunJobReply
+	13, // 29: quality.Quality.ListResults:output_type -> quality.ResultListReply
+	15, // 30: quality.Quality.SaveAlertChannel:output_type -> quality.AlertChannel
+	4,  // 31: quality.Quality.DeleteAlertChannel:output_type -> quality.IdReq
+	17, // 32: quality.Quality.ListAlertChannels:output_type -> quality.AlertChannelListReply
+	19, // 33: quality.Quality.TestAlertChannel:output_type -> quality.TestAlertReply
+	21, // 34: quality.Quality.ListErrorData:output_type -> quality.ErrorDataListReply
+	25, // 35: quality.Quality.ProfileTable:output_type -> quality.ProfileReply
+	26, // 36: quality.Quality.ListProfiles:output_type -> quality.ProfileListReply
+	23, // [23:37] is the sub-list for method output_type
+	9,  // [9:23] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_quality_proto_init() }
@@ -1265,7 +2296,7 @@ func file_quality_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_quality_proto_rawDesc), len(file_quality_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

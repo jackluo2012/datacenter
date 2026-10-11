@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
+import * as echarts from 'echarts'
 import {
   createQualityRule,
   deleteQualityRule,
@@ -9,13 +10,116 @@ import {
   qualityJobList,
   runQualityJob,
   qualityResultList,
+  saveAlertChannel,
+  deleteAlertChannel,
+  listAlertChannels,
+  testAlertChannel,
+  listErrorData,
+  profileTable,
+  listProfiles,
   type QualityRule,
   type QualityJob,
   type QualityResult,
   type RunJobResp,
+  type AlertChannel,
+  type ErrorData,
+  type TableProfile,
+  type ProfileReply,
+  type TestAlertResp,
 } from '@/api/quality'
 import { dataSourceList, type DataSourceInfo } from '@/api/datasource'
 import { ApiError } from '@/api/http'
+
+// ---------- 公共工具 ----------
+function fmtTime(ts?: number) {
+  if (!ts) return '-'
+  return new Date(ts * (ts < 1e12 ? 1000 : 1)).toLocaleString('zh-CN', { hour12: false })
+}
+
+function fmtDate(ts?: number) {
+  if (!ts) return '-'
+  return new Date(ts * (ts < 1e12 ? 1000 : 1)).toLocaleDateString('zh-CN')
+}
+
+/** 网关路由未就绪（404 / 网关 5xx）→ 页面容错展示“功能上线中”，不弹错误提示 */
+function isOffline(e: unknown): boolean {
+  return e instanceof ApiError && (e.code === 404 || e.code === 502 || e.code === 503)
+}
+
+/** 健康分配色：<60 红 / 60-80 黄 / >=80 绿 */
+function scoreColor(score?: number): string {
+  const s = score ?? 0
+  if (s < 60) return '#f56c6c'
+  if (s < 80) return '#e6a23c'
+  return '#67c23a'
+}
+
+function scoreTagType(score?: number): 'danger' | 'warning' | 'success' {
+  const s = score ?? 0
+  if (s < 60) return 'danger'
+  if (s < 80) return 'warning'
+  return 'success'
+}
+
+/**
+ * 解析 rows_json / profile_json 为动态列表格数据（参考 AiChat.vue 动态列做法）。
+ * 兼容：对象数组 / 基础类型数组 / {rows:[...]} / {columns:[...]} / {list:[...]} / 单层键值对象
+ */
+function parseJsonRows(raw?: string): { columns: string[]; rows: Record<string, unknown>[] } {
+  if (!raw) return { columns: [], rows: [] }
+  try {
+    const v: unknown = JSON.parse(raw)
+    if (Array.isArray(v)) {
+      const rows = v.filter(
+        (x): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x),
+      )
+      if (rows.length) {
+        const cols: string[] = []
+        for (const r of rows) {
+          for (const k of Object.keys(r)) if (!cols.includes(k)) cols.push(k)
+        }
+        return { columns: cols, rows }
+      }
+      return { columns: ['value'], rows: v.map((x) => ({ value: x as unknown })) }
+    }
+    if (v && typeof v === 'object') {
+      const obj = v as Record<string, unknown>
+      if (Array.isArray(obj.rows)) return parseJsonRows(JSON.stringify(obj.rows))
+      if (Array.isArray(obj.columns)) return parseJsonRows(JSON.stringify(obj.columns))
+      if (Array.isArray(obj.list)) return parseJsonRows(JSON.stringify(obj.list))
+      return {
+        columns: ['field', 'value'],
+        rows: Object.entries(obj).map(([field, value]) => ({
+          field,
+          value: value !== null && typeof value === 'object' ? JSON.stringify(value) : (value as unknown),
+        })),
+      }
+    }
+    return { columns: [], rows: [] }
+  } catch {
+    return { columns: [], rows: [] }
+  }
+}
+
+function formatCell(v: unknown): string {
+  if (v === null || v === undefined || v === '') return '-'
+  if (typeof v === 'object') return JSON.stringify(v)
+  return String(v)
+}
+
+/** JSON 字段校验：填了必须能 JSON.parse */
+function jsonValidator(field: string, required = false) {
+  return (_rule: unknown, value: string, callback: (err?: Error) => void) => {
+    const s = (value || '').trim()
+    if (!s) return required ? callback(new Error(`请输入 ${field}`)) : callback()
+    try {
+      JSON.parse(s)
+      callback()
+    } catch {
+      callback(new Error(`${field} 必须是合法的 JSON`))
+    }
+  }
+}
 
 // ---------- 文案映射 ----------
 const ruleTypeOptions = [
@@ -49,25 +153,6 @@ const paramsPlaceholder = computed(() => {
       return '该类型无需参数，可留空'
   }
 })
-
-function fmtTime(ts?: number) {
-  if (!ts) return '-'
-  return new Date(ts * (ts < 1e12 ? 1000 : 1)).toLocaleString('zh-CN', { hour12: false })
-}
-
-/** JSON 字段校验：填了必须能 JSON.parse */
-function jsonValidator(field: string, required = false) {
-  return (_rule: unknown, value: string, callback: (err?: Error) => void) => {
-    const s = (value || '').trim()
-    if (!s) return required ? callback(new Error(`请输入 ${field}`)) : callback()
-    try {
-      JSON.parse(s)
-      callback()
-    } catch {
-      callback(new Error(`${field} 必须是合法的 JSON`))
-    }
-  }
-}
 
 // ==================== 页签一：质量规则 ====================
 const ruleLoading = ref(false)
@@ -210,6 +295,17 @@ async function fetchJobs() {
 function onJobSearch() {
   jobQuery.page = 1
   fetchJobs()
+}
+
+/** 数据源下拉懒加载（健康分页签也复用） */
+async function ensureDsOptions() {
+  if (dsOptions.value.length) return
+  try {
+    const resp = await dataSourceList({ page: 1, size: 100 })
+    dsOptions.value = resp.list || []
+  } catch {
+    // 下拉仅辅助录入，失败不打断页面
+  }
 }
 
 async function fetchJobFormOptions() {
@@ -359,9 +455,10 @@ const passOptions = [
   { value: 0, label: '不通过' },
 ]
 
-/** 结果页 job 下拉候选 */
+/** 结果 / 错误数据页共用的 job 下拉候选 */
 const jobOptions = ref<QualityJob[]>([])
 async function fetchJobOptions() {
+  if (jobOptions.value.length) return
   try {
     const resp = await qualityJobList({ page: 1, size: 100 })
     jobOptions.value = resp.list || []
@@ -393,21 +490,457 @@ function onResultSearch() {
   fetchResults()
 }
 
+// ==================== 页签四：告警配置 ====================
+const channelTypeOptions = [
+  { value: 'dingtalk', label: '钉钉机器人' },
+  { value: 'feishu', label: '飞书机器人' },
+]
+const minLevelOptions = [
+  { value: 'failed', label: 'failed（仅失败）' },
+  { value: 'partial', label: 'partial（含部分通过）' },
+]
+const channelTypeText: Record<string, string> = Object.fromEntries(
+  channelTypeOptions.map((o) => [o.value, o.label]),
+)
+
+const channelLoading = ref(false)
+const channelOffline = ref(false)
+const channelList = ref<AlertChannel[]>([])
+
+async function fetchChannels() {
+  channelLoading.value = true
+  try {
+    const resp = await listAlertChannels({ page: 1, size: 200 })
+    channelList.value = resp.list || []
+    channelOffline.value = false
+  } catch (e) {
+    if (isOffline(e)) {
+      channelOffline.value = true
+    } else {
+      ElMessage.error(e instanceof ApiError ? e.message : '获取告警通道失败')
+    }
+  } finally {
+    channelLoading.value = false
+  }
+}
+
+/** 启停开关：复用 save 接口整体保存（status 字段后端契约确认中，未支持时后端会忽略） */
+const statusTogglingId = ref<number | null>(null)
+async function onChannelStatusChange(row: AlertChannel, val: string | number | boolean) {
+  if (row.id === undefined) return
+  const next = Number(val) ? 1 : 0
+  const prev = row.status ?? 1
+  if (next === prev) return
+  statusTogglingId.value = row.id
+  try {
+    await saveAlertChannel({
+      id: row.id,
+      name: row.name || '',
+      type: row.type || 'dingtalk',
+      webhook_url: row.webhook_url || '',
+      secret: row.secret || undefined,
+      min_level: row.min_level || 'failed',
+      status: next,
+    })
+    row.status = next
+    ElMessage.success(next === 1 ? '通道已启用' : '通道已停用')
+  } catch (e) {
+    row.status = prev
+    ElMessage.error(e instanceof ApiError ? e.message : '状态更新失败')
+  } finally {
+    statusTogglingId.value = null
+  }
+}
+
+// ---------- 新建 / 编辑通道对话框 ----------
+const channelDialogVisible = ref(false)
+const channelSaving = ref(false)
+const channelEditingId = ref<number | null>(null)
+const channelFormEl = ref<FormInstance>()
+const channelForm = reactive({
+  name: '',
+  type: 'dingtalk',
+  webhook_url: '',
+  secret: '',
+  min_level: 'failed',
+})
+
+const channelRules = reactive<FormRules>({
+  name: [{ required: true, message: '请输入通道名称', trigger: 'blur' }],
+  type: [{ required: true, message: '请选择通道类型', trigger: 'change' }],
+  webhook_url: [
+    { required: true, message: '请输入 Webhook 地址', trigger: 'blur' },
+    { pattern: /^https?:\/\//, message: '需以 http(s):// 开头', trigger: 'blur' },
+  ],
+  min_level: [{ required: true, message: '请选择最低告警级别', trigger: 'change' }],
+})
+
+function openChannelCreate() {
+  channelEditingId.value = null
+  Object.assign(channelForm, { name: '', type: 'dingtalk', webhook_url: '', secret: '', min_level: 'failed' })
+  channelDialogVisible.value = true
+}
+
+function openChannelEdit(row: AlertChannel) {
+  channelEditingId.value = row.id ?? null
+  Object.assign(channelForm, {
+    name: row.name || '',
+    type: row.type || 'dingtalk',
+    webhook_url: row.webhook_url || '',
+    secret: row.secret || '',
+    min_level: row.min_level || 'failed',
+  })
+  channelDialogVisible.value = true
+}
+
+async function onSaveChannel() {
+  const valid = await channelFormEl.value?.validate().catch(() => false)
+  if (!valid) return
+  channelSaving.value = true
+  try {
+    await saveAlertChannel({
+      id: channelEditingId.value ?? 0,
+      name: channelForm.name.trim(),
+      type: channelForm.type,
+      webhook_url: channelForm.webhook_url.trim(),
+      secret: channelForm.secret.trim() || undefined,
+      min_level: channelForm.min_level,
+    })
+    ElMessage.success(channelEditingId.value === null ? '通道创建成功' : '通道更新成功')
+    channelDialogVisible.value = false
+    fetchChannels()
+  } catch (e) {
+    if (isOffline(e)) {
+      ElMessage.warning('告警配置接口上线中，后端路由合入后即可保存')
+    } else {
+      ElMessage.error(e instanceof ApiError ? e.message : '保存通道失败')
+    }
+  } finally {
+    channelSaving.value = false
+  }
+}
+
+async function onDeleteChannel(row: AlertChannel) {
+  if (row.id === undefined) return
+  const ok = await ElMessageBox.confirm(
+    `确定删除告警通道「${row.name}」吗？删除后该通道不再接收告警。`,
+    '删除确认',
+    { confirmButtonText: '删除', cancelButtonText: '取消', type: 'warning' },
+  ).then(() => true).catch(() => false)
+  if (!ok) return
+  try {
+    await deleteAlertChannel(row.id)
+    ElMessage.success('删除成功')
+    fetchChannels()
+  } catch (e) {
+    ElMessage.error(e instanceof ApiError ? e.message : '删除失败')
+  }
+}
+
+// ---------- 发送测试 ----------
+const testingId = ref<number | null>(null)
+const testResultVisible = ref(false)
+const testResult = ref<TestAlertResp | null>(null)
+
+async function onTestChannel(row: AlertChannel) {
+  if (row.id === undefined) return
+  testingId.value = row.id
+  try {
+    const resp = await testAlertChannel(row.id)
+    testResult.value = resp
+    testResultVisible.value = true
+  } catch (e) {
+    if (isOffline(e)) {
+      ElMessage.warning('测试接口上线中，后端路由合入后可用')
+    } else {
+      ElMessage.error(e instanceof ApiError ? e.message : '发送测试失败')
+    }
+  } finally {
+    testingId.value = null
+  }
+}
+
+// ==================== 页签五：错误数据 ====================
+const edLoading = ref(false)
+const edOffline = ref(false)
+const edList = ref<ErrorData[]>([])
+const edTotal = ref(0)
+const edQuery = reactive({
+  job_id: undefined as number | undefined,
+  rule_id: '',
+  page: 1,
+  size: 10,
+})
+
+/** 规则 ID 手工输入 → 合法正整数才下发 */
+const edRuleId = computed(() => {
+  const n = Number(edQuery.rule_id)
+  return edQuery.rule_id && Number.isInteger(n) && n > 0 ? n : undefined
+})
+
+async function fetchErrorData() {
+  edLoading.value = true
+  try {
+    const resp = await listErrorData({
+      job_id: edQuery.job_id,
+      rule_id: edRuleId.value,
+      page: edQuery.page,
+      size: edQuery.size,
+    })
+    edList.value = resp.list || []
+    edTotal.value = resp.total || 0
+    edOffline.value = false
+  } catch (e) {
+    if (isOffline(e)) {
+      edOffline.value = true
+    } else {
+      ElMessage.error(e instanceof ApiError ? e.message : '获取错误数据失败')
+    }
+  } finally {
+    edLoading.value = false
+  }
+}
+
+function onEdSearch() {
+  edQuery.page = 1
+  fetchErrorData()
+}
+
+// ---------- 错误样本弹窗（动态列渲染 rows_json） ----------
+const sampleVisible = ref(false)
+const sampleRecord = ref<ErrorData | null>(null)
+const sampleColumns = ref<string[]>([])
+const sampleRows = ref<Record<string, unknown>[]>([])
+const sampleRaw = ref('')
+
+function openSample(row: ErrorData) {
+  sampleRecord.value = row
+  const parsed = parseJsonRows(row.rows_json)
+  sampleColumns.value = parsed.columns
+  sampleRows.value = parsed.rows
+  sampleRaw.value = row.rows_json || ''
+  sampleVisible.value = true
+}
+
+// ==================== 页签六：健康分 ====================
+const healthFormEl = ref<FormInstance>()
+const healthForm = reactive({
+  datasource_id: undefined as number | undefined,
+  db_name: '',
+  table_name: '',
+  pk_column: '',
+})
+const healthRules = reactive<FormRules>({
+  datasource_id: [{ required: true, message: '请选择数据源', trigger: 'change' }],
+  table_name: [{ required: true, message: '请输入表名', trigger: 'blur' }],
+})
+
+const healthLoading = ref(false)
+const healthOffline = ref(false)
+const profile = ref<TableProfile | null>(null)
+const profileColumns = ref<string[]>([])
+const profileRows = ref<Record<string, unknown>[]>([])
+
+/** /quality/profile/table 可能回 {profile} 包装或直接 TableProfile，做兼容 */
+function normalizeProfile(resp: ProfileReply | TableProfile | null | undefined): TableProfile | null {
+  if (!resp || typeof resp !== 'object') return null
+  const p = (resp as ProfileReply).profile ?? (resp as TableProfile)
+  return p && typeof p === 'object' ? p : null
+}
+
+/** 空值率：兼容 0~1 与 0~100 两种量纲 */
+const nullRateText = computed(() => {
+  const r = profile.value?.null_rate
+  if (r === null || r === undefined) return '-'
+  const pct = r <= 1 ? r * 100 : r
+  return `${pct.toFixed(1)}%`
+})
+
+// ---------- 健康分仪表盘 ----------
+const gaugeEl = ref<HTMLDivElement>()
+let gaugeChart: echarts.ECharts | null = null
+
+function renderGauge(score: number) {
+  nextTick(() => {
+    const el = gaugeEl.value
+    if (!el) return
+    gaugeChart?.dispose()
+    gaugeChart = echarts.init(el)
+    const color = scoreColor(score)
+    gaugeChart.setOption({
+      series: [
+        {
+          type: 'gauge',
+          min: 0,
+          max: 100,
+          startAngle: 210,
+          endAngle: -30,
+          radius: '95%',
+          axisLine: {
+            lineStyle: { width: 18, color: [[0.6, '#f56c6c'], [0.8, '#e6a23c'], [1, '#67c23a']] },
+          },
+          pointer: { length: '60%', width: 5, itemStyle: { color: 'auto' } },
+          axisTick: { distance: -18, length: 6, lineStyle: { color: '#fff', width: 1 } },
+          splitLine: { distance: -18, length: 18, lineStyle: { color: '#fff', width: 2 } },
+          axisLabel: { distance: 26, color: '#909399', fontSize: 11 },
+          title: { offsetCenter: [0, '64%'], fontSize: 13, color: '#909399' },
+          detail: {
+            valueAnimation: true,
+            offsetCenter: [0, '28%'],
+            fontSize: 32,
+            fontWeight: 600,
+            color,
+            formatter: '{value}',
+          },
+          data: [{ value: score, name: '健康分' }],
+        },
+      ],
+    })
+  })
+}
+
+// ---------- 历史趋势 ----------
+const histEl = ref<HTMLDivElement>()
+let histChart: echarts.ECharts | null = null
+const histLoading = ref(false)
+const histOffline = ref(false)
+const historyList = ref<TableProfile[]>([])
+
+function renderHistory(list: TableProfile[]) {
+  nextTick(() => {
+    const el = histEl.value
+    if (!el) return
+    histChart?.dispose()
+    histChart = echarts.init(el)
+    histChart.setOption({
+      tooltip: { trigger: 'axis' },
+      grid: { left: 40, right: 16, bottom: 26, top: 30 },
+      xAxis: { type: 'category', boundaryGap: false, data: list.map((p) => fmtDate(p.ran_at)) },
+      yAxis: { type: 'value', min: 0, max: 100 },
+      series: [
+        {
+          name: '健康分',
+          type: 'line',
+          smooth: true,
+          symbolSize: 6,
+          data: list.map((p) => p.health_score ?? 0),
+          areaStyle: { opacity: 0.12 },
+          itemStyle: { color: '#409eff' },
+          markLine: {
+            silent: true,
+            symbol: 'none',
+            lineStyle: { color: '#f56c6c', type: 'dashed' },
+            data: [{ yAxis: 60, label: { formatter: '及格线 60', position: 'insideEndTop' } }],
+          },
+        },
+      ],
+    })
+  })
+}
+
+async function fetchHistory() {
+  if (!healthForm.datasource_id) return
+  histLoading.value = true
+  try {
+    const resp = await listProfiles({
+      datasource_id: Number(healthForm.datasource_id),
+      table_name: healthForm.table_name.trim() || undefined,
+      page: 1,
+      size: 50,
+    })
+    const sorted = [...(resp.list || [])].sort((a, b) => (a.ran_at || 0) - (b.ran_at || 0))
+    historyList.value = sorted.slice(-10)
+    histOffline.value = false
+    if (historyList.value.length) renderHistory(historyList.value)
+  } catch (e) {
+    if (isOffline(e)) histOffline.value = true
+    // 历史趋势加载失败不打断主分析流程
+  } finally {
+    histLoading.value = false
+  }
+}
+
+// ---------- 开始分析 ----------
+async function onAnalyze() {
+  const valid = await healthFormEl.value?.validate().catch(() => false)
+  if (!valid) return
+  healthLoading.value = true
+  try {
+    const resp = await profileTable({
+      datasource_id: Number(healthForm.datasource_id),
+      db_name: healthForm.db_name.trim() || undefined,
+      table_name: healthForm.table_name.trim(),
+      pk_column: healthForm.pk_column.trim() || undefined,
+    })
+    const p = normalizeProfile(resp)
+    profile.value = p
+    healthOffline.value = false
+    if (p) {
+      renderGauge(p.health_score ?? 0)
+      const parsed = parseJsonRows(p.profile_json)
+      profileColumns.value = parsed.columns
+      profileRows.value = parsed.rows
+    }
+    fetchHistory()
+  } catch (e) {
+    if (isOffline(e)) {
+      healthOffline.value = true
+      ElMessage.warning('健康分析接口上线中，后端路由合入后即可使用')
+    } else {
+      ElMessage.error(e instanceof ApiError ? e.message : '表健康分析失败')
+    }
+  } finally {
+    healthLoading.value = false
+  }
+}
+
 // ---------- 页签切换：懒加载对应数据 ----------
 const activeTab = ref('rule')
 function onTabChange() {
-  if (activeTab.value === 'rule' && ruleTotal.value === 0 && ruleList.value.length === 0) {
-    fetchRules()
-  } else if (activeTab.value === 'job' && jobList.value.length === 0) {
-    fetchJobs()
-  } else if (activeTab.value === 'result' && resultList.value.length === 0) {
-    fetchJobOptions()
-    fetchResults()
+  switch (activeTab.value) {
+    case 'rule':
+      if (!ruleList.value.length && !ruleLoading.value) fetchRules()
+      break
+    case 'job':
+      if (!jobList.value.length && !jobLoading.value) fetchJobs()
+      break
+    case 'result':
+      if (!resultList.value.length && !resultLoading.value) {
+        fetchJobOptions()
+        fetchResults()
+      }
+      break
+    case 'channel':
+      if (!channelList.value.length && !channelLoading.value && !channelOffline.value) fetchChannels()
+      break
+    case 'errordata':
+      if (!edList.value.length && !edLoading.value && !edOffline.value) {
+        fetchJobOptions()
+        fetchErrorData()
+      }
+      break
+    case 'health':
+      ensureDsOptions()
+      break
   }
+}
+
+function onResize() {
+  gaugeChart?.resize()
+  histChart?.resize()
 }
 
 onMounted(() => {
   fetchRules()
+  window.addEventListener('resize', onResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize)
+  gaugeChart?.dispose()
+  gaugeChart = null
+  histChart?.dispose()
+  histChart = null
 })
 </script>
 
@@ -606,6 +1139,290 @@ onMounted(() => {
             @size-change="onResultSearch"
           />
         </el-tab-pane>
+
+        <!-- ==================== 告警配置 ==================== -->
+        <el-tab-pane label="告警配置" name="channel">
+          <el-alert
+            v-if="channelOffline"
+            title="告警通道接口暂未就绪（功能上线中），后端路由合入后即可配置"
+            type="info"
+            show-icon
+            :closable="false"
+            class="offline-alert"
+          />
+          <div v-else class="toolbar">
+            <el-button type="primary" @click="openChannelCreate">
+              <el-icon><Plus /></el-icon>&nbsp;新建通道
+            </el-button>
+            <el-button @click="fetchChannels">
+              <el-icon><Refresh /></el-icon>&nbsp;刷新
+            </el-button>
+          </div>
+
+          <el-empty v-if="channelOffline" description="告警配置 · 功能上线中" :image-size="90" />
+          <template v-else>
+            <el-table v-loading="channelLoading" :data="channelList" stripe border>
+              <el-table-column prop="id" label="ID" width="64" />
+              <el-table-column prop="name" label="通道名称" min-width="130" show-overflow-tooltip />
+              <el-table-column label="类型" width="120">
+                <template #default="{ row }">
+                  <el-tag size="small" :type="row.type === 'feishu' ? 'warning' : 'primary'">
+                    {{ channelTypeText[row.type] || row.type || '-' }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column prop="webhook_url" label="Webhook" min-width="220" show-overflow-tooltip />
+              <el-table-column label="最低告警级别" width="140">
+                <template #default="{ row }">
+                  <el-tag size="small" :type="row.min_level === 'partial' ? 'warning' : 'danger'" effect="plain">
+                    {{ row.min_level || '-' }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="启用状态" width="100" align="center">
+                <template #default="{ row }">
+                  <el-switch
+                    :model-value="row.status ?? 1"
+                    :active-value="1"
+                    :inactive-value="0"
+                    :loading="statusTogglingId === row.id"
+                    @change="onChannelStatusChange(row, $event)"
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="170" fixed="right">
+                <template #default="{ row }">
+                  <el-button
+                    link
+                    type="success"
+                    :loading="testingId === row.id"
+                    @click="onTestChannel(row)"
+                  >
+                    发送测试
+                  </el-button>
+                  <el-button link type="primary" @click="openChannelEdit(row)">编辑</el-button>
+                  <el-button link type="danger" @click="onDeleteChannel(row)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-empty
+              v-if="!channelLoading && !channelList.length"
+              description="暂无告警通道，点击「新建通道」接入钉钉 / 飞书机器人"
+              :image-size="90"
+            />
+          </template>
+        </el-tab-pane>
+
+        <!-- ==================== 错误数据 ==================== -->
+        <el-tab-pane label="错误数据" name="errordata">
+          <el-alert
+            v-if="edOffline"
+            title="错误数据接口暂未就绪（功能上线中），后端路由合入后即可查询"
+            type="info"
+            show-icon
+            :closable="false"
+            class="offline-alert"
+          />
+          <div v-else class="toolbar">
+            <el-select
+              v-model="edQuery.job_id"
+              placeholder="全部任务"
+              clearable
+              filterable
+              style="width: 200px"
+              @change="onEdSearch"
+            >
+              <el-option
+                v-for="j in jobOptions"
+                :key="j.id"
+                :label="`#${j.id} ${j.name}`"
+                :value="j.id!"
+              />
+            </el-select>
+            <el-input
+              v-model="edQuery.rule_id"
+              placeholder="规则 ID"
+              clearable
+              style="width: 140px"
+              @keyup.enter="onEdSearch"
+              @clear="onEdSearch"
+            />
+            <el-button type="primary" @click="onEdSearch">
+              <el-icon><Search /></el-icon>&nbsp;查询
+            </el-button>
+            <el-button @click="fetchErrorData">
+              <el-icon><Refresh /></el-icon>&nbsp;刷新
+            </el-button>
+          </div>
+
+          <el-empty v-if="edOffline" description="错误数据 · 功能上线中" :image-size="90" />
+          <template v-else>
+            <el-table v-loading="edLoading" :data="edList" stripe border>
+              <el-table-column prop="job_id" label="任务 ID" width="90" align="center" />
+              <el-table-column prop="rule_id" label="规则 ID" width="90" align="center" />
+              <el-table-column prop="sample_count" label="样本条数" width="100" align="center" />
+              <el-table-column prop="rows_json" label="样本预览" min-width="260" show-overflow-tooltip>
+                <template #default="{ row }">{{ row.rows_json || '-' }}</template>
+              </el-table-column>
+              <el-table-column label="采集时间" width="170">
+                <template #default="{ row }">{{ fmtTime(row.run_at) }}</template>
+              </el-table-column>
+              <el-table-column label="操作" width="100" fixed="right">
+                <template #default="{ row }">
+                  <el-button link type="primary" @click="openSample(row)">查看样本</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-empty
+              v-if="!edLoading && !edList.length"
+              description="暂无错误数据样本：仅校验失败且采样开启的规则会产生样本"
+              :image-size="90"
+            />
+
+            <el-pagination
+              v-model:current-page="edQuery.page"
+              v-model:page-size="edQuery.size"
+              :total="edTotal"
+              :page-sizes="[10, 20, 50]"
+              layout="total, sizes, prev, pager, next, jumper"
+              class="pager"
+              @current-change="fetchErrorData"
+              @size-change="onEdSearch"
+            />
+          </template>
+        </el-tab-pane>
+
+        <!-- ==================== 健康分 ==================== -->
+        <el-tab-pane label="健康分" name="health">
+          <el-alert
+            v-if="healthOffline"
+            title="健康分析接口暂未就绪（功能上线中），后端路由合入后即可使用"
+            type="info"
+            show-icon
+            :closable="false"
+            class="offline-alert"
+          />
+          <el-form
+            ref="healthFormEl"
+            :model="healthForm"
+            :rules="healthRules"
+            inline
+            :disabled="healthOffline"
+            class="health-form"
+          >
+            <el-form-item label="数据源" prop="datasource_id">
+              <el-select
+                v-model="healthForm.datasource_id"
+                filterable
+                placeholder="选择数据源"
+                style="width: 210px"
+              >
+                <el-option
+                  v-for="d in dsOptions"
+                  :key="d.id"
+                  :label="`${d.name}（ID:${d.id} · ${d.type}）`"
+                  :value="d.id!"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="目标库">
+              <el-input v-model="healthForm.db_name" placeholder="可选" style="width: 130px" />
+            </el-form-item>
+            <el-form-item label="表名" prop="table_name">
+              <el-input v-model="healthForm.table_name" placeholder="如 orders" style="width: 160px" />
+            </el-form-item>
+            <el-form-item label="主键列">
+              <el-input v-model="healthForm.pk_column" placeholder="如 id（用于重复检测）" style="width: 180px" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" :loading="healthLoading" @click="onAnalyze">
+                <el-icon><DataAnalysis /></el-icon>&nbsp;开始分析
+              </el-button>
+            </el-form-item>
+          </el-form>
+
+          <div v-if="profile" v-loading="healthLoading" class="health-result">
+            <el-row :gutter="16">
+              <el-col :xs="24" :md="8">
+                <el-card shadow="never">
+                  <div ref="gaugeEl" class="gauge-chart" />
+                </el-card>
+              </el-col>
+              <el-col :xs="24" :md="16">
+                <el-card shadow="never">
+                  <el-row :gutter="12">
+                    <el-col :span="6">
+                      <div class="mini-stat">
+                        <div class="mini-value">{{ profile.rows_cnt ?? '-' }}</div>
+                        <div class="mini-label">总行数</div>
+                      </div>
+                    </el-col>
+                    <el-col :span="6">
+                      <div class="mini-stat">
+                        <div class="mini-value">{{ profile.cols_cnt ?? '-' }}</div>
+                        <div class="mini-label">列数</div>
+                      </div>
+                    </el-col>
+                    <el-col :span="6">
+                      <div class="mini-stat">
+                        <div class="mini-value" :class="{ 'mini-warn': profile.null_rate && profile.null_rate > 0.1 }">
+                          {{ nullRateText }}
+                        </div>
+                        <div class="mini-label">空值率</div>
+                      </div>
+                    </el-col>
+                    <el-col :span="6">
+                      <div class="mini-stat">
+                        <div class="mini-value" :class="{ 'mini-bad': (profile.dup_pk_cnt ?? 0) > 0 }">
+                          {{ profile.dup_pk_cnt ?? '-' }}
+                        </div>
+                        <div class="mini-label">主键重复</div>
+                      </div>
+                    </el-col>
+                  </el-row>
+
+                  <div class="hist-title">
+                    <span>
+                      近 10 次健康分趋势
+                      <el-tag :type="scoreTagType(profile.health_score)" size="small" class="score-tag">
+                        当前 {{ profile.health_score ?? '-' }}
+                      </el-tag>
+                    </span>
+                    <el-button link type="primary" :loading="histLoading" @click="fetchHistory">
+                      刷新
+                    </el-button>
+                  </div>
+                  <div v-show="historyList.length" ref="histEl" class="hist-chart" />
+                  <el-empty
+                    v-if="!historyList.length && !histLoading"
+                    :description="histOffline ? '历史趋势接口上线中' : '暂无历史分析记录'"
+                    :image-size="60"
+                  />
+                </el-card>
+              </el-col>
+            </el-row>
+
+            <el-card v-if="profileColumns.length" shadow="never" class="mt16">
+              <template #header><span class="card-title">逐列画像（profile_json）</span></template>
+              <el-table :data="profileRows" size="small" border max-height="360">
+                <el-table-column
+                  v-for="col in profileColumns"
+                  :key="col"
+                  :prop="col"
+                  :label="col"
+                  min-width="110"
+                  show-overflow-tooltip
+                >
+                  <template #default="{ row }">{{ formatCell(row[col]) }}</template>
+                </el-table-column>
+              </el-table>
+            </el-card>
+          </div>
+          <el-empty
+            v-else-if="!healthOffline"
+            description="选择表后点击「开始分析」，查看健康分仪表盘 / 空值率 / 主键重复与逐列画像"
+          />
+        </el-tab-pane>
       </el-tabs>
     </el-card>
 
@@ -765,6 +1582,111 @@ onMounted(() => {
         <el-button @click="logVisible = false">关闭</el-button>
       </template>
     </el-dialog>
+
+    <!-- 新建/编辑告警通道对话框 -->
+    <el-dialog
+      v-model="channelDialogVisible"
+      :title="channelEditingId === null ? '新建告警通道' : '编辑告警通道'"
+      width="580px"
+      destroy-on-close
+    >
+      <el-form ref="channelFormEl" :model="channelForm" :rules="channelRules" label-width="110px">
+        <el-form-item label="通道名称" prop="name">
+          <el-input v-model="channelForm.name" placeholder="如：数据质量告警群" maxlength="64" />
+        </el-form-item>
+        <el-form-item label="通道类型" prop="type">
+          <el-select v-model="channelForm.type" style="width: 100%">
+            <el-option v-for="t in channelTypeOptions" :key="t.value" :label="t.label" :value="t.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Webhook" prop="webhook_url">
+          <el-input v-model="channelForm.webhook_url" placeholder="https://oapi.dingtalk.com/robot/send?access_token=..." />
+        </el-form-item>
+        <el-form-item label="加签密钥">
+          <el-input
+            v-model="channelForm.secret"
+            placeholder="可选，钉钉机器人「加签」安全设置下的 SEC 开头密钥"
+            show-password
+          />
+        </el-form-item>
+        <el-form-item label="最低告警级别" prop="min_level">
+          <el-select v-model="channelForm.min_level" style="width: 100%">
+            <el-option v-for="m in minLevelOptions" :key="m.value" :label="m.label" :value="m.value" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <el-alert
+        title="min_level=failed 仅在任务最终失败时告警；partial 表示存在部分通过的规则也会告警"
+        type="info"
+        :closable="false"
+        show-icon
+        class="form-alert"
+      />
+      <template #footer>
+        <el-button @click="channelDialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="channelSaving" @click="onSaveChannel">保存</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 通道测试结果对话框 -->
+    <el-dialog v-model="testResultVisible" title="通道测试结果" width="420px">
+      <template v-if="testResult">
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="是否成功">
+            <el-tag :type="testResult.ok ? 'success' : 'danger'" size="small">
+              {{ testResult.ok ? '成功' : '失败' }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="返回信息">{{ testResult.msg || '-' }}</el-descriptions-item>
+        </el-descriptions>
+      </template>
+      <template #footer>
+        <el-button type="primary" @click="testResultVisible = false">知道了</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 错误样本对话框（动态列） -->
+    <el-dialog
+      v-model="sampleVisible"
+      :title="`错误样本 · Job #${sampleRecord?.job_id ?? '-'} / Rule #${sampleRecord?.rule_id ?? '-'}`"
+      width="860px"
+    >
+      <el-alert
+        v-if="!sampleColumns.length && sampleRaw"
+        title="样本 JSON 解析失败，以下为原始内容"
+        type="warning"
+        :closable="false"
+        show-icon
+        class="form-alert"
+      />
+      <el-table
+        v-if="sampleColumns.length"
+        :data="sampleRows"
+        size="small"
+        border
+        max-height="420"
+      >
+        <el-table-column
+          v-for="col in sampleColumns"
+          :key="col"
+          :prop="col"
+          :label="col"
+          min-width="110"
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">{{ formatCell(row[col]) }}</template>
+        </el-table-column>
+      </el-table>
+      <pre v-else-if="sampleRaw" class="raw-pre">{{ sampleRaw }}</pre>
+      <el-empty v-else description="该记录没有样本数据" :image-size="70" />
+      <div v-if="sampleColumns.length" class="sample-meta">
+        共 {{ sampleRows.length }} 条样本
+        <template v-if="sampleRecord?.sample_count !== undefined">（采集 {{ sampleRecord.sample_count }} 条）</template>
+      </div>
+      <template #footer>
+        <el-button @click="sampleVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -781,5 +1703,83 @@ onMounted(() => {
 .run-rate {
   color: var(--el-text-color-secondary);
   font-size: 12px;
+}
+.offline-alert {
+  margin-bottom: 14px;
+}
+.form-alert {
+  margin-top: 4px;
+}
+.raw-pre {
+  max-height: 420px;
+  overflow: auto;
+  background: #f5f7fa;
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.sample-meta {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.health-form {
+  margin-bottom: 14px;
+}
+.health-result {
+  min-height: 120px;
+}
+.gauge-chart {
+  width: 100%;
+  height: 260px;
+}
+.hist-chart {
+  width: 100%;
+  height: 200px;
+}
+.hist-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 14px 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.score-tag {
+  margin-left: 8px;
+}
+.mini-stat {
+  text-align: center;
+  padding: 10px 4px;
+  background: var(--el-fill-color-lighter);
+  border-radius: 6px;
+}
+.mini-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: #303133;
+  line-height: 1.3;
+}
+.mini-warn {
+  color: #e6a23c;
+}
+.mini-bad {
+  color: #f56c6c;
+}
+.mini-label {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #909399;
+}
+.mt16 {
+  margin-top: 16px;
+}
+.card-title {
+  font-weight: 600;
+  font-size: 14px;
 }
 </style>

@@ -66,11 +66,18 @@ func (l *RunJobLogic) RunJob(in *quality.IdReq) (*quality.RunJobReply, error) {
 	// 逐规则执行：单规则失败不阻断整体，错误落入结果详情（整体状态按通过数收敛）
 	runAt := time.Now()
 	results := make([]*model.Result, 0, len(rules))
+	// 失败规则及其结果（供错误样本抓取与告警明细两个钩子使用）
+	failedRules := make([]*model.Rule, 0)
+	failedResults := make([]*model.Result, 0)
 	var passed int64
 	for _, rule := range rules {
 		result := l.execRule(conn, job.Id, job.DbName, rule, runAt)
 		passed += result.PassFlag // PassFlag 为 1 时恰好累加 1
 		results = append(results, result)
+		if result.PassFlag == 0 {
+			failedRules = append(failedRules, rule)
+			failedResults = append(failedResults, result)
+		}
 	}
 	if err := l.svcCtx.ResultModel.BatchInsert(l.ctx, results); err != nil {
 		return nil, err
@@ -87,12 +94,80 @@ func (l *RunJobLogic) RunJob(in *quality.IdReq) (*quality.RunJobReply, error) {
 	if err := l.svcCtx.JobModel.UpdateRunStatus(l.ctx, job.Id, in.Beid, status, runAt); err != nil {
 		return nil, err
 	}
+
+	// 钩子一：not_null/unique/value_range 失败规则抓错误行样本落库（失败仅记日志，不阻断返回）
+	l.captureErrorSamples(conn, job.Id, job.DbName, failedRules, runAt)
+	// 钩子二：任务异常（failed/partial）按通道触发级别分发 webhook 告警（失败仅记日志，不阻断返回）
+	l.dispatchAlerts(job, status, int64(len(rules)), passed, failedRules, failedResults)
+
 	return &quality.RunJobReply{
 		JobId:      job.Id,
 		TotalRules: int64(len(rules)),
 		Passed:     passed,
 		LastStatus: status,
 	}, nil
+}
+
+// captureErrorSamples 错误样本钩子：对 not_null/unique/value_range 失败规则抓取违规行样本
+// （每条 limit 100）落 dc_quality_error_data，供 ListErrorData 下钻；
+// 样本 SQL 生成失败/查询失败仅记日志，不影响任务结果返回
+func (l *RunJobLogic) captureErrorSamples(conn sqlx.SqlConn, jobId int64, dbName string,
+	failedRules []*model.Rule, runAt time.Time) {
+	for _, rule := range failedRules {
+		if err := captureOne(l.ctx, conn, l.svcCtx.ErrorDataModel, jobId, dbName, rule, runAt); err != nil {
+			l.Errorf("错误样本抓取失败: job=%d rule=%d err=%v", jobId, rule.Id, err)
+		}
+	}
+}
+
+// dispatchAlerts 告警钩子：任务异常（failed/partial）时查询租户下启用的告警通道，
+// 按 min_level 过滤后逐个推送 webhook（钉钉/飞书格式，钉钉 secret 加签可选），
+// 发送结果逐条落 dc_quality_alert_log；通道查询/发送/落日志任一失败仅记日志，不阻断主流程
+func (l *RunJobLogic) dispatchAlerts(job *model.Job, status string, total, passed int64,
+	failedRules []*model.Rule, failedResults []*model.Result) {
+	if status == model.JobStatusSuccess {
+		return // 全部通过不告警
+	}
+	channels, err := l.svcCtx.AlertChannelModel.FindEnabled(l.ctx, job.Beid)
+	if err != nil {
+		l.Errorf("查询告警通道失败: job=%d beid=%d err=%v", job.Id, job.Beid, err)
+		return
+	}
+	if len(channels) == 0 {
+		return
+	}
+	// 失败规则摘要（告警内容：任务名/状态/通过率/失败规则明细）
+	items := make([]alertFailedRule, 0, len(failedRules))
+	for i := range failedRules {
+		items = append(items, alertFailedRule{
+			Name:     failedRules[i].Name,
+			RuleType: failedRules[i].RuleType,
+			Detail:   failedResults[i].DetailJson,
+		})
+	}
+	content := BuildAlertContent(job.Name, job.Id, total, passed, status, items)
+	for _, ch := range channels {
+		// 触发级别过滤：min_level=failed 仅任务全部不通过才报；min_level=partial 部分失败即报
+		if !LevelAllowed(ch.MinLevel, status) {
+			continue
+		}
+		sendErr := sendAlertToChannel(ch, content)
+		logRow := &model.AlertLog{
+			ChannelId: ch.Id,
+			JobId:     job.Id,
+			Content:   content,
+			Status:    model.AlertSendSuccess,
+			SentAt:    time.Now().UnixMilli(),
+		}
+		if sendErr != nil {
+			l.Errorf("告警发送失败: job=%d channel=%d(%s) err=%v", job.Id, ch.Id, ch.Name, sendErr)
+			logRow.Status = model.AlertSendFailed
+			logRow.Msg = sendErr.Error()
+		}
+		if err := l.svcCtx.AlertLogModel.Insert(l.ctx, logRow); err != nil {
+			l.Errorf("告警日志落库失败: job=%d channel=%d err=%v", job.Id, ch.Id, err)
+		}
+	}
 }
 
 // loadRulesInOrder 按任务配置的 rule_ids 顺序加载规则

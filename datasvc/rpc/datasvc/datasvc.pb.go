@@ -1017,6 +1017,615 @@ func (x *ExecuteReply) GetAffected() int64 {
 	return 0
 }
 
+// ============ API 可观测（Phase 7） ============
+type ApiCallLog struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ApiId         int64                  `protobuf:"varint,2,opt,name=api_id,json=apiId,proto3" json:"api_id,omitempty"`
+	AppId         int64                  `protobuf:"varint,3,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
+	Path          string                 `protobuf:"bytes,4,opt,name=path,proto3" json:"path,omitempty"`
+	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"` //ok/error/denied
+	ErrorCode     string                 `protobuf:"bytes,6,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	RowsCnt       int64                  `protobuf:"varint,7,opt,name=rows_cnt,json=rowsCnt,proto3" json:"rows_cnt,omitempty"`
+	CostMs        int32                  `protobuf:"varint,8,opt,name=cost_ms,json=costMs,proto3" json:"cost_ms,omitempty"`
+	CacheHit      bool                   `protobuf:"varint,9,opt,name=cache_hit,json=cacheHit,proto3" json:"cache_hit,omitempty"`
+	Ip            string                 `protobuf:"bytes,10,opt,name=ip,proto3" json:"ip,omitempty"`
+	CreatedAt     int64                  `protobuf:"varint,11,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ApiCallLog) Reset() {
+	*x = ApiCallLog{}
+	mi := &file_datasvc_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ApiCallLog) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApiCallLog) ProtoMessage() {}
+
+func (x *ApiCallLog) ProtoReflect() protoreflect.Message {
+	mi := &file_datasvc_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApiCallLog.ProtoReflect.Descriptor instead.
+func (*ApiCallLog) Descriptor() ([]byte, []int) {
+	return file_datasvc_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *ApiCallLog) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *ApiCallLog) GetApiId() int64 {
+	if x != nil {
+		return x.ApiId
+	}
+	return 0
+}
+
+func (x *ApiCallLog) GetAppId() int64 {
+	if x != nil {
+		return x.AppId
+	}
+	return 0
+}
+
+func (x *ApiCallLog) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *ApiCallLog) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *ApiCallLog) GetErrorCode() string {
+	if x != nil {
+		return x.ErrorCode
+	}
+	return ""
+}
+
+func (x *ApiCallLog) GetRowsCnt() int64 {
+	if x != nil {
+		return x.RowsCnt
+	}
+	return 0
+}
+
+func (x *ApiCallLog) GetCostMs() int32 {
+	if x != nil {
+		return x.CostMs
+	}
+	return 0
+}
+
+func (x *ApiCallLog) GetCacheHit() bool {
+	if x != nil {
+		return x.CacheHit
+	}
+	return false
+}
+
+func (x *ApiCallLog) GetIp() string {
+	if x != nil {
+		return x.Ip
+	}
+	return ""
+}
+
+func (x *ApiCallLog) GetCreatedAt() int64 {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return 0
+}
+
+type CallLogListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	List          []*ApiCallLog          `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CallLogListReply) Reset() {
+	*x = CallLogListReply{}
+	mi := &file_datasvc_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CallLogListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CallLogListReply) ProtoMessage() {}
+
+func (x *CallLogListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_datasvc_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CallLogListReply.ProtoReflect.Descriptor instead.
+func (*CallLogListReply) Descriptor() ([]byte, []int) {
+	return file_datasvc_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *CallLogListReply) GetList() []*ApiCallLog {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+func (x *CallLogListReply) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type CallLogListReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Beid          int64                  `protobuf:"varint,1,opt,name=beid,proto3" json:"beid,omitempty"`
+	ApiId         int64                  `protobuf:"varint,2,opt,name=api_id,json=apiId,proto3" json:"api_id,omitempty"`
+	AppId         int64                  `protobuf:"varint,3,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
+	Status        string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
+	Page          int64                  `protobuf:"varint,5,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int64                  `protobuf:"varint,6,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CallLogListReq) Reset() {
+	*x = CallLogListReq{}
+	mi := &file_datasvc_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CallLogListReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CallLogListReq) ProtoMessage() {}
+
+func (x *CallLogListReq) ProtoReflect() protoreflect.Message {
+	mi := &file_datasvc_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CallLogListReq.ProtoReflect.Descriptor instead.
+func (*CallLogListReq) Descriptor() ([]byte, []int) {
+	return file_datasvc_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *CallLogListReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+func (x *CallLogListReq) GetApiId() int64 {
+	if x != nil {
+		return x.ApiId
+	}
+	return 0
+}
+
+func (x *CallLogListReq) GetAppId() int64 {
+	if x != nil {
+		return x.AppId
+	}
+	return 0
+}
+
+func (x *CallLogListReq) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *CallLogListReq) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *CallLogListReq) GetSize() int64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+type ApiCallStats struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TotalCalls    int64                  `protobuf:"varint,1,opt,name=total_calls,json=totalCalls,proto3" json:"total_calls,omitempty"`
+	OkCalls       int64                  `protobuf:"varint,2,opt,name=ok_calls,json=okCalls,proto3" json:"ok_calls,omitempty"`
+	ErrorCalls    int64                  `protobuf:"varint,3,opt,name=error_calls,json=errorCalls,proto3" json:"error_calls,omitempty"`
+	DeniedCalls   int64                  `protobuf:"varint,4,opt,name=denied_calls,json=deniedCalls,proto3" json:"denied_calls,omitempty"`
+	SuccessRate   float64                `protobuf:"fixed64,5,opt,name=success_rate,json=successRate,proto3" json:"success_rate,omitempty"`
+	AvgCostMs     float64                `protobuf:"fixed64,6,opt,name=avg_cost_ms,json=avgCostMs,proto3" json:"avg_cost_ms,omitempty"`
+	CacheHits     int64                  `protobuf:"varint,7,opt,name=cache_hits,json=cacheHits,proto3" json:"cache_hits,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ApiCallStats) Reset() {
+	*x = ApiCallStats{}
+	mi := &file_datasvc_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ApiCallStats) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApiCallStats) ProtoMessage() {}
+
+func (x *ApiCallStats) ProtoReflect() protoreflect.Message {
+	mi := &file_datasvc_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApiCallStats.ProtoReflect.Descriptor instead.
+func (*ApiCallStats) Descriptor() ([]byte, []int) {
+	return file_datasvc_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *ApiCallStats) GetTotalCalls() int64 {
+	if x != nil {
+		return x.TotalCalls
+	}
+	return 0
+}
+
+func (x *ApiCallStats) GetOkCalls() int64 {
+	if x != nil {
+		return x.OkCalls
+	}
+	return 0
+}
+
+func (x *ApiCallStats) GetErrorCalls() int64 {
+	if x != nil {
+		return x.ErrorCalls
+	}
+	return 0
+}
+
+func (x *ApiCallStats) GetDeniedCalls() int64 {
+	if x != nil {
+		return x.DeniedCalls
+	}
+	return 0
+}
+
+func (x *ApiCallStats) GetSuccessRate() float64 {
+	if x != nil {
+		return x.SuccessRate
+	}
+	return 0
+}
+
+func (x *ApiCallStats) GetAvgCostMs() float64 {
+	if x != nil {
+		return x.AvgCostMs
+	}
+	return 0
+}
+
+func (x *ApiCallStats) GetCacheHits() int64 {
+	if x != nil {
+		return x.CacheHits
+	}
+	return 0
+}
+
+type TopApi struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ApiId         int64                  `protobuf:"varint,1,opt,name=api_id,json=apiId,proto3" json:"api_id,omitempty"`
+	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
+	Calls         int64                  `protobuf:"varint,3,opt,name=calls,proto3" json:"calls,omitempty"`
+	AvgCostMs     float64                `protobuf:"fixed64,4,opt,name=avg_cost_ms,json=avgCostMs,proto3" json:"avg_cost_ms,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TopApi) Reset() {
+	*x = TopApi{}
+	mi := &file_datasvc_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TopApi) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TopApi) ProtoMessage() {}
+
+func (x *TopApi) ProtoReflect() protoreflect.Message {
+	mi := &file_datasvc_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TopApi.ProtoReflect.Descriptor instead.
+func (*TopApi) Descriptor() ([]byte, []int) {
+	return file_datasvc_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *TopApi) GetApiId() int64 {
+	if x != nil {
+		return x.ApiId
+	}
+	return 0
+}
+
+func (x *TopApi) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *TopApi) GetCalls() int64 {
+	if x != nil {
+		return x.Calls
+	}
+	return 0
+}
+
+func (x *TopApi) GetAvgCostMs() float64 {
+	if x != nil {
+		return x.AvgCostMs
+	}
+	return 0
+}
+
+type StatsReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Beid          int64                  `protobuf:"varint,1,opt,name=beid,proto3" json:"beid,omitempty"`
+	Days          int32                  `protobuf:"varint,2,opt,name=days,proto3" json:"days,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StatsReq) Reset() {
+	*x = StatsReq{}
+	mi := &file_datasvc_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StatsReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatsReq) ProtoMessage() {}
+
+func (x *StatsReq) ProtoReflect() protoreflect.Message {
+	mi := &file_datasvc_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatsReq.ProtoReflect.Descriptor instead.
+func (*StatsReq) Descriptor() ([]byte, []int) {
+	return file_datasvc_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *StatsReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+func (x *StatsReq) GetDays() int32 {
+	if x != nil {
+		return x.Days
+	}
+	return 0
+}
+
+type StatsReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Overall       *ApiCallStats          `protobuf:"bytes,1,opt,name=overall,proto3" json:"overall,omitempty"`
+	TopApis       []*TopApi              `protobuf:"bytes,2,rep,name=top_apis,json=topApis,proto3" json:"top_apis,omitempty"`
+	DailyCalls    []int64                `protobuf:"varint,3,rep,packed,name=daily_calls,json=dailyCalls,proto3" json:"daily_calls,omitempty"` //近 N 天调用量（升序）
+	DailyDates    []string               `protobuf:"bytes,4,rep,name=daily_dates,json=dailyDates,proto3" json:"daily_dates,omitempty"`         //对应日期 YYYY-MM-DD
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StatsReply) Reset() {
+	*x = StatsReply{}
+	mi := &file_datasvc_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StatsReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatsReply) ProtoMessage() {}
+
+func (x *StatsReply) ProtoReflect() protoreflect.Message {
+	mi := &file_datasvc_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatsReply.ProtoReflect.Descriptor instead.
+func (*StatsReply) Descriptor() ([]byte, []int) {
+	return file_datasvc_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *StatsReply) GetOverall() *ApiCallStats {
+	if x != nil {
+		return x.Overall
+	}
+	return nil
+}
+
+func (x *StatsReply) GetTopApis() []*TopApi {
+	if x != nil {
+		return x.TopApis
+	}
+	return nil
+}
+
+func (x *StatsReply) GetDailyCalls() []int64 {
+	if x != nil {
+		return x.DailyCalls
+	}
+	return nil
+}
+
+func (x *StatsReply) GetDailyDates() []string {
+	if x != nil {
+		return x.DailyDates
+	}
+	return nil
+}
+
+type ApiDocReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ApiName       string                 `protobuf:"bytes,1,opt,name=api_name,json=apiName,proto3" json:"api_name,omitempty"`
+	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
+	Markdown      string                 `protobuf:"bytes,3,opt,name=markdown,proto3" json:"markdown,omitempty"`                          //Markdown 文档（含参数表/调用示例/签名说明）
+	OpenapiJson   string                 `protobuf:"bytes,4,opt,name=openapi_json,json=openapiJson,proto3" json:"openapi_json,omitempty"` //OpenAPI 3.0 片段
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ApiDocReply) Reset() {
+	*x = ApiDocReply{}
+	mi := &file_datasvc_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ApiDocReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApiDocReply) ProtoMessage() {}
+
+func (x *ApiDocReply) ProtoReflect() protoreflect.Message {
+	mi := &file_datasvc_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApiDocReply.ProtoReflect.Descriptor instead.
+func (*ApiDocReply) Descriptor() ([]byte, []int) {
+	return file_datasvc_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *ApiDocReply) GetApiName() string {
+	if x != nil {
+		return x.ApiName
+	}
+	return ""
+}
+
+func (x *ApiDocReply) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *ApiDocReply) GetMarkdown() string {
+	if x != nil {
+		return x.Markdown
+	}
+	return ""
+}
+
+func (x *ApiDocReply) GetOpenapiJson() string {
+	if x != nil {
+		return x.OpenapiJson
+	}
+	return ""
+}
+
 type IdReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -1027,7 +1636,7 @@ type IdReq struct {
 
 func (x *IdReq) Reset() {
 	*x = IdReq{}
-	mi := &file_datasvc_proto_msgTypes[13]
+	mi := &file_datasvc_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1039,7 +1648,7 @@ func (x *IdReq) String() string {
 func (*IdReq) ProtoMessage() {}
 
 func (x *IdReq) ProtoReflect() protoreflect.Message {
-	mi := &file_datasvc_proto_msgTypes[13]
+	mi := &file_datasvc_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1052,7 +1661,7 @@ func (x *IdReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdReq.ProtoReflect.Descriptor instead.
 func (*IdReq) Descriptor() ([]byte, []int) {
-	return file_datasvc_proto_rawDescGZIP(), []int{13}
+	return file_datasvc_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *IdReq) GetId() int64 {
@@ -1078,7 +1687,7 @@ type OkReply struct {
 
 func (x *OkReply) Reset() {
 	*x = OkReply{}
-	mi := &file_datasvc_proto_msgTypes[14]
+	mi := &file_datasvc_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1090,7 +1699,7 @@ func (x *OkReply) String() string {
 func (*OkReply) ProtoMessage() {}
 
 func (x *OkReply) ProtoReflect() protoreflect.Message {
-	mi := &file_datasvc_proto_msgTypes[14]
+	mi := &file_datasvc_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1103,7 +1712,7 @@ func (x *OkReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OkReply.ProtoReflect.Descriptor instead.
 func (*OkReply) Descriptor() ([]byte, []int) {
-	return file_datasvc_proto_rawDescGZIP(), []int{14}
+	return file_datasvc_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *OkReply) GetOk() bool {
@@ -1206,12 +1815,70 @@ const file_datasvc_proto_rawDesc = "" +
 	"\trows_json\x18\x01 \x01(\tR\browsJson\x12\x17\n" +
 	"\acost_ms\x18\x02 \x01(\x03R\x06costMs\x12\x1b\n" +
 	"\tcache_hit\x18\x03 \x01(\bR\bcacheHit\x12\x1a\n" +
-	"\baffected\x18\x04 \x01(\x03R\baffected\"+\n" +
+	"\baffected\x18\x04 \x01(\x03R\baffected\"\x95\x02\n" +
+	"\n" +
+	"ApiCallLog\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x15\n" +
+	"\x06api_id\x18\x02 \x01(\x03R\x05apiId\x12\x15\n" +
+	"\x06app_id\x18\x03 \x01(\x03R\x05appId\x12\x12\n" +
+	"\x04path\x18\x04 \x01(\tR\x04path\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x12\x1d\n" +
+	"\n" +
+	"error_code\x18\x06 \x01(\tR\terrorCode\x12\x19\n" +
+	"\brows_cnt\x18\a \x01(\x03R\arowsCnt\x12\x17\n" +
+	"\acost_ms\x18\b \x01(\x05R\x06costMs\x12\x1b\n" +
+	"\tcache_hit\x18\t \x01(\bR\bcacheHit\x12\x0e\n" +
+	"\x02ip\x18\n" +
+	" \x01(\tR\x02ip\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\v \x01(\x03R\tcreatedAt\"Q\n" +
+	"\x10CallLogListReply\x12'\n" +
+	"\x04list\x18\x01 \x03(\v2\x13.datasvc.ApiCallLogR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\x92\x01\n" +
+	"\x0eCallLogListReq\x12\x12\n" +
+	"\x04beid\x18\x01 \x01(\x03R\x04beid\x12\x15\n" +
+	"\x06api_id\x18\x02 \x01(\x03R\x05apiId\x12\x15\n" +
+	"\x06app_id\x18\x03 \x01(\x03R\x05appId\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\tR\x06status\x12\x12\n" +
+	"\x04page\x18\x05 \x01(\x03R\x04page\x12\x12\n" +
+	"\x04size\x18\x06 \x01(\x03R\x04size\"\xf0\x01\n" +
+	"\fApiCallStats\x12\x1f\n" +
+	"\vtotal_calls\x18\x01 \x01(\x03R\n" +
+	"totalCalls\x12\x19\n" +
+	"\bok_calls\x18\x02 \x01(\x03R\aokCalls\x12\x1f\n" +
+	"\verror_calls\x18\x03 \x01(\x03R\n" +
+	"errorCalls\x12!\n" +
+	"\fdenied_calls\x18\x04 \x01(\x03R\vdeniedCalls\x12!\n" +
+	"\fsuccess_rate\x18\x05 \x01(\x01R\vsuccessRate\x12\x1e\n" +
+	"\vavg_cost_ms\x18\x06 \x01(\x01R\tavgCostMs\x12\x1d\n" +
+	"\n" +
+	"cache_hits\x18\a \x01(\x03R\tcacheHits\"i\n" +
+	"\x06TopApi\x12\x15\n" +
+	"\x06api_id\x18\x01 \x01(\x03R\x05apiId\x12\x12\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\x12\x14\n" +
+	"\x05calls\x18\x03 \x01(\x03R\x05calls\x12\x1e\n" +
+	"\vavg_cost_ms\x18\x04 \x01(\x01R\tavgCostMs\"2\n" +
+	"\bStatsReq\x12\x12\n" +
+	"\x04beid\x18\x01 \x01(\x03R\x04beid\x12\x12\n" +
+	"\x04days\x18\x02 \x01(\x05R\x04days\"\xab\x01\n" +
+	"\n" +
+	"StatsReply\x12/\n" +
+	"\aoverall\x18\x01 \x01(\v2\x15.datasvc.ApiCallStatsR\aoverall\x12*\n" +
+	"\btop_apis\x18\x02 \x03(\v2\x0f.datasvc.TopApiR\atopApis\x12\x1f\n" +
+	"\vdaily_calls\x18\x03 \x03(\x03R\n" +
+	"dailyCalls\x12\x1f\n" +
+	"\vdaily_dates\x18\x04 \x03(\tR\n" +
+	"dailyDates\"{\n" +
+	"\vApiDocReply\x12\x19\n" +
+	"\bapi_name\x18\x01 \x01(\tR\aapiName\x12\x12\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\x12\x1a\n" +
+	"\bmarkdown\x18\x03 \x01(\tR\bmarkdown\x12!\n" +
+	"\fopenapi_json\x18\x04 \x01(\tR\vopenapiJson\"+\n" +
 	"\x05IdReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04beid\x18\x02 \x01(\x03R\x04beid\"\x19\n" +
 	"\aOkReply\x12\x0e\n" +
-	"\x02ok\x18\x01 \x01(\bR\x02ok2\x95\x04\n" +
+	"\x02ok\x18\x01 \x01(\bR\x02ok2\xc6\x05\n" +
 	"\aDataSvc\x125\n" +
 	"\tCreateApi\x12\x15.datasvc.CreateApiReq\x1a\x11.datasvc.ApiReply\x124\n" +
 	"\tUpdateApi\x12\x15.datasvc.UpdateApiReq\x1a\x10.datasvc.OkReply\x12-\n" +
@@ -1225,7 +1892,10 @@ const file_datasvc_proto_rawDesc = "" +
 	"\vRegisterApp\x12\x17.datasvc.RegisterAppReq\x1a\x11.datasvc.AppReply\x122\n" +
 	"\bGrantApi\x12\x14.datasvc.GrantApiReq\x1a\x10.datasvc.OkReply\x128\n" +
 	"\n" +
-	"ExecuteApi\x12\x13.datasvc.ExecuteReq\x1a\x15.datasvc.ExecuteReplyB\vZ\t./datasvcb\x06proto3"
+	"ExecuteApi\x12\x13.datasvc.ExecuteReq\x1a\x15.datasvc.ExecuteReply\x12B\n" +
+	"\fListCallLogs\x12\x17.datasvc.CallLogListReq\x1a\x19.datasvc.CallLogListReply\x126\n" +
+	"\fGetCallStats\x12\x11.datasvc.StatsReq\x1a\x13.datasvc.StatsReply\x123\n" +
+	"\tGetApiDoc\x12\x10.datasvc.PathReq\x1a\x14.datasvc.ApiDocReplyB\vZ\t./datasvcb\x06proto3"
 
 var (
 	file_datasvc_proto_rawDescOnce sync.Once
@@ -1239,53 +1909,70 @@ func file_datasvc_proto_rawDescGZIP() []byte {
 	return file_datasvc_proto_rawDescData
 }
 
-var file_datasvc_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_datasvc_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_datasvc_proto_goTypes = []any{
-	(*Api)(nil),            // 0: datasvc.Api
-	(*ApiReply)(nil),       // 1: datasvc.ApiReply
-	(*ApiListReply)(nil),   // 2: datasvc.ApiListReply
-	(*CreateApiReq)(nil),   // 3: datasvc.CreateApiReq
-	(*UpdateApiReq)(nil),   // 4: datasvc.UpdateApiReq
-	(*ApiListReq)(nil),     // 5: datasvc.ApiListReq
-	(*PathReq)(nil),        // 6: datasvc.PathReq
-	(*ApiApp)(nil),         // 7: datasvc.ApiApp
-	(*RegisterAppReq)(nil), // 8: datasvc.RegisterAppReq
-	(*AppReply)(nil),       // 9: datasvc.AppReply
-	(*GrantApiReq)(nil),    // 10: datasvc.GrantApiReq
-	(*ExecuteReq)(nil),     // 11: datasvc.ExecuteReq
-	(*ExecuteReply)(nil),   // 12: datasvc.ExecuteReply
-	(*IdReq)(nil),          // 13: datasvc.IdReq
-	(*OkReply)(nil),        // 14: datasvc.OkReply
+	(*Api)(nil),              // 0: datasvc.Api
+	(*ApiReply)(nil),         // 1: datasvc.ApiReply
+	(*ApiListReply)(nil),     // 2: datasvc.ApiListReply
+	(*CreateApiReq)(nil),     // 3: datasvc.CreateApiReq
+	(*UpdateApiReq)(nil),     // 4: datasvc.UpdateApiReq
+	(*ApiListReq)(nil),       // 5: datasvc.ApiListReq
+	(*PathReq)(nil),          // 6: datasvc.PathReq
+	(*ApiApp)(nil),           // 7: datasvc.ApiApp
+	(*RegisterAppReq)(nil),   // 8: datasvc.RegisterAppReq
+	(*AppReply)(nil),         // 9: datasvc.AppReply
+	(*GrantApiReq)(nil),      // 10: datasvc.GrantApiReq
+	(*ExecuteReq)(nil),       // 11: datasvc.ExecuteReq
+	(*ExecuteReply)(nil),     // 12: datasvc.ExecuteReply
+	(*ApiCallLog)(nil),       // 13: datasvc.ApiCallLog
+	(*CallLogListReply)(nil), // 14: datasvc.CallLogListReply
+	(*CallLogListReq)(nil),   // 15: datasvc.CallLogListReq
+	(*ApiCallStats)(nil),     // 16: datasvc.ApiCallStats
+	(*TopApi)(nil),           // 17: datasvc.TopApi
+	(*StatsReq)(nil),         // 18: datasvc.StatsReq
+	(*StatsReply)(nil),       // 19: datasvc.StatsReply
+	(*ApiDocReply)(nil),      // 20: datasvc.ApiDocReply
+	(*IdReq)(nil),            // 21: datasvc.IdReq
+	(*OkReply)(nil),          // 22: datasvc.OkReply
 }
 var file_datasvc_proto_depIdxs = []int32{
 	0,  // 0: datasvc.ApiReply.api:type_name -> datasvc.Api
 	0,  // 1: datasvc.ApiListReply.list:type_name -> datasvc.Api
 	7,  // 2: datasvc.AppReply.app:type_name -> datasvc.ApiApp
-	3,  // 3: datasvc.DataSvc.CreateApi:input_type -> datasvc.CreateApiReq
-	4,  // 4: datasvc.DataSvc.UpdateApi:input_type -> datasvc.UpdateApiReq
-	13, // 5: datasvc.DataSvc.DeleteApi:input_type -> datasvc.IdReq
-	6,  // 6: datasvc.DataSvc.GetApi:input_type -> datasvc.PathReq
-	5,  // 7: datasvc.DataSvc.ListApis:input_type -> datasvc.ApiListReq
-	13, // 8: datasvc.DataSvc.PublishApi:input_type -> datasvc.IdReq
-	13, // 9: datasvc.DataSvc.OfflineApi:input_type -> datasvc.IdReq
-	8,  // 10: datasvc.DataSvc.RegisterApp:input_type -> datasvc.RegisterAppReq
-	10, // 11: datasvc.DataSvc.GrantApi:input_type -> datasvc.GrantApiReq
-	11, // 12: datasvc.DataSvc.ExecuteApi:input_type -> datasvc.ExecuteReq
-	1,  // 13: datasvc.DataSvc.CreateApi:output_type -> datasvc.ApiReply
-	14, // 14: datasvc.DataSvc.UpdateApi:output_type -> datasvc.OkReply
-	14, // 15: datasvc.DataSvc.DeleteApi:output_type -> datasvc.OkReply
-	1,  // 16: datasvc.DataSvc.GetApi:output_type -> datasvc.ApiReply
-	2,  // 17: datasvc.DataSvc.ListApis:output_type -> datasvc.ApiListReply
-	14, // 18: datasvc.DataSvc.PublishApi:output_type -> datasvc.OkReply
-	14, // 19: datasvc.DataSvc.OfflineApi:output_type -> datasvc.OkReply
-	9,  // 20: datasvc.DataSvc.RegisterApp:output_type -> datasvc.AppReply
-	14, // 21: datasvc.DataSvc.GrantApi:output_type -> datasvc.OkReply
-	12, // 22: datasvc.DataSvc.ExecuteApi:output_type -> datasvc.ExecuteReply
-	13, // [13:23] is the sub-list for method output_type
-	3,  // [3:13] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	13, // 3: datasvc.CallLogListReply.list:type_name -> datasvc.ApiCallLog
+	16, // 4: datasvc.StatsReply.overall:type_name -> datasvc.ApiCallStats
+	17, // 5: datasvc.StatsReply.top_apis:type_name -> datasvc.TopApi
+	3,  // 6: datasvc.DataSvc.CreateApi:input_type -> datasvc.CreateApiReq
+	4,  // 7: datasvc.DataSvc.UpdateApi:input_type -> datasvc.UpdateApiReq
+	21, // 8: datasvc.DataSvc.DeleteApi:input_type -> datasvc.IdReq
+	6,  // 9: datasvc.DataSvc.GetApi:input_type -> datasvc.PathReq
+	5,  // 10: datasvc.DataSvc.ListApis:input_type -> datasvc.ApiListReq
+	21, // 11: datasvc.DataSvc.PublishApi:input_type -> datasvc.IdReq
+	21, // 12: datasvc.DataSvc.OfflineApi:input_type -> datasvc.IdReq
+	8,  // 13: datasvc.DataSvc.RegisterApp:input_type -> datasvc.RegisterAppReq
+	10, // 14: datasvc.DataSvc.GrantApi:input_type -> datasvc.GrantApiReq
+	11, // 15: datasvc.DataSvc.ExecuteApi:input_type -> datasvc.ExecuteReq
+	15, // 16: datasvc.DataSvc.ListCallLogs:input_type -> datasvc.CallLogListReq
+	18, // 17: datasvc.DataSvc.GetCallStats:input_type -> datasvc.StatsReq
+	6,  // 18: datasvc.DataSvc.GetApiDoc:input_type -> datasvc.PathReq
+	1,  // 19: datasvc.DataSvc.CreateApi:output_type -> datasvc.ApiReply
+	22, // 20: datasvc.DataSvc.UpdateApi:output_type -> datasvc.OkReply
+	22, // 21: datasvc.DataSvc.DeleteApi:output_type -> datasvc.OkReply
+	1,  // 22: datasvc.DataSvc.GetApi:output_type -> datasvc.ApiReply
+	2,  // 23: datasvc.DataSvc.ListApis:output_type -> datasvc.ApiListReply
+	22, // 24: datasvc.DataSvc.PublishApi:output_type -> datasvc.OkReply
+	22, // 25: datasvc.DataSvc.OfflineApi:output_type -> datasvc.OkReply
+	9,  // 26: datasvc.DataSvc.RegisterApp:output_type -> datasvc.AppReply
+	22, // 27: datasvc.DataSvc.GrantApi:output_type -> datasvc.OkReply
+	12, // 28: datasvc.DataSvc.ExecuteApi:output_type -> datasvc.ExecuteReply
+	14, // 29: datasvc.DataSvc.ListCallLogs:output_type -> datasvc.CallLogListReply
+	19, // 30: datasvc.DataSvc.GetCallStats:output_type -> datasvc.StatsReply
+	20, // 31: datasvc.DataSvc.GetApiDoc:output_type -> datasvc.ApiDocReply
+	19, // [19:32] is the sub-list for method output_type
+	6,  // [6:19] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_datasvc_proto_init() }
@@ -1299,7 +1986,7 @@ func file_datasvc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_datasvc_proto_rawDesc), len(file_datasvc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

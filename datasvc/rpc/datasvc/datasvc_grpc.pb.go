@@ -19,16 +19,19 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	DataSvc_CreateApi_FullMethodName   = "/datasvc.DataSvc/CreateApi"
-	DataSvc_UpdateApi_FullMethodName   = "/datasvc.DataSvc/UpdateApi"
-	DataSvc_DeleteApi_FullMethodName   = "/datasvc.DataSvc/DeleteApi"
-	DataSvc_GetApi_FullMethodName      = "/datasvc.DataSvc/GetApi"
-	DataSvc_ListApis_FullMethodName    = "/datasvc.DataSvc/ListApis"
-	DataSvc_PublishApi_FullMethodName  = "/datasvc.DataSvc/PublishApi"
-	DataSvc_OfflineApi_FullMethodName  = "/datasvc.DataSvc/OfflineApi"
-	DataSvc_RegisterApp_FullMethodName = "/datasvc.DataSvc/RegisterApp"
-	DataSvc_GrantApi_FullMethodName    = "/datasvc.DataSvc/GrantApi"
-	DataSvc_ExecuteApi_FullMethodName  = "/datasvc.DataSvc/ExecuteApi"
+	DataSvc_CreateApi_FullMethodName    = "/datasvc.DataSvc/CreateApi"
+	DataSvc_UpdateApi_FullMethodName    = "/datasvc.DataSvc/UpdateApi"
+	DataSvc_DeleteApi_FullMethodName    = "/datasvc.DataSvc/DeleteApi"
+	DataSvc_GetApi_FullMethodName       = "/datasvc.DataSvc/GetApi"
+	DataSvc_ListApis_FullMethodName     = "/datasvc.DataSvc/ListApis"
+	DataSvc_PublishApi_FullMethodName   = "/datasvc.DataSvc/PublishApi"
+	DataSvc_OfflineApi_FullMethodName   = "/datasvc.DataSvc/OfflineApi"
+	DataSvc_RegisterApp_FullMethodName  = "/datasvc.DataSvc/RegisterApp"
+	DataSvc_GrantApi_FullMethodName     = "/datasvc.DataSvc/GrantApi"
+	DataSvc_ExecuteApi_FullMethodName   = "/datasvc.DataSvc/ExecuteApi"
+	DataSvc_ListCallLogs_FullMethodName = "/datasvc.DataSvc/ListCallLogs"
+	DataSvc_GetCallStats_FullMethodName = "/datasvc.DataSvc/GetCallStats"
+	DataSvc_GetApiDoc_FullMethodName    = "/datasvc.DataSvc/GetApiDoc"
 )
 
 // DataSvcClient is the client API for DataSvc service.
@@ -54,6 +57,12 @@ type DataSvcClient interface {
 	GrantApi(ctx context.Context, in *GrantApiReq, opts ...grpc.CallOption) (*OkReply, error)
 	//执行 API（核心：鉴权→限流→缓存→执行→脱敏）
 	ExecuteApi(ctx context.Context, in *ExecuteReq, opts ...grpc.CallOption) (*ExecuteReply, error)
+	//调用日志
+	ListCallLogs(ctx context.Context, in *CallLogListReq, opts ...grpc.CallOption) (*CallLogListReply, error)
+	//调用统计（成功率/耗时/TopN/日趋势）
+	GetCallStats(ctx context.Context, in *StatsReq, opts ...grpc.CallOption) (*StatsReply, error)
+	//API 文档导出（Markdown + OpenAPI 片段）
+	GetApiDoc(ctx context.Context, in *PathReq, opts ...grpc.CallOption) (*ApiDocReply, error)
 }
 
 type dataSvcClient struct {
@@ -164,6 +173,36 @@ func (c *dataSvcClient) ExecuteApi(ctx context.Context, in *ExecuteReq, opts ...
 	return out, nil
 }
 
+func (c *dataSvcClient) ListCallLogs(ctx context.Context, in *CallLogListReq, opts ...grpc.CallOption) (*CallLogListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CallLogListReply)
+	err := c.cc.Invoke(ctx, DataSvc_ListCallLogs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataSvcClient) GetCallStats(ctx context.Context, in *StatsReq, opts ...grpc.CallOption) (*StatsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StatsReply)
+	err := c.cc.Invoke(ctx, DataSvc_GetCallStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataSvcClient) GetApiDoc(ctx context.Context, in *PathReq, opts ...grpc.CallOption) (*ApiDocReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiDocReply)
+	err := c.cc.Invoke(ctx, DataSvc_GetApiDoc_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DataSvcServer is the server API for DataSvc service.
 // All implementations must embed UnimplementedDataSvcServer
 // for forward compatibility.
@@ -187,6 +226,12 @@ type DataSvcServer interface {
 	GrantApi(context.Context, *GrantApiReq) (*OkReply, error)
 	//执行 API（核心：鉴权→限流→缓存→执行→脱敏）
 	ExecuteApi(context.Context, *ExecuteReq) (*ExecuteReply, error)
+	//调用日志
+	ListCallLogs(context.Context, *CallLogListReq) (*CallLogListReply, error)
+	//调用统计（成功率/耗时/TopN/日趋势）
+	GetCallStats(context.Context, *StatsReq) (*StatsReply, error)
+	//API 文档导出（Markdown + OpenAPI 片段）
+	GetApiDoc(context.Context, *PathReq) (*ApiDocReply, error)
 	mustEmbedUnimplementedDataSvcServer()
 }
 
@@ -226,6 +271,15 @@ func (UnimplementedDataSvcServer) GrantApi(context.Context, *GrantApiReq) (*OkRe
 }
 func (UnimplementedDataSvcServer) ExecuteApi(context.Context, *ExecuteReq) (*ExecuteReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method ExecuteApi not implemented")
+}
+func (UnimplementedDataSvcServer) ListCallLogs(context.Context, *CallLogListReq) (*CallLogListReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListCallLogs not implemented")
+}
+func (UnimplementedDataSvcServer) GetCallStats(context.Context, *StatsReq) (*StatsReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetCallStats not implemented")
+}
+func (UnimplementedDataSvcServer) GetApiDoc(context.Context, *PathReq) (*ApiDocReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetApiDoc not implemented")
 }
 func (UnimplementedDataSvcServer) mustEmbedUnimplementedDataSvcServer() {}
 func (UnimplementedDataSvcServer) testEmbeddedByValue()                 {}
@@ -428,6 +482,60 @@ func _DataSvc_ExecuteApi_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataSvc_ListCallLogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CallLogListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataSvcServer).ListCallLogs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataSvc_ListCallLogs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataSvcServer).ListCallLogs(ctx, req.(*CallLogListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataSvc_GetCallStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StatsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataSvcServer).GetCallStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataSvc_GetCallStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataSvcServer).GetCallStats(ctx, req.(*StatsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataSvc_GetApiDoc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PathReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataSvcServer).GetApiDoc(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataSvc_GetApiDoc_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataSvcServer).GetApiDoc(ctx, req.(*PathReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DataSvc_ServiceDesc is the grpc.ServiceDesc for DataSvc service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -474,6 +582,18 @@ var DataSvc_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExecuteApi",
 			Handler:    _DataSvc_ExecuteApi_Handler,
+		},
+		{
+			MethodName: "ListCallLogs",
+			Handler:    _DataSvc_ListCallLogs_Handler,
+		},
+		{
+			MethodName: "GetCallStats",
+			Handler:    _DataSvc_GetCallStats_Handler,
+		},
+		{
+			MethodName: "GetApiDoc",
+			Handler:    _DataSvc_GetApiDoc_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

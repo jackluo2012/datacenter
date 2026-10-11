@@ -19,13 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Quality_CreateRule_FullMethodName  = "/quality.Quality/CreateRule"
-	Quality_DeleteRule_FullMethodName  = "/quality.Quality/DeleteRule"
-	Quality_ListRules_FullMethodName   = "/quality.Quality/ListRules"
-	Quality_CreateJob_FullMethodName   = "/quality.Quality/CreateJob"
-	Quality_ListJobs_FullMethodName    = "/quality.Quality/ListJobs"
-	Quality_RunJob_FullMethodName      = "/quality.Quality/RunJob"
-	Quality_ListResults_FullMethodName = "/quality.Quality/ListResults"
+	Quality_CreateRule_FullMethodName         = "/quality.Quality/CreateRule"
+	Quality_DeleteRule_FullMethodName         = "/quality.Quality/DeleteRule"
+	Quality_ListRules_FullMethodName          = "/quality.Quality/ListRules"
+	Quality_CreateJob_FullMethodName          = "/quality.Quality/CreateJob"
+	Quality_ListJobs_FullMethodName           = "/quality.Quality/ListJobs"
+	Quality_RunJob_FullMethodName             = "/quality.Quality/RunJob"
+	Quality_ListResults_FullMethodName        = "/quality.Quality/ListResults"
+	Quality_SaveAlertChannel_FullMethodName   = "/quality.Quality/SaveAlertChannel"
+	Quality_DeleteAlertChannel_FullMethodName = "/quality.Quality/DeleteAlertChannel"
+	Quality_ListAlertChannels_FullMethodName  = "/quality.Quality/ListAlertChannels"
+	Quality_TestAlertChannel_FullMethodName   = "/quality.Quality/TestAlertChannel"
+	Quality_ListErrorData_FullMethodName      = "/quality.Quality/ListErrorData"
+	Quality_ProfileTable_FullMethodName       = "/quality.Quality/ProfileTable"
+	Quality_ListProfiles_FullMethodName       = "/quality.Quality/ListProfiles"
 )
 
 // QualityClient is the client API for Quality service.
@@ -46,6 +53,16 @@ type QualityClient interface {
 	RunJob(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*RunJobReply, error)
 	//结果列表
 	ListResults(ctx context.Context, in *ResultListReq, opts ...grpc.CallOption) (*ResultListReply, error)
+	//告警通道
+	SaveAlertChannel(ctx context.Context, in *SaveAlertChannelReq, opts ...grpc.CallOption) (*AlertChannel, error)
+	DeleteAlertChannel(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
+	ListAlertChannels(ctx context.Context, in *AlertChannelListReq, opts ...grpc.CallOption) (*AlertChannelListReply, error)
+	TestAlertChannel(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*TestAlertReply, error)
+	//错误数据下钻
+	ListErrorData(ctx context.Context, in *ErrorDataListReq, opts ...grpc.CallOption) (*ErrorDataListReply, error)
+	//表剖析与健康分
+	ProfileTable(ctx context.Context, in *ProfileTableReq, opts ...grpc.CallOption) (*ProfileReply, error)
+	ListProfiles(ctx context.Context, in *ProfileListReq, opts ...grpc.CallOption) (*ProfileListReply, error)
 }
 
 type qualityClient struct {
@@ -126,6 +143,76 @@ func (c *qualityClient) ListResults(ctx context.Context, in *ResultListReq, opts
 	return out, nil
 }
 
+func (c *qualityClient) SaveAlertChannel(ctx context.Context, in *SaveAlertChannelReq, opts ...grpc.CallOption) (*AlertChannel, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AlertChannel)
+	err := c.cc.Invoke(ctx, Quality_SaveAlertChannel_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *qualityClient) DeleteAlertChannel(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IdReq)
+	err := c.cc.Invoke(ctx, Quality_DeleteAlertChannel_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *qualityClient) ListAlertChannels(ctx context.Context, in *AlertChannelListReq, opts ...grpc.CallOption) (*AlertChannelListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AlertChannelListReply)
+	err := c.cc.Invoke(ctx, Quality_ListAlertChannels_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *qualityClient) TestAlertChannel(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*TestAlertReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TestAlertReply)
+	err := c.cc.Invoke(ctx, Quality_TestAlertChannel_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *qualityClient) ListErrorData(ctx context.Context, in *ErrorDataListReq, opts ...grpc.CallOption) (*ErrorDataListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ErrorDataListReply)
+	err := c.cc.Invoke(ctx, Quality_ListErrorData_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *qualityClient) ProfileTable(ctx context.Context, in *ProfileTableReq, opts ...grpc.CallOption) (*ProfileReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProfileReply)
+	err := c.cc.Invoke(ctx, Quality_ProfileTable_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *qualityClient) ListProfiles(ctx context.Context, in *ProfileListReq, opts ...grpc.CallOption) (*ProfileListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProfileListReply)
+	err := c.cc.Invoke(ctx, Quality_ListProfiles_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QualityServer is the server API for Quality service.
 // All implementations must embed UnimplementedQualityServer
 // for forward compatibility.
@@ -144,6 +231,16 @@ type QualityServer interface {
 	RunJob(context.Context, *IdReq) (*RunJobReply, error)
 	//结果列表
 	ListResults(context.Context, *ResultListReq) (*ResultListReply, error)
+	//告警通道
+	SaveAlertChannel(context.Context, *SaveAlertChannelReq) (*AlertChannel, error)
+	DeleteAlertChannel(context.Context, *IdReq) (*IdReq, error)
+	ListAlertChannels(context.Context, *AlertChannelListReq) (*AlertChannelListReply, error)
+	TestAlertChannel(context.Context, *IdReq) (*TestAlertReply, error)
+	//错误数据下钻
+	ListErrorData(context.Context, *ErrorDataListReq) (*ErrorDataListReply, error)
+	//表剖析与健康分
+	ProfileTable(context.Context, *ProfileTableReq) (*ProfileReply, error)
+	ListProfiles(context.Context, *ProfileListReq) (*ProfileListReply, error)
 	mustEmbedUnimplementedQualityServer()
 }
 
@@ -174,6 +271,27 @@ func (UnimplementedQualityServer) RunJob(context.Context, *IdReq) (*RunJobReply,
 }
 func (UnimplementedQualityServer) ListResults(context.Context, *ResultListReq) (*ResultListReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListResults not implemented")
+}
+func (UnimplementedQualityServer) SaveAlertChannel(context.Context, *SaveAlertChannelReq) (*AlertChannel, error) {
+	return nil, status.Error(codes.Unimplemented, "method SaveAlertChannel not implemented")
+}
+func (UnimplementedQualityServer) DeleteAlertChannel(context.Context, *IdReq) (*IdReq, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteAlertChannel not implemented")
+}
+func (UnimplementedQualityServer) ListAlertChannels(context.Context, *AlertChannelListReq) (*AlertChannelListReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListAlertChannels not implemented")
+}
+func (UnimplementedQualityServer) TestAlertChannel(context.Context, *IdReq) (*TestAlertReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method TestAlertChannel not implemented")
+}
+func (UnimplementedQualityServer) ListErrorData(context.Context, *ErrorDataListReq) (*ErrorDataListReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListErrorData not implemented")
+}
+func (UnimplementedQualityServer) ProfileTable(context.Context, *ProfileTableReq) (*ProfileReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method ProfileTable not implemented")
+}
+func (UnimplementedQualityServer) ListProfiles(context.Context, *ProfileListReq) (*ProfileListReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListProfiles not implemented")
 }
 func (UnimplementedQualityServer) mustEmbedUnimplementedQualityServer() {}
 func (UnimplementedQualityServer) testEmbeddedByValue()                 {}
@@ -322,6 +440,132 @@ func _Quality_ListResults_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Quality_SaveAlertChannel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveAlertChannelReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QualityServer).SaveAlertChannel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Quality_SaveAlertChannel_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QualityServer).SaveAlertChannel(ctx, req.(*SaveAlertChannelReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Quality_DeleteAlertChannel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QualityServer).DeleteAlertChannel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Quality_DeleteAlertChannel_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QualityServer).DeleteAlertChannel(ctx, req.(*IdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Quality_ListAlertChannels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AlertChannelListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QualityServer).ListAlertChannels(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Quality_ListAlertChannels_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QualityServer).ListAlertChannels(ctx, req.(*AlertChannelListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Quality_TestAlertChannel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QualityServer).TestAlertChannel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Quality_TestAlertChannel_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QualityServer).TestAlertChannel(ctx, req.(*IdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Quality_ListErrorData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ErrorDataListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QualityServer).ListErrorData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Quality_ListErrorData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QualityServer).ListErrorData(ctx, req.(*ErrorDataListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Quality_ProfileTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProfileTableReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QualityServer).ProfileTable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Quality_ProfileTable_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QualityServer).ProfileTable(ctx, req.(*ProfileTableReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Quality_ListProfiles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProfileListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QualityServer).ListProfiles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Quality_ListProfiles_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QualityServer).ListProfiles(ctx, req.(*ProfileListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Quality_ServiceDesc is the grpc.ServiceDesc for Quality service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -356,6 +600,34 @@ var Quality_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListResults",
 			Handler:    _Quality_ListResults_Handler,
+		},
+		{
+			MethodName: "SaveAlertChannel",
+			Handler:    _Quality_SaveAlertChannel_Handler,
+		},
+		{
+			MethodName: "DeleteAlertChannel",
+			Handler:    _Quality_DeleteAlertChannel_Handler,
+		},
+		{
+			MethodName: "ListAlertChannels",
+			Handler:    _Quality_ListAlertChannels_Handler,
+		},
+		{
+			MethodName: "TestAlertChannel",
+			Handler:    _Quality_TestAlertChannel_Handler,
+		},
+		{
+			MethodName: "ListErrorData",
+			Handler:    _Quality_ListErrorData_Handler,
+		},
+		{
+			MethodName: "ProfileTable",
+			Handler:    _Quality_ProfileTable_Handler,
+		},
+		{
+			MethodName: "ListProfiles",
+			Handler:    _Quality_ListProfiles_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

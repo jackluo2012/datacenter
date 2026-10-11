@@ -14,21 +14,29 @@ import (
 )
 
 type (
-	Api            = datasvc.Api
-	ApiApp         = datasvc.ApiApp
-	ApiListReply   = datasvc.ApiListReply
-	ApiListReq     = datasvc.ApiListReq
-	ApiReply       = datasvc.ApiReply
-	AppReply       = datasvc.AppReply
-	CreateApiReq   = datasvc.CreateApiReq
-	ExecuteReply   = datasvc.ExecuteReply
-	ExecuteReq     = datasvc.ExecuteReq
-	GrantApiReq    = datasvc.GrantApiReq
-	IdReq          = datasvc.IdReq
-	OkReply        = datasvc.OkReply
-	PathReq        = datasvc.PathReq
-	RegisterAppReq = datasvc.RegisterAppReq
-	UpdateApiReq   = datasvc.UpdateApiReq
+	Api              = datasvc.Api
+	ApiApp           = datasvc.ApiApp
+	ApiCallLog       = datasvc.ApiCallLog
+	ApiCallStats     = datasvc.ApiCallStats
+	ApiDocReply      = datasvc.ApiDocReply
+	ApiListReply     = datasvc.ApiListReply
+	ApiListReq       = datasvc.ApiListReq
+	ApiReply         = datasvc.ApiReply
+	AppReply         = datasvc.AppReply
+	CallLogListReply = datasvc.CallLogListReply
+	CallLogListReq   = datasvc.CallLogListReq
+	CreateApiReq     = datasvc.CreateApiReq
+	ExecuteReply     = datasvc.ExecuteReply
+	ExecuteReq       = datasvc.ExecuteReq
+	GrantApiReq      = datasvc.GrantApiReq
+	IdReq            = datasvc.IdReq
+	OkReply          = datasvc.OkReply
+	PathReq          = datasvc.PathReq
+	RegisterAppReq   = datasvc.RegisterAppReq
+	StatsReply       = datasvc.StatsReply
+	StatsReq         = datasvc.StatsReq
+	TopApi           = datasvc.TopApi
+	UpdateApiReq     = datasvc.UpdateApiReq
 
 	DataSvc interface {
 		// 创建API
@@ -50,6 +58,12 @@ type (
 		GrantApi(ctx context.Context, in *GrantApiReq, opts ...grpc.CallOption) (*OkReply, error)
 		// 执行 API（核心：鉴权→限流→缓存→执行→脱敏）
 		ExecuteApi(ctx context.Context, in *ExecuteReq, opts ...grpc.CallOption) (*ExecuteReply, error)
+		// 调用日志
+		ListCallLogs(ctx context.Context, in *CallLogListReq, opts ...grpc.CallOption) (*CallLogListReply, error)
+		// 调用统计（成功率/耗时/TopN/日趋势）
+		GetCallStats(ctx context.Context, in *StatsReq, opts ...grpc.CallOption) (*StatsReply, error)
+		// API 文档导出（Markdown + OpenAPI 片段）
+		GetApiDoc(ctx context.Context, in *PathReq, opts ...grpc.CallOption) (*ApiDocReply, error)
 	}
 
 	defaultDataSvc struct {
@@ -120,4 +134,22 @@ func (m *defaultDataSvc) GrantApi(ctx context.Context, in *GrantApiReq, opts ...
 func (m *defaultDataSvc) ExecuteApi(ctx context.Context, in *ExecuteReq, opts ...grpc.CallOption) (*ExecuteReply, error) {
 	client := datasvc.NewDataSvcClient(m.cli.Conn())
 	return client.ExecuteApi(ctx, in, opts...)
+}
+
+// 调用日志
+func (m *defaultDataSvc) ListCallLogs(ctx context.Context, in *CallLogListReq, opts ...grpc.CallOption) (*CallLogListReply, error) {
+	client := datasvc.NewDataSvcClient(m.cli.Conn())
+	return client.ListCallLogs(ctx, in, opts...)
+}
+
+// 调用统计（成功率/耗时/TopN/日趋势）
+func (m *defaultDataSvc) GetCallStats(ctx context.Context, in *StatsReq, opts ...grpc.CallOption) (*StatsReply, error) {
+	client := datasvc.NewDataSvcClient(m.cli.Conn())
+	return client.GetCallStats(ctx, in, opts...)
+}
+
+// API 文档导出（Markdown + OpenAPI 片段）
+func (m *defaultDataSvc) GetApiDoc(ctx context.Context, in *PathReq, opts ...grpc.CallOption) (*ApiDocReply, error) {
+	client := datasvc.NewDataSvcClient(m.cli.Conn())
+	return client.GetApiDoc(ctx, in, opts...)
 }

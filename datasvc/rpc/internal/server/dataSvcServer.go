@@ -81,3 +81,21 @@ func (s *DataSvcServer) ExecuteApi(ctx context.Context, in *datasvc.ExecuteReq) 
 	l := logic.NewExecuteApiLogic(ctx, s.svcCtx)
 	return l.ExecuteApi(in)
 }
+
+// 调用日志
+func (s *DataSvcServer) ListCallLogs(ctx context.Context, in *datasvc.CallLogListReq) (*datasvc.CallLogListReply, error) {
+	l := logic.NewListCallLogsLogic(ctx, s.svcCtx)
+	return l.ListCallLogs(in)
+}
+
+// 调用统计（成功率/耗时/TopN/日趋势）
+func (s *DataSvcServer) GetCallStats(ctx context.Context, in *datasvc.StatsReq) (*datasvc.StatsReply, error) {
+	l := logic.NewGetCallStatsLogic(ctx, s.svcCtx)
+	return l.GetCallStats(in)
+}
+
+// API 文档导出（Markdown + OpenAPI 片段）
+func (s *DataSvcServer) GetApiDoc(ctx context.Context, in *datasvc.PathReq) (*datasvc.ApiDocReply, error) {
+	l := logic.NewGetApiDocLogic(ctx, s.svcCtx)
+	return l.GetApiDoc(in)
+}

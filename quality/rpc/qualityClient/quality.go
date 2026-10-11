@@ -14,21 +14,34 @@ import (
 )
 
 type (
-	CreateJobReq    = quality.CreateJobReq
-	CreateRuleReq   = quality.CreateRuleReq
-	IdReq           = quality.IdReq
-	JobListReply    = quality.JobListReply
-	JobListReq      = quality.JobListReq
-	JobReply        = quality.JobReply
-	QualityJob      = quality.QualityJob
-	QualityResult   = quality.QualityResult
-	QualityRule     = quality.QualityRule
-	ResultListReply = quality.ResultListReply
-	ResultListReq   = quality.ResultListReq
-	RuleListReply   = quality.RuleListReply
-	RuleListReq     = quality.RuleListReq
-	RuleReply       = quality.RuleReply
-	RunJobReply     = quality.RunJobReply
+	AlertChannel          = quality.AlertChannel
+	AlertChannelListReply = quality.AlertChannelListReply
+	AlertChannelListReq   = quality.AlertChannelListReq
+	CreateJobReq          = quality.CreateJobReq
+	CreateRuleReq         = quality.CreateRuleReq
+	ErrorData             = quality.ErrorData
+	ErrorDataListReply    = quality.ErrorDataListReply
+	ErrorDataListReq      = quality.ErrorDataListReq
+	IdReq                 = quality.IdReq
+	JobListReply          = quality.JobListReply
+	JobListReq            = quality.JobListReq
+	JobReply              = quality.JobReply
+	ProfileListReply      = quality.ProfileListReply
+	ProfileListReq        = quality.ProfileListReq
+	ProfileReply          = quality.ProfileReply
+	ProfileTableReq       = quality.ProfileTableReq
+	QualityJob            = quality.QualityJob
+	QualityResult         = quality.QualityResult
+	QualityRule           = quality.QualityRule
+	ResultListReply       = quality.ResultListReply
+	ResultListReq         = quality.ResultListReq
+	RuleListReply         = quality.RuleListReply
+	RuleListReq           = quality.RuleListReq
+	RuleReply             = quality.RuleReply
+	RunJobReply           = quality.RunJobReply
+	SaveAlertChannelReq   = quality.SaveAlertChannelReq
+	TableProfile          = quality.TableProfile
+	TestAlertReply        = quality.TestAlertReply
 
 	Quality interface {
 		// 创建规则
@@ -45,6 +58,16 @@ type (
 		RunJob(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*RunJobReply, error)
 		// 结果列表
 		ListResults(ctx context.Context, in *ResultListReq, opts ...grpc.CallOption) (*ResultListReply, error)
+		// 告警通道
+		SaveAlertChannel(ctx context.Context, in *SaveAlertChannelReq, opts ...grpc.CallOption) (*AlertChannel, error)
+		DeleteAlertChannel(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
+		ListAlertChannels(ctx context.Context, in *AlertChannelListReq, opts ...grpc.CallOption) (*AlertChannelListReply, error)
+		TestAlertChannel(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*TestAlertReply, error)
+		// 错误数据下钻
+		ListErrorData(ctx context.Context, in *ErrorDataListReq, opts ...grpc.CallOption) (*ErrorDataListReply, error)
+		// 表剖析与健康分
+		ProfileTable(ctx context.Context, in *ProfileTableReq, opts ...grpc.CallOption) (*ProfileReply, error)
+		ListProfiles(ctx context.Context, in *ProfileListReq, opts ...grpc.CallOption) (*ProfileListReply, error)
 	}
 
 	defaultQuality struct {
@@ -98,4 +121,42 @@ func (m *defaultQuality) RunJob(ctx context.Context, in *IdReq, opts ...grpc.Cal
 func (m *defaultQuality) ListResults(ctx context.Context, in *ResultListReq, opts ...grpc.CallOption) (*ResultListReply, error) {
 	client := quality.NewQualityClient(m.cli.Conn())
 	return client.ListResults(ctx, in, opts...)
+}
+
+// 告警通道
+func (m *defaultQuality) SaveAlertChannel(ctx context.Context, in *SaveAlertChannelReq, opts ...grpc.CallOption) (*AlertChannel, error) {
+	client := quality.NewQualityClient(m.cli.Conn())
+	return client.SaveAlertChannel(ctx, in, opts...)
+}
+
+func (m *defaultQuality) DeleteAlertChannel(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	client := quality.NewQualityClient(m.cli.Conn())
+	return client.DeleteAlertChannel(ctx, in, opts...)
+}
+
+func (m *defaultQuality) ListAlertChannels(ctx context.Context, in *AlertChannelListReq, opts ...grpc.CallOption) (*AlertChannelListReply, error) {
+	client := quality.NewQualityClient(m.cli.Conn())
+	return client.ListAlertChannels(ctx, in, opts...)
+}
+
+func (m *defaultQuality) TestAlertChannel(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*TestAlertReply, error) {
+	client := quality.NewQualityClient(m.cli.Conn())
+	return client.TestAlertChannel(ctx, in, opts...)
+}
+
+// 错误数据下钻
+func (m *defaultQuality) ListErrorData(ctx context.Context, in *ErrorDataListReq, opts ...grpc.CallOption) (*ErrorDataListReply, error) {
+	client := quality.NewQualityClient(m.cli.Conn())
+	return client.ListErrorData(ctx, in, opts...)
+}
+
+// 表剖析与健康分
+func (m *defaultQuality) ProfileTable(ctx context.Context, in *ProfileTableReq, opts ...grpc.CallOption) (*ProfileReply, error) {
+	client := quality.NewQualityClient(m.cli.Conn())
+	return client.ProfileTable(ctx, in, opts...)
+}
+
+func (m *defaultQuality) ListProfiles(ctx context.Context, in *ProfileListReq, opts ...grpc.CallOption) (*ProfileListReply, error) {
+	client := quality.NewQualityClient(m.cli.Conn())
+	return client.ListProfiles(ctx, in, opts...)
 }

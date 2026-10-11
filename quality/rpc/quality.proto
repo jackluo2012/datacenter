@@ -88,6 +88,65 @@ message ResultListReply {
 }
 message ResultListReq { int64 job_id = 1; int64 pass_filter = 2; int64 page = 3; int64 size = 4; }
 
+
+// ============ 落地深化（Phase 7）：告警/错误数据/健康分 ============
+message AlertChannel {
+  int64  id          = 1;
+  string name        = 2;
+  string type        = 3;   //dingtalk/feishu
+  string webhook_url = 4;
+  string secret      = 5;
+  string min_level   = 6;   //failed/partial
+  int32  status      = 7;
+  int64  beid        = 8;
+}
+message SaveAlertChannelReq {
+  int64  id          = 1;
+  string name        = 2;
+  string type        = 3;
+  string webhook_url = 4;
+  string secret      = 5;
+  string min_level   = 6;
+  int64  beid        = 7;
+}
+message AlertChannelListReply { repeated AlertChannel list = 1; int64 total = 2; }
+message AlertChannelListReq { int64 beid = 1; int64 page = 2; int64 size = 3; }
+message TestAlertReply { bool ok = 1; string msg = 2; }
+
+message ErrorData {
+  int64  rule_id      = 1;
+  int64  job_id       = 2;
+  string rows_json    = 3;
+  int32  sample_count = 4;
+  int64  run_at       = 5;
+}
+message ErrorDataListReply { repeated ErrorData list = 1; int64 total = 2; }
+message ErrorDataListReq { int64 job_id = 1; int64 rule_id = 2; int64 page = 3; int64 size = 4; }
+
+message TableProfile {
+  int64  id            = 1;
+  int64  datasource_id = 2;
+  string table_name    = 3;
+  int64  rows_cnt      = 4;
+  int32  cols_cnt      = 5;
+  double null_rate     = 6;
+  int64  dup_pk_cnt    = 7;
+  int32  health_score  = 8;
+  string profile_json  = 9;
+  int64  ran_at        = 10;
+}
+message ProfileTableReq {
+  int64  datasource_id = 1;
+  int64  beid          = 2;
+  string db_name       = 3;
+  string table_name    = 4;
+  string pk_column     = 5;
+}
+message ProfileReply { TableProfile profile = 1; }
+message ProfileListReply { repeated TableProfile list = 1; int64 total = 2; }
+message ProfileListReq { int64 beid = 1; int64 datasource_id = 2; string table_name = 3; int64 page = 4; int64 size = 5; }
+
+
 service Quality {
   //创建规则
   rpc CreateRule(CreateRuleReq) returns (RuleReply);
@@ -103,4 +162,14 @@ service Quality {
   rpc RunJob(IdReq) returns (RunJobReply);
   //结果列表
   rpc ListResults(ResultListReq) returns (ResultListReply);
+  //告警通道
+  rpc SaveAlertChannel(SaveAlertChannelReq) returns (AlertChannel);
+  rpc DeleteAlertChannel(IdReq) returns (IdReq);
+  rpc ListAlertChannels(AlertChannelListReq) returns (AlertChannelListReply);
+  rpc TestAlertChannel(IdReq) returns (TestAlertReply);
+  //错误数据下钻
+  rpc ListErrorData(ErrorDataListReq) returns (ErrorDataListReply);
+  //表剖析与健康分
+  rpc ProfileTable(ProfileTableReq) returns (ProfileReply);
+  rpc ListProfiles(ProfileListReq) returns (ProfileListReply);
 }

@@ -64,3 +64,41 @@ func (s *QualityServer) ListResults(ctx context.Context, in *quality.ResultListR
 	l := logic.NewListResultsLogic(ctx, s.svcCtx)
 	return l.ListResults(in)
 }
+
+// 告警通道
+func (s *QualityServer) SaveAlertChannel(ctx context.Context, in *quality.SaveAlertChannelReq) (*quality.AlertChannel, error) {
+	l := logic.NewSaveAlertChannelLogic(ctx, s.svcCtx)
+	return l.SaveAlertChannel(in)
+}
+
+func (s *QualityServer) DeleteAlertChannel(ctx context.Context, in *quality.IdReq) (*quality.IdReq, error) {
+	l := logic.NewDeleteAlertChannelLogic(ctx, s.svcCtx)
+	return l.DeleteAlertChannel(in)
+}
+
+func (s *QualityServer) ListAlertChannels(ctx context.Context, in *quality.AlertChannelListReq) (*quality.AlertChannelListReply, error) {
+	l := logic.NewListAlertChannelsLogic(ctx, s.svcCtx)
+	return l.ListAlertChannels(in)
+}
+
+func (s *QualityServer) TestAlertChannel(ctx context.Context, in *quality.IdReq) (*quality.TestAlertReply, error) {
+	l := logic.NewTestAlertChannelLogic(ctx, s.svcCtx)
+	return l.TestAlertChannel(in)
+}
+
+// 错误数据下钻
+func (s *QualityServer) ListErrorData(ctx context.Context, in *quality.ErrorDataListReq) (*quality.ErrorDataListReply, error) {
+	l := logic.NewListErrorDataLogic(ctx, s.svcCtx)
+	return l.ListErrorData(in)
+}
+
+// 表剖析与健康分
+func (s *QualityServer) ProfileTable(ctx context.Context, in *quality.ProfileTableReq) (*quality.ProfileReply, error) {
+	l := logic.NewProfileTableLogic(ctx, s.svcCtx)
+	return l.ProfileTable(in)
+}
+
+func (s *QualityServer) ListProfiles(ctx context.Context, in *quality.ProfileListReq) (*quality.ProfileListReply, error) {
+	l := logic.NewListProfilesLogic(ctx, s.svcCtx)
+	return l.ListProfiles(in)
+}
