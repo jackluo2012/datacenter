@@ -900,6 +900,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
+				// 管理台登录
+				Method:  http.MethodPost,
+				Path:    "/sys/login",
+				Handler: sys.SysLoginHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
 				// 创建标签定义
 				Method:  http.MethodPost,
 				Path:    "/tag/def/create",

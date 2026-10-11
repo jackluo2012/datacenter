@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	Sys_SysLogin_FullMethodName   = "/sys.Sys/SysLogin"
 	Sys_CreateUser_FullMethodName = "/sys.Sys/CreateUser"
 	Sys_UpdateUser_FullMethodName = "/sys.Sys/UpdateUser"
 	Sys_DeleteUser_FullMethodName = "/sys.Sys/DeleteUser"
@@ -41,6 +42,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SysClient interface {
+	//管理台登录（sys_user，bcrypt 校验）
+	SysLogin(ctx context.Context, in *SysLoginReq, opts ...grpc.CallOption) (*SysLoginReply, error)
 	//用户
 	CreateUser(ctx context.Context, in *CreateSysUserReq, opts ...grpc.CallOption) (*SysUserReply, error)
 	UpdateUser(ctx context.Context, in *UpdateSysUserReq, opts ...grpc.CallOption) (*SysUserReply, error)
@@ -69,6 +72,16 @@ type sysClient struct {
 
 func NewSysClient(cc grpc.ClientConnInterface) SysClient {
 	return &sysClient{cc}
+}
+
+func (c *sysClient) SysLogin(ctx context.Context, in *SysLoginReq, opts ...grpc.CallOption) (*SysLoginReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SysLoginReply)
+	err := c.cc.Invoke(ctx, Sys_SysLogin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *sysClient) CreateUser(ctx context.Context, in *CreateSysUserReq, opts ...grpc.CallOption) (*SysUserReply, error) {
@@ -235,6 +248,8 @@ func (c *sysClient) GetRouters(ctx context.Context, in *GetRoutersReq, opts ...g
 // All implementations must embed UnimplementedSysServer
 // for forward compatibility.
 type SysServer interface {
+	//管理台登录（sys_user，bcrypt 校验）
+	SysLogin(context.Context, *SysLoginReq) (*SysLoginReply, error)
 	//用户
 	CreateUser(context.Context, *CreateSysUserReq) (*SysUserReply, error)
 	UpdateUser(context.Context, *UpdateSysUserReq) (*SysUserReply, error)
@@ -265,6 +280,9 @@ type SysServer interface {
 // pointer dereference when methods are called.
 type UnimplementedSysServer struct{}
 
+func (UnimplementedSysServer) SysLogin(context.Context, *SysLoginReq) (*SysLoginReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method SysLogin not implemented")
+}
 func (UnimplementedSysServer) CreateUser(context.Context, *CreateSysUserReq) (*SysUserReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateUser not implemented")
 }
@@ -332,6 +350,24 @@ func RegisterSysServer(s grpc.ServiceRegistrar, srv SysServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&Sys_ServiceDesc, srv)
+}
+
+func _Sys_SysLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SysLoginReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SysServer).SysLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Sys_SysLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SysServer).SysLogin(ctx, req.(*SysLoginReq))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Sys_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -629,6 +665,10 @@ var Sys_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "sys.Sys",
 	HandlerType: (*SysServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SysLogin",
+			Handler:    _Sys_SysLogin_Handler,
+		},
 		{
 			MethodName: "CreateUser",
 			Handler:    _Sys_CreateUser_Handler,

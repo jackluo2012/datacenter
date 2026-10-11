@@ -257,12 +257,12 @@ func (m *defaultUserModel) SetUserRoles(ctx context.Context, session sqlx.Sessio
 	if len(roleIds) == 0 {
 		return nil
 	}
+	pairs := strings.TrimSuffix(strings.Repeat("(?, ?), ", len(roleIds)), ", ")
 	insQuery := fmt.Sprintf("insert into %s (`user_id`,`role_id`) values %s",
-		userRoleTable, placeholders(len(roleIds)))
-	args := make([]any, 0, len(roleIds)+1)
-	args = append(args, userId)
+		userRoleTable, pairs)
+	args := make([]any, 0, len(roleIds)*2)
 	for _, id := range roleIds {
-		args = append(args, id)
+		args = append(args, userId, id)
 	}
 	_, err := session.ExecCtx(ctx, insQuery, args...)
 	return err
@@ -274,12 +274,12 @@ func (m *defaultUserModel) AddUserRoles(ctx context.Context, userId int64, roleI
 	if len(roleIds) == 0 {
 		return nil
 	}
+	pairs := strings.TrimSuffix(strings.Repeat("(?, ?), ", len(roleIds)), ", ")
 	query := fmt.Sprintf("insert ignore into %s (`user_id`,`role_id`) values %s",
-		userRoleTable, placeholders(len(roleIds)))
-	args := make([]any, 0, len(roleIds)+1)
-	args = append(args, userId)
+		userRoleTable, pairs)
+	args := make([]any, 0, len(roleIds)*2)
 	for _, id := range roleIds {
-		args = append(args, id)
+		args = append(args, userId, id)
 	}
 	_, err := m.conn.ExecCtx(ctx, query, args...)
 	return err

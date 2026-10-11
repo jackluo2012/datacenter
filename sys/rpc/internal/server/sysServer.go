@@ -23,6 +23,12 @@ func NewSysServer(svcCtx *svc.ServiceContext) *SysServer {
 	}
 }
 
+// 管理台登录（sys_user，bcrypt 校验）
+func (s *SysServer) SysLogin(ctx context.Context, in *sys.SysLoginReq) (*sys.SysLoginReply, error) {
+	l := logic.NewSysLoginLogic(ctx, s.svcCtx)
+	return l.SysLogin(in)
+}
+
 // 用户
 func (s *SysServer) CreateUser(ctx context.Context, in *sys.CreateSysUserReq) (*sys.SysUserReply, error) {
 	l := logic.NewCreateUserLogic(ctx, s.svcCtx)

@@ -1356,6 +1356,21 @@ type SysGetInfoResp struct {
 	Menus    []SysMenuInfo `json:"menus,optional"` //菜单树(目录+菜单，不含按钮)
 }
 
+type SysLoginReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Beid     int64  `json:"beid,optional"`
+}
+
+type SysLoginResp struct {
+	Token    string   `json:"token"`
+	Uid      int64    `json:"uid"`
+	Username string   `json:"username"`
+	Nickname string   `json:"nickname,optional"`
+	Roles    []string `json:"roles"`
+	Perms    []string `json:"perms"`
+}
+
 type SysMenuIdReq struct {
 	Id   int64 `json:"id,optional" form:"id,optional"`
 	Beid int64 `json:"beid,optional" form:"beid,optional"`

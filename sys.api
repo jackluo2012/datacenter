@@ -201,3 +201,29 @@ service datacenter-api {
 	@handler sysGetrouters
 	get /sys/getrouters () returns (SysRoutersResp)
 }
+
+//管理台登录（不走 JWT，成功后签发）
+type SysLoginReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Beid     int64  `json:"beid,optional"`
+}
+type SysLoginResp {
+	Token    string   `json:"token"`
+	Uid      int64    `json:"uid"`
+	Username string   `json:"username"`
+	Nickname string   `json:"nickname,optional"`
+	Roles    []string `json:"roles"`
+	Perms    []string `json:"perms"`
+}
+
+@server(
+	group: sys
+)
+service datacenter-api {
+	@doc(
+		summary: "管理台登录"
+	)
+	@handler sysLogin
+	post /sys/login (SysLoginReq) returns (SysLoginResp)
+}

@@ -2,7 +2,7 @@
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { login } from '@/api/auth'
+import { sysLogin } from '@/api/auth'
 import { ApiError } from '@/api/http'
 import { useAuthStore } from '@/stores/auth'
 
@@ -33,13 +33,14 @@ async function onSubmit() {
   if (!valid) return
   loading.value = true
   try {
-    const reply = await login({ mobile: form.mobile, password: form.password })
-    const token = reply.jwt_token?.access_token || ''
-    if (!token) {
-      ElMessage.error('登录响应缺少 access_token')
+    // 管理台登录走 sys_user（RBAC 账号，种子内置 admin/admin123）
+    const reply = await sysLogin({ username: form.mobile, password: form.password })
+    if (!reply.token) {
+      ElMessage.error('登录响应缺少 token')
       return
     }
-    auth.setAuth(token, reply.uid, reply.username || reply.nickname || '')
+    auth.setAuth(reply.token, reply.uid, reply.username || reply.nickname || '')
+    await auth.fetchInfo().catch(() => undefined) // 拉角色/权限/菜单（失败降级静态菜单）
     ElMessage.success('登录成功')
     const redirect = (route.query.redirect as string) || '/'
     router.push(redirect)

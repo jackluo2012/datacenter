@@ -127,7 +127,22 @@ message GetRoutersReply { repeated RouterBranch routers = 1; }
 
 message IdReq { int64 id = 1; int64 beid = 2; }
 
+message SysLoginReq {
+  string username = 1;
+  string password = 2;
+  int64  beid     = 3;
+}
+message SysLoginReply {
+  int64  uid      = 1;
+  string username = 2;
+  string nickname = 3;
+  repeated string roles = 4;
+  repeated string perms = 5;
+}
+
 service Sys {
+  //管理台登录（sys_user，bcrypt 校验）
+  rpc SysLogin(SysLoginReq) returns (SysLoginReply);
   //用户
   rpc CreateUser(CreateSysUserReq) returns (SysUserReply);
   rpc UpdateUser(UpdateSysUserReq) returns (SysUserReply);

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/zeromicro/go-zero/core/logx"
 	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -213,12 +215,12 @@ func (m *defaultRoleModel) SetRoleMenus(ctx context.Context, session sqlx.Sessio
 	if len(menuIds) == 0 {
 		return nil
 	}
+	pairs := strings.TrimSuffix(strings.Repeat("(?, ?), ", len(menuIds)), ", ")
 	insQuery := fmt.Sprintf("insert into %s (`role_id`,`menu_id`) values %s",
-		roleMenuTable, placeholders(len(menuIds)))
-	args := make([]any, 0, len(menuIds)+1)
-	args = append(args, roleId)
+		roleMenuTable, pairs)
+	args := make([]any, 0, len(menuIds)*2)
 	for _, id := range menuIds {
-		args = append(args, id)
+		args = append(args, roleId, id)
 	}
 	_, err := session.ExecCtx(ctx, insQuery, args...)
 	return err
@@ -230,13 +232,16 @@ func (m *defaultRoleModel) AddRoleMenus(ctx context.Context, roleId int64, menuI
 	if len(menuIds) == 0 {
 		return nil
 	}
+	// 两列值行：values (?, ?), (?, ?) ...（role_id + menu_id 成对，数量与 menuIds 一致）
+	pairs := strings.TrimSuffix(strings.Repeat("(?, ?), ", len(menuIds)), ", ")
 	query := fmt.Sprintf("insert ignore into %s (`role_id`,`menu_id`) values %s",
-		roleMenuTable, placeholders(len(menuIds)))
-	args := make([]any, 0, len(menuIds)+1)
-	args = append(args, roleId)
+		roleMenuTable, pairs)
+	args := make([]any, 0, len(menuIds)*2)
 	for _, id := range menuIds {
-		args = append(args, id)
+		args = append(args, roleId, id)
 	}
+	logx.Errorf("[定位] AddRoleMenus roleId=%d menuIds=%d sql占位=%d args=%d sql=%s",
+		roleId, len(menuIds), strings.Count(query, "?"), len(args), query[:min(120, len(query))])
 	_, err := m.conn.ExecCtx(ctx, query, args...)
 	return err
 }

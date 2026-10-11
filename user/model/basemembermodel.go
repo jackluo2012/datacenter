@@ -16,6 +16,8 @@ import (
 var (
 	baseMemberFieldNames          = builder.RawFieldNames(&BaseMember{})
 	baseMemberRows                = strings.Join(baseMemberFieldNames, ",")
+	// 读路径安全列清单：可空列（icard 等NULL 会炸 string 扫描）用 ifnull 兜底
+	baseMemberRowsSafe            = strings.Replace(baseMemberRows, "`icard`", "ifnull(`icard`,'') as `icard`", 1)
 	baseMemberRowsExpectAutoSet   = strings.Join(stringx.Remove(baseMemberFieldNames, "`id`", "`create_time`", "`update_time`"), ",")
 	baseMemberRowsWithPlaceHolder = strings.Join(stringx.Remove(baseMemberFieldNames, "`id`", "`create_time`", "`update_time`"), "=?,") + "=?"
 
@@ -64,7 +66,7 @@ func (m *BaseMemberModel) FindOne(id int64) (*BaseMember, error) {
 	baseMemberIdKey := fmt.Sprintf("%s%v", cacheBaseMemberIdPrefix, id)
 	var resp BaseMember
 	err := m.QueryRow(&resp, baseMemberIdKey, func(conn sqlx.SqlConn, v interface{}) error {
-		query := fmt.Sprintf("select %s from %s where id = ? limit 1", baseMemberRows, m.table)
+		query := fmt.Sprintf("select %s from %s where id = ? limit 1", baseMemberRowsSafe, m.table)
 		return conn.QueryRow(v, query, id)
 	})
 	switch err {
@@ -81,7 +83,7 @@ func (m *BaseMemberModel) FindOneByMobile(mobile string) (*BaseMember, error) {
 	baseMemberMobileKey := fmt.Sprintf("%s%v", cacheBaseMemberMobilePrefix, mobile)
 	var resp BaseMember
 	err := m.QueryRowIndex(&resp, baseMemberMobileKey, m.formatPrimary, func(conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
-		query := fmt.Sprintf("select %s from %s where mobile = ? limit 1", baseMemberRows, m.table)
+		query := fmt.Sprintf("select %s from %s where mobile = ? limit 1", baseMemberRowsSafe, m.table)
 		if err := conn.QueryRow(&resp, query, mobile); err != nil {
 			return nil, err
 		}
@@ -126,6 +128,6 @@ func (m *BaseMemberModel) formatPrimary(primary interface{}) string {
 }
 
 func (m *BaseMemberModel) queryPrimary(conn sqlx.SqlConn, v, primary interface{}) error {
-	query := fmt.Sprintf("select %s from %s where id = ? limit 1", baseMemberRows, m.table)
+	query := fmt.Sprintf("select %s from %s where id = ? limit 1", baseMemberRowsSafe, m.table)
 	return conn.QueryRow(v, query, primary)
 }

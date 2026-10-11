@@ -46,3 +46,18 @@ export function register(req: {
 export function userInfo(params?: { uid?: number; auid?: number }): Promise<UserReply> {
   return get<UserReply>('/user/dc/info', cleanParams(params))
 }
+
+// ============ 管理台登录（sys_user，RBAC） ============
+export interface SysLoginResp {
+  token: string
+  uid: number
+  username: string
+  nickname?: string
+  roles: string[]
+  perms: string[]
+}
+
+// 管理台登录（走 sys_user 表与 RBAC 角色；响应为裸对象，无 code 包装）
+export function sysLogin(req: { username: string; password: string }): Promise<SysLoginResp> {
+  return post<SysLoginResp>('/sys/login', req)
+}

@@ -26,6 +26,8 @@ type (
 	RouterBranch     = sys.RouterBranch
 	SaveMenuReq      = sys.SaveMenuReq
 	SaveSysRoleReq   = sys.SaveSysRoleReq
+	SysLoginReply    = sys.SysLoginReply
+	SysLoginReq      = sys.SysLoginReq
 	SysMenu          = sys.SysMenu
 	SysRole          = sys.SysRole
 	SysRoleListReply = sys.SysRoleListReply
@@ -38,6 +40,8 @@ type (
 	UpdateSysUserReq = sys.UpdateSysUserReq
 
 	Sys interface {
+		// 管理台登录（sys_user，bcrypt 校验）
+		SysLogin(ctx context.Context, in *SysLoginReq, opts ...grpc.CallOption) (*SysLoginReply, error)
 		// 用户
 		CreateUser(ctx context.Context, in *CreateSysUserReq, opts ...grpc.CallOption) (*SysUserReply, error)
 		UpdateUser(ctx context.Context, in *UpdateSysUserReq, opts ...grpc.CallOption) (*SysUserReply, error)
@@ -69,6 +73,12 @@ func NewSys(cli zrpc.Client) Sys {
 	return &defaultSys{
 		cli: cli,
 	}
+}
+
+// 管理台登录（sys_user，bcrypt 校验）
+func (m *defaultSys) SysLogin(ctx context.Context, in *SysLoginReq, opts ...grpc.CallOption) (*SysLoginReply, error) {
+	client := sys.NewSysClient(m.cli.Conn())
+	return client.SysLogin(ctx, in, opts...)
 }
 
 // 用户

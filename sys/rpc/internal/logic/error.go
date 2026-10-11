@@ -37,3 +37,9 @@ var (
 	// ErrMenuInUse 菜单已绑定角色，禁止删除
 	ErrMenuInUse = errors.New("菜单已绑定角色，禁止删除")
 )
+
+// 登录错误（不泄露账号存在性）
+var (
+	ErrUserOrPwdWrong = errors.New("用户名或密码错误")
+	ErrUserDisabled   = errors.New("用户已停用")
+)

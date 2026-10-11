@@ -1625,6 +1625,142 @@ func (x *IdReq) GetBeid() int64 {
 	return 0
 }
 
+type SysLoginReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Beid          int64                  `protobuf:"varint,3,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SysLoginReq) Reset() {
+	*x = SysLoginReq{}
+	mi := &file_sys_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SysLoginReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SysLoginReq) ProtoMessage() {}
+
+func (x *SysLoginReq) ProtoReflect() protoreflect.Message {
+	mi := &file_sys_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SysLoginReq.ProtoReflect.Descriptor instead.
+func (*SysLoginReq) Descriptor() ([]byte, []int) {
+	return file_sys_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *SysLoginReq) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *SysLoginReq) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *SysLoginReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+type SysLoginReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Uid           int64                  `protobuf:"varint,1,opt,name=uid,proto3" json:"uid,omitempty"`
+	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Nickname      string                 `protobuf:"bytes,3,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	Roles         []string               `protobuf:"bytes,4,rep,name=roles,proto3" json:"roles,omitempty"`
+	Perms         []string               `protobuf:"bytes,5,rep,name=perms,proto3" json:"perms,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SysLoginReply) Reset() {
+	*x = SysLoginReply{}
+	mi := &file_sys_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SysLoginReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SysLoginReply) ProtoMessage() {}
+
+func (x *SysLoginReply) ProtoReflect() protoreflect.Message {
+	mi := &file_sys_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SysLoginReply.ProtoReflect.Descriptor instead.
+func (*SysLoginReply) Descriptor() ([]byte, []int) {
+	return file_sys_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *SysLoginReply) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
+}
+
+func (x *SysLoginReply) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *SysLoginReply) GetNickname() string {
+	if x != nil {
+		return x.Nickname
+	}
+	return ""
+}
+
+func (x *SysLoginReply) GetRoles() []string {
+	if x != nil {
+		return x.Roles
+	}
+	return nil
+}
+
+func (x *SysLoginReply) GetPerms() []string {
+	if x != nil {
+		return x.Perms
+	}
+	return nil
+}
+
 var File_sys_proto protoreflect.FileDescriptor
 
 const file_sys_proto_rawDesc = "" +
@@ -1756,8 +1892,19 @@ const file_sys_proto_rawDesc = "" +
 	"\arouters\x18\x01 \x03(\v2\x11.sys.RouterBranchR\arouters\"+\n" +
 	"\x05IdReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
-	"\x04beid\x18\x02 \x01(\x03R\x04beid2\x84\x06\n" +
-	"\x03Sys\x126\n" +
+	"\x04beid\x18\x02 \x01(\x03R\x04beid\"Y\n" +
+	"\vSysLoginReq\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x12\n" +
+	"\x04beid\x18\x03 \x01(\x03R\x04beid\"\x85\x01\n" +
+	"\rSysLoginReply\x12\x10\n" +
+	"\x03uid\x18\x01 \x01(\x03R\x03uid\x12\x1a\n" +
+	"\busername\x18\x02 \x01(\tR\busername\x12\x1a\n" +
+	"\bnickname\x18\x03 \x01(\tR\bnickname\x12\x14\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\x12\x14\n" +
+	"\x05perms\x18\x05 \x03(\tR\x05perms2\xb6\x06\n" +
+	"\x03Sys\x120\n" +
+	"\bSysLogin\x12\x10.sys.SysLoginReq\x1a\x12.sys.SysLoginReply\x126\n" +
 	"\n" +
 	"CreateUser\x12\x15.sys.CreateSysUserReq\x1a\x11.sys.SysUserReply\x126\n" +
 	"\n" +
@@ -1805,7 +1952,7 @@ func file_sys_proto_rawDescGZIP() []byte {
 	return file_sys_proto_rawDescData
 }
 
-var file_sys_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_sys_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_sys_proto_goTypes = []any{
 	(*SysUser)(nil),          // 0: sys.SysUser
 	(*SysUserReply)(nil),     // 1: sys.SysUserReply
@@ -1829,6 +1976,8 @@ var file_sys_proto_goTypes = []any{
 	(*RouterBranch)(nil),     // 19: sys.RouterBranch
 	(*GetRoutersReply)(nil),  // 20: sys.GetRoutersReply
 	(*IdReq)(nil),            // 21: sys.IdReq
+	(*SysLoginReq)(nil),      // 22: sys.SysLoginReq
+	(*SysLoginReply)(nil),    // 23: sys.SysLoginReply
 }
 var file_sys_proto_depIdxs = []int32{
 	0,  // 0: sys.SysUserReply.user:type_name -> sys.SysUser
@@ -1841,40 +1990,42 @@ var file_sys_proto_depIdxs = []int32{
 	12, // 7: sys.GetInfoReply.menus:type_name -> sys.SysMenu
 	19, // 8: sys.RouterBranch.children:type_name -> sys.RouterBranch
 	19, // 9: sys.GetRoutersReply.routers:type_name -> sys.RouterBranch
-	3,  // 10: sys.Sys.CreateUser:input_type -> sys.CreateSysUserReq
-	4,  // 11: sys.Sys.UpdateUser:input_type -> sys.UpdateSysUserReq
-	21, // 12: sys.Sys.DeleteUser:input_type -> sys.IdReq
-	5,  // 13: sys.Sys.ListUsers:input_type -> sys.SysUserListReq
-	21, // 14: sys.Sys.GetUser:input_type -> sys.IdReq
-	6,  // 15: sys.Sys.ResetPwd:input_type -> sys.ResetPwdReq
-	10, // 16: sys.Sys.CreateRole:input_type -> sys.SaveSysRoleReq
-	10, // 17: sys.Sys.UpdateRole:input_type -> sys.SaveSysRoleReq
-	21, // 18: sys.Sys.DeleteRole:input_type -> sys.IdReq
-	11, // 19: sys.Sys.ListRoles:input_type -> sys.SysRoleListReq
-	21, // 20: sys.Sys.GetRole:input_type -> sys.IdReq
-	15, // 21: sys.Sys.SaveMenu:input_type -> sys.SaveMenuReq
-	21, // 22: sys.Sys.DeleteMenu:input_type -> sys.IdReq
-	21, // 23: sys.Sys.MenuTree:input_type -> sys.IdReq
-	16, // 24: sys.Sys.GetInfo:input_type -> sys.GetInfoReq
-	18, // 25: sys.Sys.GetRouters:input_type -> sys.GetRoutersReq
-	1,  // 26: sys.Sys.CreateUser:output_type -> sys.SysUserReply
-	1,  // 27: sys.Sys.UpdateUser:output_type -> sys.SysUserReply
-	21, // 28: sys.Sys.DeleteUser:output_type -> sys.IdReq
-	2,  // 29: sys.Sys.ListUsers:output_type -> sys.SysUserListReply
-	1,  // 30: sys.Sys.GetUser:output_type -> sys.SysUserReply
-	21, // 31: sys.Sys.ResetPwd:output_type -> sys.IdReq
-	8,  // 32: sys.Sys.CreateRole:output_type -> sys.SysRoleReply
-	8,  // 33: sys.Sys.UpdateRole:output_type -> sys.SysRoleReply
-	21, // 34: sys.Sys.DeleteRole:output_type -> sys.IdReq
-	9,  // 35: sys.Sys.ListRoles:output_type -> sys.SysRoleListReply
-	8,  // 36: sys.Sys.GetRole:output_type -> sys.SysRoleReply
-	13, // 37: sys.Sys.SaveMenu:output_type -> sys.MenuReply
-	21, // 38: sys.Sys.DeleteMenu:output_type -> sys.IdReq
-	14, // 39: sys.Sys.MenuTree:output_type -> sys.MenuTreeReply
-	17, // 40: sys.Sys.GetInfo:output_type -> sys.GetInfoReply
-	20, // 41: sys.Sys.GetRouters:output_type -> sys.GetRoutersReply
-	26, // [26:42] is the sub-list for method output_type
-	10, // [10:26] is the sub-list for method input_type
+	22, // 10: sys.Sys.SysLogin:input_type -> sys.SysLoginReq
+	3,  // 11: sys.Sys.CreateUser:input_type -> sys.CreateSysUserReq
+	4,  // 12: sys.Sys.UpdateUser:input_type -> sys.UpdateSysUserReq
+	21, // 13: sys.Sys.DeleteUser:input_type -> sys.IdReq
+	5,  // 14: sys.Sys.ListUsers:input_type -> sys.SysUserListReq
+	21, // 15: sys.Sys.GetUser:input_type -> sys.IdReq
+	6,  // 16: sys.Sys.ResetPwd:input_type -> sys.ResetPwdReq
+	10, // 17: sys.Sys.CreateRole:input_type -> sys.SaveSysRoleReq
+	10, // 18: sys.Sys.UpdateRole:input_type -> sys.SaveSysRoleReq
+	21, // 19: sys.Sys.DeleteRole:input_type -> sys.IdReq
+	11, // 20: sys.Sys.ListRoles:input_type -> sys.SysRoleListReq
+	21, // 21: sys.Sys.GetRole:input_type -> sys.IdReq
+	15, // 22: sys.Sys.SaveMenu:input_type -> sys.SaveMenuReq
+	21, // 23: sys.Sys.DeleteMenu:input_type -> sys.IdReq
+	21, // 24: sys.Sys.MenuTree:input_type -> sys.IdReq
+	16, // 25: sys.Sys.GetInfo:input_type -> sys.GetInfoReq
+	18, // 26: sys.Sys.GetRouters:input_type -> sys.GetRoutersReq
+	23, // 27: sys.Sys.SysLogin:output_type -> sys.SysLoginReply
+	1,  // 28: sys.Sys.CreateUser:output_type -> sys.SysUserReply
+	1,  // 29: sys.Sys.UpdateUser:output_type -> sys.SysUserReply
+	21, // 30: sys.Sys.DeleteUser:output_type -> sys.IdReq
+	2,  // 31: sys.Sys.ListUsers:output_type -> sys.SysUserListReply
+	1,  // 32: sys.Sys.GetUser:output_type -> sys.SysUserReply
+	21, // 33: sys.Sys.ResetPwd:output_type -> sys.IdReq
+	8,  // 34: sys.Sys.CreateRole:output_type -> sys.SysRoleReply
+	8,  // 35: sys.Sys.UpdateRole:output_type -> sys.SysRoleReply
+	21, // 36: sys.Sys.DeleteRole:output_type -> sys.IdReq
+	9,  // 37: sys.Sys.ListRoles:output_type -> sys.SysRoleListReply
+	8,  // 38: sys.Sys.GetRole:output_type -> sys.SysRoleReply
+	13, // 39: sys.Sys.SaveMenu:output_type -> sys.MenuReply
+	21, // 40: sys.Sys.DeleteMenu:output_type -> sys.IdReq
+	14, // 41: sys.Sys.MenuTree:output_type -> sys.MenuTreeReply
+	17, // 42: sys.Sys.GetInfo:output_type -> sys.GetInfoReply
+	20, // 43: sys.Sys.GetRouters:output_type -> sys.GetRoutersReply
+	27, // [27:44] is the sub-list for method output_type
+	10, // [10:27] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name
 	10, // [10:10] is the sub-list for extension extendee
 	0,  // [0:10] is the sub-list for field type_name
@@ -1891,7 +2042,7 @@ func file_sys_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sys_proto_rawDesc), len(file_sys_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   22,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
