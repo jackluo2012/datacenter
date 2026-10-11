@@ -55,6 +55,8 @@ func main() {
 	server := rest.MustNewServer(c.RestConf, rest.WithNotAllowedHandler(middleware.NewCorsMiddleware().Handler()))
 	defer server.Stop()
 	server.Use(middleware.NewCorsMiddleware().Handle)
+	//审计切面全局挂载：管理面写操作（POST/PUT/DELETE）自动落审计日志（内部按 method 过滤，GET 不记）
+	server.Use(ctx.AuditLog)
 	//静太文件处理
 	staticFileHandler(server)
 	// 设置错误处理函数

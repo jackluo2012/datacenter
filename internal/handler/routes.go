@@ -22,6 +22,7 @@ import (
 	search "datacenter/internal/handler/search"
 	security "datacenter/internal/handler/security"
 	standard "datacenter/internal/handler/standard"
+	sys "datacenter/internal/handler/sys"
 	tag "datacenter/internal/handler/tag"
 	theme "datacenter/internal/handler/theme"
 	user "datacenter/internal/handler/user"
@@ -805,6 +806,92 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/standard/wordroot/save",
 				Handler: standard.SaveWordRootHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/sys/getinfo",
+				Handler: sys.SysGetinfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/sys/getrouters",
+				Handler: sys.SysGetroutersHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/sys/menu/delete",
+				Handler: sys.SysMenuDeleteHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/sys/menu/save",
+				Handler: sys.SysMenuSaveHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/sys/menu/tree",
+				Handler: sys.SysMenuTreeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/sys/role/create",
+				Handler: sys.SysRoleCreateHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/sys/role/delete",
+				Handler: sys.SysRoleDeleteHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/sys/role/info",
+				Handler: sys.SysRoleInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/sys/role/list",
+				Handler: sys.SysRoleListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/sys/role/update",
+				Handler: sys.SysRoleUpdateHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/sys/user/create",
+				Handler: sys.SysUserCreateHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/sys/user/delete",
+				Handler: sys.SysUserDeleteHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/sys/user/info",
+				Handler: sys.SysUserInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/sys/user/list",
+				Handler: sys.SysUserListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/sys/user/resetpwd",
+				Handler: sys.SysUserResetpwdHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/sys/user/update",
+				Handler: sys.SysUserUpdateHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

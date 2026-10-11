@@ -1,41 +1,45 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
+import { usePermissionStore } from '@/stores/permission'
+import { useTagsViewStore } from '@/stores/tagsView'
+import SidebarItem from '@/components/SidebarItem.vue'
+import Breadcrumb from '@/components/Breadcrumb.vue'
+import TagsView from '@/components/TagsView.vue'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+const permission = usePermissionStore()
+const tagsView = useTagsViewStore()
 
+// ===== 侧边栏：动态菜单（getRouters 注入；失败降级静态菜单） =====
 const isCollapse = ref(false)
-
-interface MenuItem {
-  path: string
-  title: string
-  icon: string
-}
-
-/** 侧边栏菜单（icon 为全局注册的 ElementPlus 图标组件名） */
-const menus: MenuItem[] = [
-  { path: '/dashboard', title: '仪表盘', icon: 'Odometer' },
-  { path: '/datasource', title: '数据源', icon: 'Coin' },
-  { path: '/metadata', title: '元数据', icon: 'Collection' },
-  { path: '/datasvc', title: '数据服务', icon: 'Connection' },
-  { path: '/catalog', title: '资产目录', icon: 'FolderOpened' },
-  { path: '/quality', title: '数据质量', icon: 'CircleCheck' },
-  { path: '/metric', title: '数据指标', icon: 'DataAnalysis' },
-  { path: '/tag', title: '数据标签', icon: 'PriceTag' },
-  { path: '/standard', title: '数据标准', icon: 'Document' },
-  { path: '/mdm', title: '主数据', icon: 'Box' },
-  { path: '/job', title: '调度集成', icon: 'Timer' },
-  { path: '/ide', title: 'SQL IDE', icon: 'EditPen' },
-  { path: '/ai', title: 'AI 问数', icon: 'ChatDotRound' },
-  { path: '/ops', title: '数据运维', icon: 'Setting' },
-]
-
 const activeMenu = computed(() => route.path)
-const displayName = computed(() => auth.username || `用户${auth.uid || ''}`)
+/** 只渲染 visible 菜单（hidden 的仅注册路由不显示） */
+const visibleMenus = computed(() => permission.menus.filter((m) => !m.hidden))
+
+/** keep-alive 缓存名单：visitedViews 中各路由 name */
+const cachedViews = computed(() => tagsView.cachedViews)
+
+const displayName = computed(() => auth.nickname || auth.username || `用户${auth.uid || ''}`)
+
+// ===== 全屏切换（手写 requestFullscreen，不引第三方库） =====
+const isFullscreen = ref(false)
+function syncFullscreen() {
+  isFullscreen.value = !!document.fullscreenElement
+}
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen?.().catch(() => undefined)
+  } else {
+    document.exitFullscreen?.().catch(() => undefined)
+  }
+}
+onMounted(() => document.addEventListener('fullscreenchange', syncFullscreen))
+onBeforeUnmount(() => document.removeEventListener('fullscreenchange', syncFullscreen))
 
 function onLogout() {
   ElMessageBox.confirm('确定退出登录吗？', '提示', {
@@ -44,6 +48,7 @@ function onLogout() {
     type: 'warning',
   })
     .then(() => {
+      // logout 内部联动清理动态路由（permission.reset）与标签页（tagsView.delAllViews）
       auth.logout()
       ElMessage.success('已退出登录')
       router.push('/login')
@@ -59,21 +64,20 @@ function onLogout() {
         <el-icon :size="22"><DataLine /></el-icon>
         <span v-show="!isCollapse" class="logo-text">数据中台</span>
       </div>
-      <el-menu
-        :default-active="activeMenu"
-        :collapse="isCollapse"
-        :collapse-transition="false"
-        background-color="#001529"
-        text-color="#a6adb4"
-        active-text-color="#ffffff"
-        router
-        class="menu"
-      >
-        <el-menu-item v-for="m in menus" :key="m.path" :index="m.path">
-          <el-icon><component :is="m.icon" /></el-icon>
-          <template #title>{{ m.title }}</template>
-        </el-menu-item>
-      </el-menu>
+      <div class="menu-wrap">
+        <el-menu
+          :default-active="activeMenu"
+          :collapse="isCollapse"
+          :collapse-transition="false"
+          background-color="#001529"
+          text-color="#a6adb4"
+          active-text-color="#ffffff"
+          router
+          class="menu"
+        >
+          <SidebarItem v-for="m in visibleMenus" :key="m.path" :item="m" />
+        </el-menu>
+      </div>
     </el-aside>
 
     <el-container>
@@ -82,8 +86,15 @@ function onLogout() {
           <Expand v-if="isCollapse" />
           <Fold v-else />
         </el-icon>
-        <div class="header-title">{{ route.meta.title || '' }}</div>
+        <!-- 面包屑：菜单树层级优先，route.matched 兜底 -->
+        <Breadcrumb class="header-breadcrumb" />
         <div class="header-right">
+          <el-tooltip :content="isFullscreen ? '退出全屏' : '全屏'" placement="bottom">
+            <el-icon class="header-icon" :size="18" @click="toggleFullscreen">
+              <Aim v-if="isFullscreen" />
+              <FullScreen v-else />
+            </el-icon>
+          </el-tooltip>
           <el-dropdown @command="(cmd: string) => cmd === 'logout' && onLogout()">
             <span class="user-entry">
               <el-avatar :size="28" class="avatar">
@@ -100,8 +111,22 @@ function onLogout() {
           </el-dropdown>
         </div>
       </el-header>
+
+      <!-- 标签页：当前路由高亮 / 关闭 / 右键 关闭其他·全部 -->
+      <TagsView />
+
       <el-main class="main">
-        <router-view />
+        <router-view v-slot="{ Component }">
+          <!--
+            keep-alive 缓存依赖「页面组件 name === 路由 name」：
+            TODO 各 views 页面（尤其占位 List.vue）尚未声明组件 name，
+            需在各页面加 defineOptions({ name: '与路由name一致' }) 后缓存才会真正生效，
+            否则 include 匹配不到（script-setup 默认以文件名推断，List.vue 全部同名 'List'）。
+          -->
+          <keep-alive :include="cachedViews">
+            <component :is="Component" />
+          </keep-alive>
+        </router-view>
       </el-main>
     </el-container>
   </el-container>
@@ -115,9 +140,12 @@ function onLogout() {
   background-color: #001529;
   transition: width 0.2s;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .logo {
   height: 56px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -130,6 +158,11 @@ function onLogout() {
 .logo-text {
   white-space: nowrap;
 }
+.menu-wrap {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 .menu {
   border-right: none;
 }
@@ -140,20 +173,29 @@ function onLogout() {
   height: 56px;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 .collapse-btn {
   cursor: pointer;
   color: #303133;
+  flex-shrink: 0;
 }
-.header-title {
-  margin-left: 16px;
-  font-size: 15px;
-  font-weight: 500;
-  color: #303133;
+.header-breadcrumb {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 .header-right {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-shrink: 0;
+}
+.header-icon {
+  cursor: pointer;
+  color: #303133;
+  outline: none;
 }
 .user-entry {
   display: flex;

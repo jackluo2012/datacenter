@@ -1347,6 +1347,177 @@ type SyncTaskListResp struct {
 	Total int64      `json:"total"`
 }
 
+type SysGetInfoResp struct {
+	Uid      int64         `json:"uid,optional"`
+	Username string        `json:"username,optional"`
+	Nickname string        `json:"nickname,optional"`
+	Roles    []string      `json:"roles,optional"` //角色 key 集
+	Perms    []string      `json:"perms,optional"` //按钮权限标识集
+	Menus    []SysMenuInfo `json:"menus,optional"` //菜单树(目录+菜单，不含按钮)
+}
+
+type SysMenuIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type SysMenuInfo struct {
+	Id        int64         `json:"id,optional"`
+	ParentId  int64         `json:"parent_id,optional"` //0 根
+	Name      string        `json:"name,optional"`      //菜单名
+	Path      string        `json:"path,optional"`      //前端路由路径(如 /datasource)
+	Component string        `json:"component,optional"` //前端组件路径
+	Sort      int32         `json:"sort,optional"`
+	Icon      string        `json:"icon,optional"`      //element 图标名
+	MenuType  int32         `json:"menu_type,optional"` //1.目录 2.菜单 3.按钮
+	Perm      string        `json:"perm,optional"`      //按钮权限标识(如 datasource:create)
+	Visible   int32         `json:"visible,optional"`   //1.显示 0.隐藏
+	Beid      int64         `json:"beid,optional"`
+	Children  []SysMenuInfo `json:"children,optional"` //树形返回
+}
+
+type SysMenuResp struct {
+	Menu SysMenuInfo `json:"menu"`
+}
+
+type SysMenuSaveReq struct {
+	Id        int64  `json:"id,optional"` //0 新建
+	ParentId  int64  `json:"parent_id,optional"`
+	Name      string `json:"name"`
+	Path      string `json:"path,optional"`
+	Component string `json:"component,optional"`
+	Sort      int32  `json:"sort,optional"`
+	Icon      string `json:"icon,optional"`
+	MenuType  int32  `json:"menu_type"`
+	Perm      string `json:"perm,optional"`
+	Visible   int32  `json:"visible,optional"`
+	Beid      int64  `json:"beid,optional"`
+}
+
+type SysMenuTreeReq struct {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type SysMenuTreeResp struct {
+	List []SysMenuInfo `json:"list"`
+}
+
+type SysRoleIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type SysRoleInfo struct {
+	Id       int64   `json:"id,optional"`
+	RoleKey  string  `json:"role_key,optional"` //权限字符(如 admin/operator)
+	RoleName string  `json:"role_name,optional"`
+	Status   int32   `json:"status,optional"` //1.启用 0.停用
+	Remark   string  `json:"remark,optional"`
+	Beid     int64   `json:"beid,optional"`
+	MenuIds  []int64 `json:"menu_ids,optional"` //角色菜单
+}
+
+type SysRoleListReq struct {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+
+type SysRoleListResp struct {
+	List  []SysRoleInfo `json:"list"`
+	Total int64         `json:"total"`
+}
+
+type SysRoleResp struct {
+	Role SysRoleInfo `json:"role"`
+}
+
+type SysRoleSaveReq struct {
+	Id       int64   `json:"id,optional"` //0 新建
+	RoleKey  string  `json:"role_key"`
+	RoleName string  `json:"role_name"`
+	Status   int32   `json:"status,optional"`
+	Remark   string  `json:"remark,optional"`
+	MenuIds  []int64 `json:"menu_ids,optional"`
+	Beid     int64   `json:"beid,optional"`
+}
+
+type SysRouterBranch struct {
+	Name      string            `json:"name,optional"`
+	Path      string            `json:"path,optional"`
+	Component string            `json:"component,optional"`
+	Icon      string            `json:"icon,optional"`
+	Children  []SysRouterBranch `json:"children,optional"`
+}
+
+type SysRoutersResp struct {
+	Routers []SysRouterBranch `json:"routers"`
+}
+
+type SysUserCreateReq struct {
+	Username string  `json:"username"`
+	Password string  `json:"password"`
+	Nickname string  `json:"nickname,optional"`
+	Mobile   string  `json:"mobile,optional"`
+	Email    string  `json:"email,optional"`
+	Remark   string  `json:"remark,optional"`
+	RoleIds  []int64 `json:"role_ids,optional"`
+	Beid     int64   `json:"beid,optional"` //缺省取 JWT ctx 中的 beid
+}
+
+type SysUserIdReq struct {
+	Id   int64 `json:"id,optional" form:"id,optional"`
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type SysUserInfo struct {
+	Id        int64   `json:"id,optional"`
+	Username  string  `json:"username,optional"` //登录名
+	Nickname  string  `json:"nickname,optional"`
+	Mobile    string  `json:"mobile,optional"`
+	Email     string  `json:"email,optional"`
+	Status    int32   `json:"status,optional"` //1.启用 0.停用
+	Remark    string  `json:"remark,optional"`
+	CreatedAt int64   `json:"created_at,optional"`
+	RoleIds   []int64 `json:"role_ids,optional"` //用户角色
+}
+
+type SysUserListReq struct {
+	Beid    int64  `json:"beid,optional" form:"beid,optional"`
+	Keyword string `json:"keyword,optional" form:"keyword,optional"` //username/nickname/mobile
+	Status  int32  `json:"status,optional" form:"status,optional"`
+	Page    int64  `json:"page,optional" form:"page,optional"`
+	Size    int64  `json:"size,optional" form:"size,optional"`
+}
+
+type SysUserListResp struct {
+	List  []SysUserInfo `json:"list"`
+	Total int64         `json:"total"`
+}
+
+type SysUserResetPwdReq struct {
+	Id       int64  `json:"id"`
+	Password string `json:"password"`
+	Beid     int64  `json:"beid,optional"`
+}
+
+type SysUserResp struct {
+	User SysUserInfo `json:"user"`
+}
+
+type SysUserUpdateReq struct {
+	Id       int64   `json:"id"`
+	Nickname string  `json:"nickname,optional"`
+	Mobile   string  `json:"mobile,optional"`
+	Email    string  `json:"email,optional"`
+	Status   int32   `json:"status,optional"`
+	Remark   string  `json:"remark,optional"`
+	Password string  `json:"password,optional"` //空=不修改
+	RoleIds  []int64 `json:"role_ids,optional"`
+	Beid     int64   `json:"beid,optional"`
+}
+
 type TagAssetReq struct {
 	EntityId       int64  `json:"entity_id"`
 	CategoryId     int64  `json:"category_id,optional"`

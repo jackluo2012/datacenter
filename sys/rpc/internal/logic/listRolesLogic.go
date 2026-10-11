@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"datacenter/sys/model"
 	"datacenter/sys/rpc/internal/svc"
 	"datacenter/sys/rpc/sys"
 
@@ -23,8 +24,19 @@ func NewListRolesLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListRol
 	}
 }
 
+// 角色列表：keyword 模糊匹配 role_key/role_name + 分页
 func (l *ListRolesLogic) ListRoles(in *sys.SysRoleListReq) (*sys.SysRoleListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &sys.SysRoleListReply{}, nil
+	if in.Beid <= 0 {
+		return nil, model.ErrBeidRequired
+	}
+	list, total, err := l.svcCtx.RoleModel.FindList(l.ctx, in.Beid, in.Keyword, in.Page, in.Size)
+	if err != nil {
+		return nil, err
+	}
+	pbList := make([]*sys.SysRole, 0, len(list))
+	for _, r := range list {
+		// 列表不回填 menu_ids（详情接口 GetRole 才返回）
+		pbList = append(pbList, roleToPb(r, nil))
+	}
+	return &sys.SysRoleListReply{List: pbList, Total: total}, nil
 }

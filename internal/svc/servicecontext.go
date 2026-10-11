@@ -21,6 +21,7 @@ import (
 	"datacenter/security/rpc/securityClient"
 	"datacenter/shared"
 	"datacenter/standard/rpc/standardClient"
+	"datacenter/sys/rpc/sysClient"
 	"datacenter/tag/rpc/tagClient"
 	"datacenter/theme/rpc/themeClient"
 	"datacenter/user/rpc/userclient"
@@ -44,6 +45,7 @@ type ServiceContext struct {
 	GreetMiddleware2 rest.Middleware
 	Usercheck        rest.Middleware
 	Admincheck       rest.Middleware
+	AuditLog         rest.Middleware             //审计切面（管理面写操作自动落审计日志）
 	UserRpc          userclient.User             //用户
 	CommonRpc        commonclient.Common         //公共
 	VotesRpc         votesclient.Votes           //投票
@@ -64,6 +66,7 @@ type ServiceContext struct {
 	OpsRpc           opsClient.Ops               //数据运维与日志（Phase 5）
 	ThemeRpc         themeClient.Theme           //数仓建模（Phase 6）
 	SecurityRpc      securityClient.Security     //数据安全（Phase 6）
+	SysRpc           sysClient.Sys               //系统管理 RBAC（Phase 7）
 	Cache            cache.Cache
 	RedisConn        *redis.Redis
 }
@@ -100,6 +103,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	or5 := opsClient.NewOps(zrpc.MustNewClient(c.OpsRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	tr6 := themeClient.NewTheme(zrpc.MustNewClient(c.ThemeRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	sr6 := securityClient.NewSecurity(zrpc.MustNewClient(c.SecurityRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
+	scr7 := sysClient.NewSys(zrpc.MustNewClient(c.SysRpc, zrpc.WithUnaryClientInterceptor(timeInterceptor)))
 	//缓存
 	ca := cache.New(c.CacheRedis, syncx.NewSingleFlight(), cache.NewStat("dc"), shared.ErrNotFound)
 	rcon := redis.MustNewRedis(c.CacheRedis[0].RedisConf)
@@ -109,6 +113,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		GreetMiddleware2: greetMiddleware2,
 		Usercheck:        middleware.NewUserCheckMiddleware().Handle,
 		Admincheck:       middleware.NewAdminCheckMiddleware().Handle,
+		AuditLog:         middleware.NewAuditLogMiddleware(or5).Handle, //审计切面挂载到全局 Use
 		UserRpc:          ur,
 		CommonRpc:        cr,
 		VotesRpc:         vr,
@@ -129,6 +134,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		OpsRpc:           or5,
 		ThemeRpc:         tr6,
 		SecurityRpc:      sr6,
+		SysRpc:           scr7,
 		Cache:            ca,
 		RedisConn:        rcon,
 	}

@@ -2,7 +2,9 @@ package logic
 
 import (
 	"context"
+	"errors"
 
+	"datacenter/sys/model"
 	"datacenter/sys/rpc/internal/svc"
 	"datacenter/sys/rpc/sys"
 
@@ -23,8 +25,21 @@ func NewGetUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUserLo
 	}
 }
 
+// 用户详情：用户信息 + role_ids（不含密码哈希）
 func (l *GetUserLogic) GetUser(in *sys.IdReq) (*sys.SysUserReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &sys.SysUserReply{}, nil
+	if in.Id <= 0 {
+		return nil, ErrIdRequired
+	}
+	user, err := l.svcCtx.UserModel.FindOne(l.ctx, in.Id, in.Beid)
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return nil, ErrUserNotFound
+		}
+		return nil, err
+	}
+	roleIds, err := l.svcCtx.UserModel.GetRoleIds(l.ctx, user.Id)
+	if err != nil {
+		return nil, err
+	}
+	return &sys.SysUserReply{User: userToPb(user, roleIds)}, nil
 }

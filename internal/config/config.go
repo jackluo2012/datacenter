@@ -40,5 +40,8 @@ type Config struct {
 	ThemeRpc    zrpc.RpcClientConf
 	SecurityRpc zrpc.RpcClientConf
 
+	//Phase 7 系统管理 RBAC
+	SysRpc zrpc.RpcClientConf
+
 	CacheRedis cache.ClusterConf
 }

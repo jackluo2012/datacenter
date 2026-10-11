@@ -26,6 +26,7 @@ import "security.api"
 import "votes.api"
 import "search.api"
 import "questions.api"
+import "sys.api"
 
 //获取 应用信息
 type Beid {
