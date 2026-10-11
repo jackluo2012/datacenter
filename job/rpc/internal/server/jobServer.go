@@ -64,3 +64,21 @@ func (s *JobServer) GetSchedulerInfo(ctx context.Context, in *job.IdReq) (*job.S
 	l := logic.NewGetSchedulerInfoLogic(ctx, s.svcCtx)
 	return l.GetSchedulerInfo(in)
 }
+
+// 创建同步任务（内置引擎：源 SQL→目标表 分批同步）
+func (s *JobServer) CreateSyncTaskV2(ctx context.Context, in *job.SaveSyncTaskReq) (*job.TaskReply, error) {
+	l := logic.NewCreateSyncTaskV2Logic(ctx, s.svcCtx)
+	return l.CreateSyncTaskV2(in)
+}
+
+// 执行同步（真实跑库：分批读源写目标，同批事务）
+func (s *JobServer) RunSync(ctx context.Context, in *job.RunSyncReq) (*job.RunSyncReply, error) {
+	l := logic.NewRunSyncLogic(ctx, s.svcCtx)
+	return l.RunSync(in)
+}
+
+// 同步日志
+func (s *JobServer) ListSyncLogs(ctx context.Context, in *job.SyncLogListReq) (*job.SyncLogListReply, error) {
+	l := logic.NewListSyncLogsLogic(ctx, s.svcCtx)
+	return l.ListSyncLogs(in)
+}

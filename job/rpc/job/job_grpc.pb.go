@@ -26,6 +26,9 @@ const (
 	Job_TriggerTask_FullMethodName       = "/job.Job/TriggerTask"
 	Job_GetTaskStatus_FullMethodName     = "/job.Job/GetTaskStatus"
 	Job_GetSchedulerInfo_FullMethodName  = "/job.Job/GetSchedulerInfo"
+	Job_CreateSyncTaskV2_FullMethodName  = "/job.Job/CreateSyncTaskV2"
+	Job_RunSync_FullMethodName           = "/job.Job/RunSync"
+	Job_ListSyncLogs_FullMethodName      = "/job.Job/ListSyncLogs"
 )
 
 // JobClient is the client API for Job service.
@@ -46,6 +49,12 @@ type JobClient interface {
 	GetTaskStatus(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*StatusReply, error)
 	//调度器连接信息（运维视图）
 	GetSchedulerInfo(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*SchedulerReply, error)
+	//创建同步任务（内置引擎：源 SQL→目标表 分批同步）
+	CreateSyncTaskV2(ctx context.Context, in *SaveSyncTaskReq, opts ...grpc.CallOption) (*TaskReply, error)
+	//执行同步（真实跑库：分批读源写目标，同批事务）
+	RunSync(ctx context.Context, in *RunSyncReq, opts ...grpc.CallOption) (*RunSyncReply, error)
+	//同步日志
+	ListSyncLogs(ctx context.Context, in *SyncLogListReq, opts ...grpc.CallOption) (*SyncLogListReply, error)
 }
 
 type jobClient struct {
@@ -126,6 +135,36 @@ func (c *jobClient) GetSchedulerInfo(ctx context.Context, in *IdReq, opts ...grp
 	return out, nil
 }
 
+func (c *jobClient) CreateSyncTaskV2(ctx context.Context, in *SaveSyncTaskReq, opts ...grpc.CallOption) (*TaskReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TaskReply)
+	err := c.cc.Invoke(ctx, Job_CreateSyncTaskV2_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobClient) RunSync(ctx context.Context, in *RunSyncReq, opts ...grpc.CallOption) (*RunSyncReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RunSyncReply)
+	err := c.cc.Invoke(ctx, Job_RunSync_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobClient) ListSyncLogs(ctx context.Context, in *SyncLogListReq, opts ...grpc.CallOption) (*SyncLogListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SyncLogListReply)
+	err := c.cc.Invoke(ctx, Job_ListSyncLogs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServer is the server API for Job service.
 // All implementations must embed UnimplementedJobServer
 // for forward compatibility.
@@ -144,6 +183,12 @@ type JobServer interface {
 	GetTaskStatus(context.Context, *IdReq) (*StatusReply, error)
 	//调度器连接信息（运维视图）
 	GetSchedulerInfo(context.Context, *IdReq) (*SchedulerReply, error)
+	//创建同步任务（内置引擎：源 SQL→目标表 分批同步）
+	CreateSyncTaskV2(context.Context, *SaveSyncTaskReq) (*TaskReply, error)
+	//执行同步（真实跑库：分批读源写目标，同批事务）
+	RunSync(context.Context, *RunSyncReq) (*RunSyncReply, error)
+	//同步日志
+	ListSyncLogs(context.Context, *SyncLogListReq) (*SyncLogListReply, error)
 	mustEmbedUnimplementedJobServer()
 }
 
@@ -174,6 +219,15 @@ func (UnimplementedJobServer) GetTaskStatus(context.Context, *IdReq) (*StatusRep
 }
 func (UnimplementedJobServer) GetSchedulerInfo(context.Context, *IdReq) (*SchedulerReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetSchedulerInfo not implemented")
+}
+func (UnimplementedJobServer) CreateSyncTaskV2(context.Context, *SaveSyncTaskReq) (*TaskReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSyncTaskV2 not implemented")
+}
+func (UnimplementedJobServer) RunSync(context.Context, *RunSyncReq) (*RunSyncReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method RunSync not implemented")
+}
+func (UnimplementedJobServer) ListSyncLogs(context.Context, *SyncLogListReq) (*SyncLogListReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListSyncLogs not implemented")
 }
 func (UnimplementedJobServer) mustEmbedUnimplementedJobServer() {}
 func (UnimplementedJobServer) testEmbeddedByValue()             {}
@@ -322,6 +376,60 @@ func _Job_GetSchedulerInfo_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Job_CreateSyncTaskV2_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveSyncTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServer).CreateSyncTaskV2(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Job_CreateSyncTaskV2_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServer).CreateSyncTaskV2(ctx, req.(*SaveSyncTaskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Job_RunSync_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunSyncReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServer).RunSync(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Job_RunSync_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServer).RunSync(ctx, req.(*RunSyncReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Job_ListSyncLogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SyncLogListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServer).ListSyncLogs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Job_ListSyncLogs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServer).ListSyncLogs(ctx, req.(*SyncLogListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Job_ServiceDesc is the grpc.ServiceDesc for Job service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -356,6 +464,18 @@ var Job_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSchedulerInfo",
 			Handler:    _Job_GetSchedulerInfo_Handler,
+		},
+		{
+			MethodName: "CreateSyncTaskV2",
+			Handler:    _Job_CreateSyncTaskV2_Handler,
+		},
+		{
+			MethodName: "RunSync",
+			Handler:    _Job_RunSync_Handler,
+		},
+		{
+			MethodName: "ListSyncLogs",
+			Handler:    _Job_ListSyncLogs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

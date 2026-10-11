@@ -702,6 +702,455 @@ func (x *SchedulerReply) GetMsg() string {
 	return ""
 }
 
+// ============ 内置同步执行（Phase 8：DS 不可用时的轻量引擎）============
+type RunSyncReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Beid          int64                  `protobuf:"varint,2,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunSyncReq) Reset() {
+	*x = RunSyncReq{}
+	mi := &file_job_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunSyncReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunSyncReq) ProtoMessage() {}
+
+func (x *RunSyncReq) ProtoReflect() protoreflect.Message {
+	mi := &file_job_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunSyncReq.ProtoReflect.Descriptor instead.
+func (*RunSyncReq) Descriptor() ([]byte, []int) {
+	return file_job_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *RunSyncReq) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *RunSyncReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+type RunSyncReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ReadRows      int64                  `protobuf:"varint,1,opt,name=read_rows,json=readRows,proto3" json:"read_rows,omitempty"`
+	WriteRows     int64                  `protobuf:"varint,2,opt,name=write_rows,json=writeRows,proto3" json:"write_rows,omitempty"`
+	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"` //success/failed
+	Msg           string                 `protobuf:"bytes,4,opt,name=msg,proto3" json:"msg,omitempty"`
+	CostMs        int64                  `protobuf:"varint,5,opt,name=cost_ms,json=costMs,proto3" json:"cost_ms,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunSyncReply) Reset() {
+	*x = RunSyncReply{}
+	mi := &file_job_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunSyncReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunSyncReply) ProtoMessage() {}
+
+func (x *RunSyncReply) ProtoReflect() protoreflect.Message {
+	mi := &file_job_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunSyncReply.ProtoReflect.Descriptor instead.
+func (*RunSyncReply) Descriptor() ([]byte, []int) {
+	return file_job_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *RunSyncReply) GetReadRows() int64 {
+	if x != nil {
+		return x.ReadRows
+	}
+	return 0
+}
+
+func (x *RunSyncReply) GetWriteRows() int64 {
+	if x != nil {
+		return x.WriteRows
+	}
+	return 0
+}
+
+func (x *RunSyncReply) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *RunSyncReply) GetMsg() string {
+	if x != nil {
+		return x.Msg
+	}
+	return ""
+}
+
+func (x *RunSyncReply) GetCostMs() int64 {
+	if x != nil {
+		return x.CostMs
+	}
+	return 0
+}
+
+type SyncLog struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	TaskId        int64                  `protobuf:"varint,2,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	ReadRows      int64                  `protobuf:"varint,3,opt,name=read_rows,json=readRows,proto3" json:"read_rows,omitempty"`
+	WriteRows     int64                  `protobuf:"varint,4,opt,name=write_rows,json=writeRows,proto3" json:"write_rows,omitempty"`
+	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
+	Msg           string                 `protobuf:"bytes,6,opt,name=msg,proto3" json:"msg,omitempty"`
+	RunAt         int64                  `protobuf:"varint,7,opt,name=run_at,json=runAt,proto3" json:"run_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SyncLog) Reset() {
+	*x = SyncLog{}
+	mi := &file_job_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SyncLog) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SyncLog) ProtoMessage() {}
+
+func (x *SyncLog) ProtoReflect() protoreflect.Message {
+	mi := &file_job_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SyncLog.ProtoReflect.Descriptor instead.
+func (*SyncLog) Descriptor() ([]byte, []int) {
+	return file_job_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *SyncLog) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *SyncLog) GetTaskId() int64 {
+	if x != nil {
+		return x.TaskId
+	}
+	return 0
+}
+
+func (x *SyncLog) GetReadRows() int64 {
+	if x != nil {
+		return x.ReadRows
+	}
+	return 0
+}
+
+func (x *SyncLog) GetWriteRows() int64 {
+	if x != nil {
+		return x.WriteRows
+	}
+	return 0
+}
+
+func (x *SyncLog) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *SyncLog) GetMsg() string {
+	if x != nil {
+		return x.Msg
+	}
+	return ""
+}
+
+func (x *SyncLog) GetRunAt() int64 {
+	if x != nil {
+		return x.RunAt
+	}
+	return 0
+}
+
+type SyncLogListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	List          []*SyncLog             `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SyncLogListReply) Reset() {
+	*x = SyncLogListReply{}
+	mi := &file_job_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SyncLogListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SyncLogListReply) ProtoMessage() {}
+
+func (x *SyncLogListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_job_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SyncLogListReply.ProtoReflect.Descriptor instead.
+func (*SyncLogListReply) Descriptor() ([]byte, []int) {
+	return file_job_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *SyncLogListReply) GetList() []*SyncLog {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+func (x *SyncLogListReply) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type SyncLogListReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TaskId        int64                  `protobuf:"varint,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	Page          int64                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int64                  `protobuf:"varint,3,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SyncLogListReq) Reset() {
+	*x = SyncLogListReq{}
+	mi := &file_job_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SyncLogListReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SyncLogListReq) ProtoMessage() {}
+
+func (x *SyncLogListReq) ProtoReflect() protoreflect.Message {
+	mi := &file_job_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SyncLogListReq.ProtoReflect.Descriptor instead.
+func (*SyncLogListReq) Descriptor() ([]byte, []int) {
+	return file_job_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *SyncLogListReq) GetTaskId() int64 {
+	if x != nil {
+		return x.TaskId
+	}
+	return 0
+}
+
+func (x *SyncLogListReq) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *SyncLogListReq) GetSize() int64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+type SaveSyncTaskReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	SourceDsId    int64                  `protobuf:"varint,2,opt,name=source_ds_id,json=sourceDsId,proto3" json:"source_ds_id,omitempty"`
+	TargetDsId    int64                  `protobuf:"varint,3,opt,name=target_ds_id,json=targetDsId,proto3" json:"target_ds_id,omitempty"`
+	Mode          string                 `protobuf:"bytes,4,opt,name=mode,proto3" json:"mode,omitempty"`
+	SourceSql     string                 `protobuf:"bytes,5,opt,name=source_sql,json=sourceSql,proto3" json:"source_sql,omitempty"`       //源端查询（SELECT）
+	TargetTable   string                 `protobuf:"bytes,6,opt,name=target_table,json=targetTable,proto3" json:"target_table,omitempty"` //目标表（不存在自动建）
+	MappingJson   string                 `protobuf:"bytes,7,opt,name=mapping_json,json=mappingJson,proto3" json:"mapping_json,omitempty"` //列映射[{src,dst,type}]
+	BatchSize     int32                  `protobuf:"varint,8,opt,name=batch_size,json=batchSize,proto3" json:"batch_size,omitempty"`
+	Cron          string                 `protobuf:"bytes,9,opt,name=cron,proto3" json:"cron,omitempty"`
+	Beid          int64                  `protobuf:"varint,10,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SaveSyncTaskReq) Reset() {
+	*x = SaveSyncTaskReq{}
+	mi := &file_job_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SaveSyncTaskReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SaveSyncTaskReq) ProtoMessage() {}
+
+func (x *SaveSyncTaskReq) ProtoReflect() protoreflect.Message {
+	mi := &file_job_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SaveSyncTaskReq.ProtoReflect.Descriptor instead.
+func (*SaveSyncTaskReq) Descriptor() ([]byte, []int) {
+	return file_job_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *SaveSyncTaskReq) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *SaveSyncTaskReq) GetSourceDsId() int64 {
+	if x != nil {
+		return x.SourceDsId
+	}
+	return 0
+}
+
+func (x *SaveSyncTaskReq) GetTargetDsId() int64 {
+	if x != nil {
+		return x.TargetDsId
+	}
+	return 0
+}
+
+func (x *SaveSyncTaskReq) GetMode() string {
+	if x != nil {
+		return x.Mode
+	}
+	return ""
+}
+
+func (x *SaveSyncTaskReq) GetSourceSql() string {
+	if x != nil {
+		return x.SourceSql
+	}
+	return ""
+}
+
+func (x *SaveSyncTaskReq) GetTargetTable() string {
+	if x != nil {
+		return x.TargetTable
+	}
+	return ""
+}
+
+func (x *SaveSyncTaskReq) GetMappingJson() string {
+	if x != nil {
+		return x.MappingJson
+	}
+	return ""
+}
+
+func (x *SaveSyncTaskReq) GetBatchSize() int32 {
+	if x != nil {
+		return x.BatchSize
+	}
+	return 0
+}
+
+func (x *SaveSyncTaskReq) GetCron() string {
+	if x != nil {
+		return x.Cron
+	}
+	return ""
+}
+
+func (x *SaveSyncTaskReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
 var File_job_proto protoreflect.FileDescriptor
 
 const file_job_proto_rawDesc = "" +
@@ -763,7 +1212,50 @@ const file_job_proto_rawDesc = "" +
 	"configured\x12\x1c\n" +
 	"\tconnected\x18\x02 \x01(\bR\tconnected\x12\x19\n" +
 	"\bbase_url\x18\x03 \x01(\tR\abaseUrl\x12\x10\n" +
-	"\x03msg\x18\x04 \x01(\tR\x03msg2\xe5\x02\n" +
+	"\x03msg\x18\x04 \x01(\tR\x03msg\"0\n" +
+	"\n" +
+	"RunSyncReq\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x04beid\x18\x02 \x01(\x03R\x04beid\"\x8d\x01\n" +
+	"\fRunSyncReply\x12\x1b\n" +
+	"\tread_rows\x18\x01 \x01(\x03R\breadRows\x12\x1d\n" +
+	"\n" +
+	"write_rows\x18\x02 \x01(\x03R\twriteRows\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\tR\x06status\x12\x10\n" +
+	"\x03msg\x18\x04 \x01(\tR\x03msg\x12\x17\n" +
+	"\acost_ms\x18\x05 \x01(\x03R\x06costMs\"\xaf\x01\n" +
+	"\aSyncLog\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x17\n" +
+	"\atask_id\x18\x02 \x01(\x03R\x06taskId\x12\x1b\n" +
+	"\tread_rows\x18\x03 \x01(\x03R\breadRows\x12\x1d\n" +
+	"\n" +
+	"write_rows\x18\x04 \x01(\x03R\twriteRows\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x12\x10\n" +
+	"\x03msg\x18\x06 \x01(\tR\x03msg\x12\x15\n" +
+	"\x06run_at\x18\a \x01(\x03R\x05runAt\"J\n" +
+	"\x10SyncLogListReply\x12 \n" +
+	"\x04list\x18\x01 \x03(\v2\f.job.SyncLogR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"Q\n" +
+	"\x0eSyncLogListReq\x12\x17\n" +
+	"\atask_id\x18\x01 \x01(\x03R\x06taskId\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\x03R\x04page\x12\x12\n" +
+	"\x04size\x18\x03 \x01(\x03R\x04size\"\xa9\x02\n" +
+	"\x0fSaveSyncTaskReq\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\fsource_ds_id\x18\x02 \x01(\x03R\n" +
+	"sourceDsId\x12 \n" +
+	"\ftarget_ds_id\x18\x03 \x01(\x03R\n" +
+	"targetDsId\x12\x12\n" +
+	"\x04mode\x18\x04 \x01(\tR\x04mode\x12\x1d\n" +
+	"\n" +
+	"source_sql\x18\x05 \x01(\tR\tsourceSql\x12!\n" +
+	"\ftarget_table\x18\x06 \x01(\tR\vtargetTable\x12!\n" +
+	"\fmapping_json\x18\a \x01(\tR\vmappingJson\x12\x1d\n" +
+	"\n" +
+	"batch_size\x18\b \x01(\x05R\tbatchSize\x12\x12\n" +
+	"\x04cron\x18\t \x01(\tR\x04cron\x12\x12\n" +
+	"\x04beid\x18\n" +
+	" \x01(\x03R\x04beid2\x8a\x04\n" +
 	"\x03Job\x128\n" +
 	"\x0eCreateSyncTask\x12\x16.job.CreateSyncTaskReq\x1a\x0e.job.TaskReply\x125\n" +
 	"\rListSyncTasks\x12\x10.job.TaskListReq\x1a\x12.job.TaskListReply\x12(\n" +
@@ -777,7 +1269,10 @@ const file_job_proto_rawDesc = "" +
 	"\rGetTaskStatus\x12\n" +
 	".job.IdReq\x1a\x10.job.StatusReply\x123\n" +
 	"\x10GetSchedulerInfo\x12\n" +
-	".job.IdReq\x1a\x13.job.SchedulerReplyB\aZ\x05./jobb\x06proto3"
+	".job.IdReq\x1a\x13.job.SchedulerReply\x128\n" +
+	"\x10CreateSyncTaskV2\x12\x14.job.SaveSyncTaskReq\x1a\x0e.job.TaskReply\x12-\n" +
+	"\aRunSync\x12\x0f.job.RunSyncReq\x1a\x11.job.RunSyncReply\x12:\n" +
+	"\fListSyncLogs\x12\x13.job.SyncLogListReq\x1a\x15.job.SyncLogListReplyB\aZ\x05./jobb\x06proto3"
 
 var (
 	file_job_proto_rawDescOnce sync.Once
@@ -791,7 +1286,7 @@ func file_job_proto_rawDescGZIP() []byte {
 	return file_job_proto_rawDescData
 }
 
-var file_job_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_job_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_job_proto_goTypes = []any{
 	(*SyncTask)(nil),          // 0: job.SyncTask
 	(*TaskReply)(nil),         // 1: job.TaskReply
@@ -803,29 +1298,42 @@ var file_job_proto_goTypes = []any{
 	(*TriggerReply)(nil),      // 7: job.TriggerReply
 	(*StatusReply)(nil),       // 8: job.StatusReply
 	(*SchedulerReply)(nil),    // 9: job.SchedulerReply
+	(*RunSyncReq)(nil),        // 10: job.RunSyncReq
+	(*RunSyncReply)(nil),      // 11: job.RunSyncReply
+	(*SyncLog)(nil),           // 12: job.SyncLog
+	(*SyncLogListReply)(nil),  // 13: job.SyncLogListReply
+	(*SyncLogListReq)(nil),    // 14: job.SyncLogListReq
+	(*SaveSyncTaskReq)(nil),   // 15: job.SaveSyncTaskReq
 }
 var file_job_proto_depIdxs = []int32{
-	0, // 0: job.TaskReply.task:type_name -> job.SyncTask
-	0, // 1: job.TaskListReply.list:type_name -> job.SyncTask
-	3, // 2: job.Job.CreateSyncTask:input_type -> job.CreateSyncTaskReq
-	4, // 3: job.Job.ListSyncTasks:input_type -> job.TaskListReq
-	5, // 4: job.Job.DeleteSyncTask:input_type -> job.IdReq
-	5, // 5: job.Job.DeployToScheduler:input_type -> job.IdReq
-	5, // 6: job.Job.TriggerTask:input_type -> job.IdReq
-	5, // 7: job.Job.GetTaskStatus:input_type -> job.IdReq
-	5, // 8: job.Job.GetSchedulerInfo:input_type -> job.IdReq
-	1, // 9: job.Job.CreateSyncTask:output_type -> job.TaskReply
-	2, // 10: job.Job.ListSyncTasks:output_type -> job.TaskListReply
-	5, // 11: job.Job.DeleteSyncTask:output_type -> job.IdReq
-	6, // 12: job.Job.DeployToScheduler:output_type -> job.DeployReply
-	7, // 13: job.Job.TriggerTask:output_type -> job.TriggerReply
-	8, // 14: job.Job.GetTaskStatus:output_type -> job.StatusReply
-	9, // 15: job.Job.GetSchedulerInfo:output_type -> job.SchedulerReply
-	9, // [9:16] is the sub-list for method output_type
-	2, // [2:9] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0,  // 0: job.TaskReply.task:type_name -> job.SyncTask
+	0,  // 1: job.TaskListReply.list:type_name -> job.SyncTask
+	12, // 2: job.SyncLogListReply.list:type_name -> job.SyncLog
+	3,  // 3: job.Job.CreateSyncTask:input_type -> job.CreateSyncTaskReq
+	4,  // 4: job.Job.ListSyncTasks:input_type -> job.TaskListReq
+	5,  // 5: job.Job.DeleteSyncTask:input_type -> job.IdReq
+	5,  // 6: job.Job.DeployToScheduler:input_type -> job.IdReq
+	5,  // 7: job.Job.TriggerTask:input_type -> job.IdReq
+	5,  // 8: job.Job.GetTaskStatus:input_type -> job.IdReq
+	5,  // 9: job.Job.GetSchedulerInfo:input_type -> job.IdReq
+	15, // 10: job.Job.CreateSyncTaskV2:input_type -> job.SaveSyncTaskReq
+	10, // 11: job.Job.RunSync:input_type -> job.RunSyncReq
+	14, // 12: job.Job.ListSyncLogs:input_type -> job.SyncLogListReq
+	1,  // 13: job.Job.CreateSyncTask:output_type -> job.TaskReply
+	2,  // 14: job.Job.ListSyncTasks:output_type -> job.TaskListReply
+	5,  // 15: job.Job.DeleteSyncTask:output_type -> job.IdReq
+	6,  // 16: job.Job.DeployToScheduler:output_type -> job.DeployReply
+	7,  // 17: job.Job.TriggerTask:output_type -> job.TriggerReply
+	8,  // 18: job.Job.GetTaskStatus:output_type -> job.StatusReply
+	9,  // 19: job.Job.GetSchedulerInfo:output_type -> job.SchedulerReply
+	1,  // 20: job.Job.CreateSyncTaskV2:output_type -> job.TaskReply
+	11, // 21: job.Job.RunSync:output_type -> job.RunSyncReply
+	13, // 22: job.Job.ListSyncLogs:output_type -> job.SyncLogListReply
+	13, // [13:23] is the sub-list for method output_type
+	3,  // [3:13] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_job_proto_init() }
@@ -839,7 +1347,7 @@ func file_job_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_job_proto_rawDesc), len(file_job_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

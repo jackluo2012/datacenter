@@ -58,6 +58,40 @@ message SchedulerReply {
   string msg        = 4;
 }
 
+
+// ============ 内置同步执行（Phase 8：DS 不可用时的轻量引擎）============
+message RunSyncReq { int64 id = 1; int64 beid = 2; }
+message RunSyncReply {
+  int64  read_rows  = 1;
+  int64  write_rows = 2;
+  string status     = 3;  //success/failed
+  string msg        = 4;
+  int64  cost_ms    = 5;
+}
+message SyncLog {
+  int64  id         = 1;
+  int64  task_id    = 2;
+  int64  read_rows  = 3;
+  int64  write_rows = 4;
+  string status     = 5;
+  string msg        = 6;
+  int64  run_at     = 7;
+}
+message SyncLogListReply { repeated SyncLog list = 1; int64 total = 2; }
+message SyncLogListReq { int64 task_id = 1; int64 page = 2; int64 size = 3; }
+message SaveSyncTaskReq {
+  string name          = 1;
+  int64  source_ds_id  = 2;
+  int64  target_ds_id  = 3;
+  string mode          = 4;
+  string source_sql    = 5;  //源端查询（SELECT）
+  string target_table  = 6;  //目标表（不存在自动建）
+  string mapping_json  = 7;  //列映射[{src,dst,type}]
+  int32  batch_size    = 8;
+  string cron          = 9;
+  int64  beid          = 10;
+}
+
 service Job {
   //创建同步任务
   rpc CreateSyncTask(CreateSyncTaskReq) returns (TaskReply);
@@ -73,4 +107,10 @@ service Job {
   rpc GetTaskStatus(IdReq) returns (StatusReply);
   //调度器连接信息（运维视图）
   rpc GetSchedulerInfo(IdReq) returns (SchedulerReply);
+  //创建同步任务（内置引擎：源 SQL→目标表 分批同步）
+  rpc CreateSyncTaskV2(SaveSyncTaskReq) returns (TaskReply);
+  //执行同步（真实跑库：分批读源写目标，同批事务）
+  rpc RunSync(RunSyncReq) returns (RunSyncReply);
+  //同步日志
+  rpc ListSyncLogs(SyncLogListReq) returns (SyncLogListReply);
 }

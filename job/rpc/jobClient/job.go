@@ -17,8 +17,14 @@ type (
 	CreateSyncTaskReq = job.CreateSyncTaskReq
 	DeployReply       = job.DeployReply
 	IdReq             = job.IdReq
+	RunSyncReply      = job.RunSyncReply
+	RunSyncReq        = job.RunSyncReq
+	SaveSyncTaskReq   = job.SaveSyncTaskReq
 	SchedulerReply    = job.SchedulerReply
 	StatusReply       = job.StatusReply
+	SyncLog           = job.SyncLog
+	SyncLogListReply  = job.SyncLogListReply
+	SyncLogListReq    = job.SyncLogListReq
 	SyncTask          = job.SyncTask
 	TaskListReply     = job.TaskListReply
 	TaskListReq       = job.TaskListReq
@@ -40,6 +46,12 @@ type (
 		GetTaskStatus(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*StatusReply, error)
 		// 调度器连接信息（运维视图）
 		GetSchedulerInfo(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*SchedulerReply, error)
+		// 创建同步任务（内置引擎：源 SQL→目标表 分批同步）
+		CreateSyncTaskV2(ctx context.Context, in *SaveSyncTaskReq, opts ...grpc.CallOption) (*TaskReply, error)
+		// 执行同步（真实跑库：分批读源写目标，同批事务）
+		RunSync(ctx context.Context, in *RunSyncReq, opts ...grpc.CallOption) (*RunSyncReply, error)
+		// 同步日志
+		ListSyncLogs(ctx context.Context, in *SyncLogListReq, opts ...grpc.CallOption) (*SyncLogListReply, error)
 	}
 
 	defaultJob struct {
@@ -93,4 +105,22 @@ func (m *defaultJob) GetTaskStatus(ctx context.Context, in *IdReq, opts ...grpc.
 func (m *defaultJob) GetSchedulerInfo(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*SchedulerReply, error) {
 	client := job.NewJobClient(m.cli.Conn())
 	return client.GetSchedulerInfo(ctx, in, opts...)
+}
+
+// 创建同步任务（内置引擎：源 SQL→目标表 分批同步）
+func (m *defaultJob) CreateSyncTaskV2(ctx context.Context, in *SaveSyncTaskReq, opts ...grpc.CallOption) (*TaskReply, error) {
+	client := job.NewJobClient(m.cli.Conn())
+	return client.CreateSyncTaskV2(ctx, in, opts...)
+}
+
+// 执行同步（真实跑库：分批读源写目标，同批事务）
+func (m *defaultJob) RunSync(ctx context.Context, in *RunSyncReq, opts ...grpc.CallOption) (*RunSyncReply, error) {
+	client := job.NewJobClient(m.cli.Conn())
+	return client.RunSync(ctx, in, opts...)
+}
+
+// 同步日志
+func (m *defaultJob) ListSyncLogs(ctx context.Context, in *SyncLogListReq, opts ...grpc.CallOption) (*SyncLogListReply, error) {
+	client := job.NewJobClient(m.cli.Conn())
+	return client.ListSyncLogs(ctx, in, opts...)
 }
