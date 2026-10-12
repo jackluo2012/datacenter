@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	baseMemberFieldNames          = builder.RawFieldNames(&BaseMember{})
-	baseMemberRows                = strings.Join(baseMemberFieldNames, ",")
+	baseMemberFieldNames = builder.RawFieldNames(&BaseMember{})
+	baseMemberRows       = strings.Join(baseMemberFieldNames, ",")
 	// 读路径安全列清单：可空列（icard 等NULL 会炸 string 扫描）用 ifnull 兜底
 	baseMemberRowsSafe            = strings.Replace(baseMemberRows, "`icard`", "ifnull(`icard`,'') as `icard`", 1)
 	baseMemberRowsExpectAutoSet   = strings.Join(stringx.Remove(baseMemberFieldNames, "`id`", "`create_time`", "`update_time`"), ",")

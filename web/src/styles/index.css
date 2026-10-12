@@ -1,0 +1,264 @@
+/**
+ * ============================================================
+ * DataCenter 数据中台 · 全局设计系统（Design Tokens + 基础皮肤）
+ * ------------------------------------------------------------
+ * 色板：主色科技蓝 #2563eb / 辅助青 #06b6d4
+ *       语义色与 Element Plus 默认 success/warning/danger 对齐
+ *       （#67c23a / #e6a23c / #f56c6c），保证健康分仪表盘
+ *       （quality/List.vue echarts 硬编码）与 el-tag 配色一致
+ * 圆角：--dc-radius-sm 6px / --dc-radius 10px / --dc-radius-lg 14px
+ * 阴影：--dc-shadow-sm / md / lg 三级
+ * 说明：项目未引入 sass，故以原生 CSS 自定义属性（Custom Properties）
+ *       承载 token；文件在 main.ts 中于 element-plus 样式之后引入。
+ * ============================================================
+ */
+
+/* ---------- 1. 设计令牌 ---------- */
+:root {
+  /* 品牌色 */
+  --dc-primary: #2563eb;        /* 科技蓝 */
+  --dc-primary-light: #3b82f6;
+  --dc-primary-dark: #1d4ed8;
+  --dc-cyan: #06b6d4;           /* 辅助青 */
+  --dc-cyan-dark: #0891b2;
+
+  /* 语义色（与 Element Plus 默认一致，保证图表/tag 对齐） */
+  --dc-success: #67c23a;
+  --dc-warning: #e6a23c;
+  --dc-danger: #f56c6c;
+  --dc-info: #909399;
+
+  /* 中性灰阶（slate） */
+  --dc-gray-50: #f8fafc;
+  --dc-gray-100: #f1f5f9;
+  --dc-gray-200: #e2e8f0;
+  --dc-gray-300: #cbd5e1;
+  --dc-gray-400: #94a3b8;
+  --dc-gray-500: #64748b;
+  --dc-gray-600: #475569;
+  --dc-gray-700: #334155;
+  --dc-gray-800: #1e293b;
+  --dc-gray-900: #0f172a;
+
+  /* 圆角 */
+  --dc-radius-sm: 6px;
+  --dc-radius: 10px;
+  --dc-radius-lg: 14px;
+  --dc-radius-xl: 18px;
+
+  /* 阴影 */
+  --dc-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.06);
+  --dc-shadow-md: 0 4px 10px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.06);
+  --dc-shadow-lg: 0 12px 28px -6px rgba(15, 23, 42, 0.14), 0 4px 10px -4px rgba(15, 23, 42, 0.08);
+  --dc-shadow-primary: 0 6px 16px -4px rgba(37, 99, 235, 0.4);
+
+  /* 品牌渐变 */
+  --dc-grad-brand: linear-gradient(135deg, #1d4ed8 0%, #2563eb 45%, #06b6d4 100%);
+  --dc-grad-bar: linear-gradient(180deg, #2563eb, #06b6d4);
+
+  /* 动效 */
+  --dc-transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- 2. Element Plus 主题变量覆盖 ---------- */
+/* light-3/5/7/8/9、dark-2 均为 #2563eb 与白/黑按官方公式混色所得 */
+:root,
+html.dark {
+  --el-color-primary: #2563eb;
+  --el-color-primary-light-3: #6692f1;
+  --el-color-primary-light-5: #92b1f5;
+  --el-color-primary-light-7: #bed0f9;
+  --el-color-primary-light-8: #d3e0fb;
+  --el-color-primary-light-9: #e9effd;
+  --el-color-primary-dark-2: #1e4fbc;
+
+  /* 组件级圆角统一 */
+  --el-border-radius-base: 6px;
+  --el-border-radius-small: 4px;
+}
+
+/* ---------- 3. 基础样式 ---------- */
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', Arial, sans-serif;
+  background-color: var(--el-bg-color-page, #f5f7fa);
+  color: var(--el-text-color-primary, #303133);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(37, 99, 235, 0.22);
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--dc-gray-300);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dc-gray-400);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: var(--dc-gray-700);
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--dc-gray-600);
+}
+
+/* ---------- 4. 卡片体系统一：圆角 / 阴影 / hover 提升 ---------- */
+.el-card {
+  border-radius: var(--dc-radius-lg);
+  border-color: var(--el-border-color-lighter);
+  box-shadow: var(--dc-shadow-sm);
+  transition: var(--dc-transition);
+}
+
+/* hover 阴影卡片：浮起 + 品牌色描边微光 */
+.el-card.is-hover-shadow:hover,
+.el-card.is-always-shadow:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--dc-shadow-lg);
+  border-color: rgba(37, 99, 235, 0.35);
+}
+
+.el-card__header {
+  padding: 14px 20px;
+  border-bottom-color: var(--el-border-color-lighter);
+}
+
+/* 区块标题统一左侧色条（所有页面的 .card-title 自动生效） */
+.el-card__header .card-title {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--el-text-color-primary);
+  letter-spacing: 0.2px;
+}
+.el-card__header .card-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--dc-grad-bar);
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+/* ---------- 5. 按钮：主按钮品牌渐变 ---------- */
+.el-button--primary:not(.is-link):not(.is-text):not(.is-plain) {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 60%, #0ea5e9 100%);
+  border: none;
+  box-shadow: 0 4px 12px -4px rgba(37, 99, 235, 0.5);
+  transition: var(--dc-transition);
+}
+.el-button--primary:not(.is-link):not(.is-text):not(.is-plain):hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #06b6d4 100%);
+  box-shadow: var(--dc-shadow-primary);
+  transform: translateY(-1px);
+}
+.el-button--primary:not(.is-link):not(.is-text):not(.is-plain):active {
+  transform: translateY(0);
+}
+
+/* ---------- 6. 表格 / 弹窗 / 标签 ---------- */
+.el-table th.el-table__cell {
+  background: var(--el-fill-color-light);
+  font-weight: 600;
+}
+
+.el-dialog {
+  border-radius: var(--dc-radius-lg);
+  overflow: hidden;
+}
+
+.el-tag {
+  border-radius: var(--dc-radius-sm);
+}
+
+/* 分页器悬浮 */
+.el-pagination {
+  --el-pagination-hover-color: var(--dc-primary);
+}
+
+/* ---------- 7. 路由切换过渡（fade-slide） ---------- */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.26s ease, transform 0.26s ease;
+}
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(14px);
+}
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* 主内容区页面挂载入场（叠加 keep-alive 场景下也能生效） */
+.el-main > * {
+  animation: dc-page-in 0.3s ease both;
+}
+@keyframes dc-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .el-main > * {
+    animation: none;
+  }
+  .fade-slide-enter-active,
+  .fade-slide-leave-active {
+    transition: none;
+  }
+}
+
+/* ---------- 8. 骨架屏统一 ---------- */
+.el-skeleton__item {
+  border-radius: var(--dc-radius-sm);
+}
+.el-skeleton__text {
+  margin-top: 12px;
+}
+
+/* ---------- 9. 暗色模式基础适配（html.dark） ---------- */
+html.dark {
+  color-scheme: dark;
+}
+html.dark body {
+  background-color: var(--el-bg-color-page, #0a0a0a);
+}
+html.dark .el-card {
+  box-shadow: var(--dc-shadow-sm);
+}
+html.dark .el-card.is-hover-shadow:hover,
+html.dark .el-card.is-always-shadow:hover {
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.55);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+html.dark ::selection {
+  background: rgba(59, 130, 246, 0.4);
+}

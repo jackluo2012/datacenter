@@ -4,6 +4,9 @@ import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
+// Element Plus 暗色变量基础（html.dark 生效）+ 全局设计系统（品牌色/圆角/阴影/动效）
+import 'element-plus/theme-chalk/dark/css-vars.css'
+import './styles/index.css'
 
 import App from './App.vue'
 import router from './router'

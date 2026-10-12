@@ -231,6 +231,27 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
+				Method:  http.MethodGet,
+				Path:    "/datasvc/apidoc",
+				Handler: datasvc.DsApiDocHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/datasvc/calllog/list",
+				Handler: datasvc.DsCallLogListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/datasvc/callstats",
+				Handler: datasvc.DsCallStatsHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
 				// 删除脚本
 				Method:  http.MethodPost,
 				Path:    "/ide/script/delete",
@@ -564,6 +585,47 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/quality/rule/list",
 				Handler: quality.QualityRuleListHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/quality/alertchannel/delete",
+				Handler: quality.DeleteAlertChannelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/quality/alertchannel/list",
+				Handler: quality.AlertChannelListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/quality/alertchannel/save",
+				Handler: quality.SaveAlertChannelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/quality/alertchannel/test",
+				Handler: quality.TestAlertChannelHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/quality/errordata/list",
+				Handler: quality.QualityErrorDataListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/quality/profile/list",
+				Handler: quality.QualityProfileListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/quality/profile/table",
+				Handler: quality.ProfileTableHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

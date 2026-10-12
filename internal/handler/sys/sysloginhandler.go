@@ -6,10 +6,10 @@ package sys
 import (
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest/httpx"
 	"datacenter/internal/logic/sys"
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 // 管理台登录

@@ -29,7 +29,7 @@ type (
 		Id        int64  `db:"id"`
 		ParentId  int64  `db:"parent_id"`
 		Name      string `db:"name"`
-		Path      string `db:"path"` // 前端路由路径（目录/菜单用，如 /system、user）
+		Path      string `db:"path"`      // 前端路由路径（目录/菜单用，如 /system、user）
 		Component string `db:"component"` // 前端组件路径（如 system/UserList → web/src/views/system/UserList.vue）
 		Sort      int64  `db:"sort"`
 		Icon      string `db:"icon"`

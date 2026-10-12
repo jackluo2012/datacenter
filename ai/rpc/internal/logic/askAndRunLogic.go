@@ -54,9 +54,9 @@ func (l *AskAndRunLogic) AskAndRun(in *ai.AskAndRunReq) (*ai.AskAndRunReply, err
 		}
 	}
 
-	//2. 复用 Ask 主流程（检索→候选打分→可选 LLM 生成 SQL）
+	//2. 复用 Ask 主流程（检索→候选打分→可选 LLM 生成 SQL；AskAndRun 暂不支持多轮，context_json 传空）
 	ask := NewAskLogic(l.ctx, l.svcCtx)
-	core := ask.askCore(question, in.Beid, normalizeMaxCandidates(in.MaxCandidates))
+	core := ask.askCore(question, in.Beid, normalizeMaxCandidates(in.MaxCandidates), "")
 
 	reply := &ai.AskAndRunReply{
 		Candidates:   core.candidates,
@@ -70,6 +70,9 @@ func (l *AskAndRunLogic) AskAndRun(in *ai.AskAndRunReq) (*ai.AskAndRunReply, err
 		switch {
 		case !core.llmEnabled:
 			reply.RunError = "未启用 LLM 或 LLM 调用失败已降级，无生成 SQL 可执行"
+		case core.sqlGuardErr != "":
+			//发送侧安全校验已拦截（仅允许单条 SELECT）：不送 ide 执行，原因透出
+			reply.RunError = "生成 SQL 未通过安全校验: " + core.sqlGuardErr
 		case strings.TrimSpace(core.generatedSql) == "":
 			reply.RunError = "LLM 未生成 SQL（回复中未提取到 ```sql 代码块），无可执行内容"
 		default:

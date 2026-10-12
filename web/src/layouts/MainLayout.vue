@@ -76,6 +76,11 @@ function onLogout() {
           class="menu"
         >
           <SidebarItem v-for="m in visibleMenus" :key="m.path" :item="m" />
+          <!-- 数据大屏：独立全屏页（/bigscreen 免登录白名单），固定菜单项置于动态菜单之后 -->
+          <el-menu-item index="/bigscreen" class="bigscreen-entry">
+            <el-icon :size="18"><DataBoard /></el-icon>
+            <template #title>数据大屏</template>
+          </el-menu-item>
         </el-menu>
       </div>
     </el-aside>
@@ -165,6 +170,12 @@ function onLogout() {
 }
 .menu {
   border-right: none;
+}
+/* 数据大屏固定入口：与动态菜单之间加分隔线，青色点缀 */
+.bigscreen-entry {
+  margin-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 2px;
 }
 .header {
   background: #fff;

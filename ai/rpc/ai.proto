@@ -17,6 +17,7 @@ message AskReq {
   string question     = 1;
   int64  beid         = 2;
   int32  max_candidates = 3;  //语义检索返回上限,默认 5
+  string context_json = 4;  //可选:多轮上下文(JSON,形如 {"question":"上一问","sql":"上一轮生成SQL"}),注入 prompt 辅助追问,空或非法 JSON 时忽略
 }
 message AskReply {
   repeated Candidate candidates = 1;

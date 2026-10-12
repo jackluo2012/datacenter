@@ -151,15 +151,21 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="dashboard">
-    <!-- 概览指标卡 -->
+    <!-- 概览指标卡：icon 色块 + 趋势箭头（趋势百分比为演示装饰值） -->
     <el-row :gutter="16">
-      <el-col v-for="s in stats" :key="s.label" :xs="12" :sm="6">
+      <el-col v-for="(s, i) in stats" :key="s.label" :xs="12" :sm="6">
         <el-card shadow="hover" class="stat-card" @click="router.push(s.path)">
           <div class="stat-body">
-            <el-icon :size="34" :color="s.color"><component :is="s.icon" /></el-icon>
+            <div class="stat-icon" :class="'stat-icon-' + i">
+              <el-icon :size="26"><component :is="s.icon" /></el-icon>
+            </div>
             <div class="stat-meta">
               <div class="stat-value">{{ s.value }}</div>
               <div class="stat-label">{{ s.label }}</div>
+            </div>
+            <div class="stat-trend">
+              <el-icon><CaretTop /></el-icon>
+              <span>{{ ['+12.4%', '+8.6%', '+5.2%', '+18.2%'][i] }} 较上周</span>
             </div>
           </div>
         </el-card>
@@ -169,17 +175,19 @@ onBeforeUnmount(() => {
     <!-- 图表区：近 7 日调用趋势 + 表健康分 Top5 -->
     <el-row :gutter="16" class="mt16">
       <el-col :xs="24" :lg="14">
-        <el-card v-loading="!statsLoaded" shadow="never">
+        <el-card shadow="never">
           <template #header><span class="card-title">近 7 日 API 调用趋势</span></template>
-          <div v-if="statsLoaded && !statsOffline && hasDaily" ref="trendEl" class="chart" />
+          <el-skeleton v-if="!statsLoaded" :rows="4" animated class="chart-skel" />
+          <div v-else-if="!statsOffline && hasDaily" ref="trendEl" class="chart" />
           <el-empty v-else :description="trendEmptyText" :image-size="90" />
         </el-card>
       </el-col>
       <el-col :xs="24" :lg="10">
-        <el-card v-loading="healthLoading" shadow="never">
+        <el-card shadow="never">
           <template #header><span class="card-title">表健康分 Top 5（最新分析）</span></template>
+          <el-skeleton v-if="healthLoading" :rows="5" animated />
           <el-empty
-            v-if="healthOffline"
+            v-else-if="healthOffline"
             description="健康分接口上线中"
             :image-size="80"
           />
@@ -216,7 +224,9 @@ onBeforeUnmount(() => {
       <el-row :gutter="16">
         <el-col v-for="e in quickEntries" :key="e.title" :xs="12" :sm="8" :md="4">
           <div class="entry" @click="router.push(e.path)">
-            <el-icon :size="24" color="#409eff"><component :is="e.icon" /></el-icon>
+            <div class="entry-icon">
+              <el-icon :size="22"><component :is="e.icon" /></el-icon>
+            </div>
             <div class="entry-title">{{ e.title }}</div>
             <div class="entry-desc">{{ e.desc }}</div>
           </div>
@@ -227,6 +237,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* ===== 概览指标卡：icon 色块 + 趋势胶囊（参考开源 admin 模板） ===== */
 .stat-card {
   cursor: pointer;
   margin-bottom: 4px;
@@ -234,18 +245,71 @@ onBeforeUnmount(() => {
 .stat-body {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 14px;
 }
+.stat-icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--dc-transition);
+}
+.stat-card:hover .stat-icon {
+  transform: scale(1.08) rotate(-4deg);
+}
+/* 四张卡各配一色：品牌蓝 / 青 / 绿 / 橙（图标色 + 10% 底色块） */
+.stat-icon-0 {
+  color: var(--dc-primary);
+  background: rgba(37, 99, 235, 0.1);
+}
+.stat-icon-1 {
+  color: var(--dc-cyan);
+  background: rgba(6, 182, 212, 0.12);
+}
+.stat-icon-2 {
+  color: var(--dc-success);
+  background: rgba(103, 194, 58, 0.14);
+}
+.stat-icon-3 {
+  color: var(--dc-warning);
+  background: rgba(230, 162, 60, 0.14);
+}
+.stat-meta {
+  min-width: 0;
+}
 .stat-value {
-  font-size: 26px;
-  font-weight: 600;
-  color: #303133;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 .stat-label {
+  margin-top: 2px;
   font-size: 13px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
+.stat-trend {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dc-success);
+  background: rgba(103, 194, 58, 0.12);
+}
+html.dark .stat-trend {
+  color: #95d475;
+  background: rgba(103, 194, 58, 0.16);
+}
+
 .mt16 {
   margin-top: 16px;
 }
@@ -253,28 +317,58 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 320px;
 }
+.chart-skel {
+  padding: 8px 4px;
+}
+.chart-skel :deep(.el-skeleton__item) {
+  height: 56px;
+}
 .card-title {
   font-weight: 600;
   font-size: 14px;
 }
+
+/* ===== 快捷入口：渐变图标块 + hover 提升 ===== */
 .entry {
   text-align: center;
-  padding: 16px 8px;
-  border-radius: 8px;
+  padding: 18px 8px 14px;
+  border-radius: var(--dc-radius);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: var(--dc-transition);
+  border: 1px solid transparent;
 }
 .entry:hover {
-  background: #ecf5ff;
+  background: var(--el-color-primary-light-9);
+  border-color: var(--el-color-primary-light-8);
+  transform: translateY(-3px);
+  box-shadow: var(--dc-shadow-md);
+}
+.entry-icon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dc-primary);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(6, 182, 212, 0.14));
+  transition: var(--dc-transition);
+}
+.entry:hover .entry-icon {
+  color: #fff;
+  background: var(--dc-grad-brand);
+  box-shadow: var(--dc-shadow-primary);
 }
 .entry-title {
-  margin-top: 8px;
+  margin-top: 10px;
   font-size: 14px;
-  color: #303133;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
 }
 .entry-desc {
   margin-top: 4px;
   font-size: 12px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 </style>

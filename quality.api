@@ -138,3 +138,103 @@ service datacenter-api {
 	@handler qualityResultList
 	get /quality/result/list (ResultListReq) returns (ResultListResp)
 }
+
+type AlertChannelInfo {
+	Id          int64  `json:"id,optional"`
+	Name        string `json:"name,optional"`
+	Type        string `json:"type,optional"`
+	WebhookUrl  string `json:"webhook_url,optional"`
+	Secret      string `json:"secret,optional"`
+	MinLevel    string `json:"min_level,optional"`
+	Status      int32  `json:"status,optional"`
+}
+type SaveAlertChannelReq {
+	Name        string `json:"name"`
+	Type        string `json:"type"`
+	WebhookUrl  string `json:"webhook_url"`
+	Secret      string `json:"secret,optional"`
+	MinLevel    string `json:"min_level,optional"`
+	Beid        int64  `json:"beid,optional"`
+}
+type AlertChannelListReq {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Page int64 `json:"page,optional" form:"page,optional"`
+	Size int64 `json:"size,optional" form:"size,optional"`
+}
+type AlertChannelListResp {
+	List  []AlertChannelInfo `json:"list"`
+	Total int64              `json:"total"`
+}
+type TestAlertResp {
+	Ok  bool   `json:"ok"`
+	Msg string `json:"msg,optional"`
+}
+type QualityErrorData {
+	RuleId      int64  `json:"rule_id,optional"`
+	JobId       int64  `json:"job_id,optional"`
+	RowsJson    string `json:"rows_json,optional"`
+	SampleCount int32  `json:"sample_count,optional"`
+	RunAt       int64  `json:"run_at,optional"`
+}
+type ErrorDataListReq {
+	JobId  int64 `json:"job_id,optional" form:"job_id,optional"`
+	RuleId int64 `json:"rule_id,optional" form:"rule_id,optional"`
+	Page   int64 `json:"page,optional" form:"page,optional"`
+	Size   int64 `json:"size,optional" form:"size,optional"`
+}
+type ErrorDataListResp {
+	List  []QualityErrorData `json:"list"`
+	Total int64              `json:"total"`
+}
+type TableProfileInfo {
+	Id           int64   `json:"id,optional"`
+	DatasourceId int64   `json:"datasource_id,optional"`
+	TableName    string  `json:"table_name,optional"`
+	RowsCnt      int64   `json:"rows_cnt,optional"`
+	ColsCnt      int32   `json:"cols_cnt,optional"`
+	NullRate     float64 `json:"null_rate,optional"`
+	DupPkCnt     int64   `json:"dup_pk_cnt,optional"`
+	HealthScore  int32   `json:"health_score,optional"`
+	ProfileJson  string  `json:"profile_json,optional"`
+	RunAt        int64   `json:"run_at,optional"`
+}
+type ProfileTableReq {
+	DatasourceId int64  `json:"datasource_id"`
+	Beid         int64  `json:"beid,optional"`
+	DbName       string `json:"db_name,optional"`
+	TableName    string `json:"table_name"`
+	PkColumn     string `json:"pk_column,optional"`
+}
+type ProfileResp { Profile TableProfileInfo `json:"profile"` }
+type ProfileListQReq {
+	Beid         int64  `json:"beid,optional" form:"beid,optional"`
+	DatasourceId int64  `json:"datasource_id,optional" form:"datasource_id,optional"`
+	TableName    string `json:"table_name,optional" form:"table_name,optional"`
+	Page         int64  `json:"page,optional" form:"page,optional"`
+	Size         int64  `json:"size,optional" form:"size,optional"`
+}
+type ProfileListResp {
+	List  []TableProfileInfo `json:"list"`
+	Total int64              `json:"total"`
+}
+
+@server(
+	jwt: Auth
+	group: quality
+)
+service datacenter-api {
+	@handler saveAlertChannel
+	post /quality/alertchannel/save (SaveAlertChannelReq) returns (AlertChannelInfo)
+	@handler deleteAlertChannel
+	post /quality/alertchannel/delete (QualityIdReq)
+	@handler alertChannelList
+	get /quality/alertchannel/list (AlertChannelListReq) returns (AlertChannelListResp)
+	@handler testAlertChannel
+	post /quality/alertchannel/test (QualityIdReq) returns (TestAlertResp)
+	@handler qualityErrorDataList
+	get /quality/errordata/list (ErrorDataListReq) returns (ErrorDataListResp)
+	@handler profileTable
+	post /quality/profile/table (ProfileTableReq) returns (ProfileResp)
+	@handler qualityProfileList
+	get /quality/profile/list (ProfileListQReq) returns (ProfileListResp)
+}

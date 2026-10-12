@@ -56,7 +56,7 @@ const (
 )
 
 // NormalizeBatchSize 分批大小防御（纯函数）：<=0 兜底默认 1000，超过上限封顶 10000
-//（多行 values 一次写入，批过大会撑爆单语句长度与事务内存）
+// （多行 values 一次写入，批过大会撑爆单语句长度与事务内存）
 func NormalizeBatchSize(n int64) int64 {
 	if n <= 0 {
 		return DefaultSyncBatchSize

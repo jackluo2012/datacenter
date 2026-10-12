@@ -8,6 +8,7 @@ import (
 
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
+	"datacenter/tag/rpc/tagClient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,12 @@ func NewRunTagCircleLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RunT
 }
 
 func (l *RunTagCircleLogic) RunTagCircle(req *types.RunTagCircleReq) (resp *types.RunTagCircleResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	reply, err := l.svcCtx.TagRpc.RunCircle(l.ctx, &tagClient.RunCircleReq{
+		GroupId: req.GroupId,
+		Beid:    req.Beid,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &types.RunTagCircleResp{MemberCount: reply.GetMemberCount(), Msg: reply.GetMsg()}, nil
 }

@@ -152,3 +152,77 @@ service datacenter-api {
 	@handler executeApi
 	post /datasvc/execute (ExecuteApiReq) returns (ExecuteApiResp)
 }
+
+type DsApiCallLog {
+	Id         int64  `json:"id,optional"`
+	ApiId      int64  `json:"api_id,optional"`
+	AppId      int64  `json:"app_id,optional"`
+	Path       string `json:"path,optional"`
+	Status     string `json:"status,optional"`
+	ErrorCode  string `json:"error_code,optional"`
+	RowsCnt    int64  `json:"rows_cnt,optional"`
+	CostMs     int32  `json:"cost_ms,optional"`
+	CacheHit   bool   `json:"cache_hit"`
+	Ip         string `json:"ip,optional"`
+	CreatedAt  int64  `json:"created_at,optional"`
+}
+type CallLogListReq {
+	Beid   int64  `json:"beid,optional" form:"beid,optional"`
+	ApiId  int64  `json:"api_id,optional" form:"api_id,optional"`
+	AppId  int64  `json:"app_id,optional" form:"app_id,optional"`
+	Status string `json:"status,optional" form:"status,optional"`
+	Page   int64  `json:"page,optional" form:"page,optional"`
+	Size   int64  `json:"size,optional" form:"size,optional"`
+}
+type CallLogListResp {
+	List  []DsApiCallLog `json:"list"`
+	Total int64          `json:"total"`
+}
+type DsStatsReq {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Days int32 `json:"days,optional" form:"days,optional"`
+}
+type DsTopApi {
+	ApiId      int64  `json:"api_id,optional"`
+	Path       string `json:"path,optional"`
+	Calls      int64  `json:"calls,optional"`
+	AvgCostMs  float64 `json:"avg_cost_ms,optional"`
+}
+type DsStatsOverall {
+	TotalCalls  int64   `json:"total_calls"`
+	OkCalls     int64   `json:"ok_calls"`
+	ErrorCalls  int64   `json:"error_calls"`
+	DeniedCalls int64   `json:"denied_calls"`
+	SuccessRate float64 `json:"success_rate"`
+	AvgCostMs   float64 `json:"avg_cost_ms"`
+	CacheHits   int64   `json:"cache_hits"`
+}
+type DsStatsResp {
+	Overall     DsStatsOverall `json:"overall"`
+	TopApis     []DsTopApi     `json:"top_apis"`
+	DailyCalls  []int64        `json:"daily_calls"`
+	DailyDates  []string       `json:"daily_dates"`
+}
+type DsApiDocReq {
+	Path string `json:"path,optional" form:"path,optional"`
+	Beid int64  `json:"beid,optional" form:"beid,optional"`
+}
+type DsApiDocResp {
+	ApiName     string `json:"api_name,optional"`
+	Path        string `json:"path,optional"`
+	Markdown    string `json:"markdown,optional"`
+	OpenapiJson string `json:"openapi_json,optional"`
+}
+
+@server(
+	jwt: Auth
+	group: datasvc
+)
+service datacenter-api {
+	@handler dsCallLogList
+	get /datasvc/calllog/list (CallLogListReq) returns (CallLogListResp)
+	@handler dsCallStats
+	get /datasvc/callstats (DsStatsReq) returns (DsStatsResp)
+	@handler dsApiDoc
+	get /datasvc/apidoc (DsApiDocReq) returns (DsApiDocResp)
+}

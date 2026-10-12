@@ -19,7 +19,7 @@ const (
 // go-zero 扫宽 struct 报 not matching destination to scan）：
 // circle_rule_sql 为 text 可空，用 ifnull 兜底避免扫描报错；
 // last_run_at 可空，转秒级时间戳返回（未跑过为 0），pb 侧直接可用
-const groupRows = "`id`,`name`,`object_id`,ifnull(`circle_rule_sql`,'') as `circle_rule_sql`,`est_count`,`materialized_table`,ifnull(unix_timestamp(`last_run_at`),0) as `last_run_at`,`beid`,`created_at`"
+const groupRows = "`id`,`name`,`object_id`,ifnull(`circle_rule_sql`,'') as `circle_rule_sql`,`est_count`,`materialized_table`,cast(ifnull(unix_timestamp(`last_run_at`),0) as signed) as `last_run_at`,`beid`,`created_at`"
 
 type (
 	// Group dc_tag_group 行（标签人群/圈群定义）

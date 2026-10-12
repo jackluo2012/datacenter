@@ -103,6 +103,7 @@ type AskReq struct {
 	Question      string                 `protobuf:"bytes,1,opt,name=question,proto3" json:"question,omitempty"`
 	Beid          int64                  `protobuf:"varint,2,opt,name=beid,proto3" json:"beid,omitempty"`
 	MaxCandidates int32                  `protobuf:"varint,3,opt,name=max_candidates,json=maxCandidates,proto3" json:"max_candidates,omitempty"` //语义检索返回上限,默认 5
+	ContextJson   string                 `protobuf:"bytes,4,opt,name=context_json,json=contextJson,proto3" json:"context_json,omitempty"`        //可选:多轮上下文(JSON,形如 {"question":"上一问","sql":"上一轮生成SQL"}),注入 prompt 辅助追问,空或非法 JSON 时忽略
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -156,6 +157,13 @@ func (x *AskReq) GetMaxCandidates() int32 {
 		return x.MaxCandidates
 	}
 	return 0
+}
+
+func (x *AskReq) GetContextJson() string {
+	if x != nil {
+		return x.ContextJson
+	}
+	return ""
 }
 
 type AskReply struct {
@@ -444,11 +452,12 @@ const file_ai_proto_rawDesc = "" +
 	"\x02id\x18\x02 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x16\n" +
 	"\x06detail\x18\x04 \x01(\tR\x06detail\x12\x18\n" +
-	"\acomment\x18\x05 \x01(\tR\acomment\"_\n" +
+	"\acomment\x18\x05 \x01(\tR\acomment\"\x82\x01\n" +
 	"\x06AskReq\x12\x1a\n" +
 	"\bquestion\x18\x01 \x01(\tR\bquestion\x12\x12\n" +
 	"\x04beid\x18\x02 \x01(\x03R\x04beid\x12%\n" +
-	"\x0emax_candidates\x18\x03 \x01(\x05R\rmaxCandidates\"\xb0\x01\n" +
+	"\x0emax_candidates\x18\x03 \x01(\x05R\rmaxCandidates\x12!\n" +
+	"\fcontext_json\x18\x04 \x01(\tR\vcontextJson\"\xb0\x01\n" +
 	"\bAskReply\x12-\n" +
 	"\n" +
 	"candidates\x18\x01 \x03(\v2\r.ai.CandidateR\n" +

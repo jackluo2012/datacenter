@@ -6,8 +6,10 @@ Etcd:
   Key: ai.rpc
 Mysql:
   DataSource: root:admin@tcp(127.0.0.1:3306)/datacenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+#LLM 接入（OpenAI 兼容 chat/completions），逐供应商示例详见同目录 README-LLM.md；
+#Enabled=false（无 key 默认态）时自动降级为语义检索，Ask 接口不报错
 Llm:
   Enabled: false
-  BaseUrl: https://api.openai.com/v1
-  ApiKey: sk-xxxx
-  Model: gpt-4o-mini
+  BaseUrl: https://api.deepseek.com        #DeepSeek；通义千问兼容模式填 https://dashscope.aliyuncs.com/compatible-mode/v1；OpenAI 填 https://api.openai.com/v1
+  ApiKey: sk-xxxx                          #供应商密钥，Bearer 头发送
+  Model: deepseek-chat                     #DeepSeek=deepseek-chat / 通义=qwen-plus / OpenAI=gpt-4o-mini

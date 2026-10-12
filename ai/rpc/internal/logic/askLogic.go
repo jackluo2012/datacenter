@@ -42,7 +42,8 @@ type askCoreResult struct {
 	question     string          //清洗后的问句
 	candidates   []*ai.Candidate //语义检索候选（永不为 nil，空结果为空数组）
 	llmEnabled   bool            //LLM 是否生成成功
-	generatedSql string          //LLM 生成的 SQL（未启用/失败为空）
+	generatedSql string          //LLM 生成的 SQL（未启用/失败/被安全校验拦截为空）
+	sqlGuardErr  string          //生成 SQL 未通过发送侧安全校验的原因（通过校验/未生成时为空）
 	answer       string          //回答（含降级说明）
 	costMs       int64           //本阶段耗时
 }
@@ -55,8 +56,8 @@ func (l *AskLogic) Ask(in *ai.AskReq) (*ai.AskReply, error) {
 		return nil, fmt.Errorf("question 不能为空")
 	}
 
-	//2. 复用主流程：检索 → 可选 LLM 生成
-	core := l.askCore(question, in.Beid, normalizeMaxCandidates(in.MaxCandidates))
+	//2. 复用主流程：检索 → 可选 LLM 生成（context_json 可选携带上一轮 SQL，支持多轮追问）
+	core := l.askCore(question, in.Beid, normalizeMaxCandidates(in.MaxCandidates), in.ContextJson)
 
 	reply := &ai.AskReply{
 		Candidates:   core.candidates,
@@ -75,8 +76,9 @@ func (l *AskLogic) Ask(in *ai.AskReq) (*ai.AskReply, error) {
 }
 
 // askCore 问数主体（检索→候选打分→可选 LLM 生成 SQL），Ask 与 AskAndRun 共用；
+// contextJson 为可选多轮上下文（AskReq.context_json 原文，空串=首轮）；
 // 检索失败降级、LLM 失败降级均为常见业务态，不返回 error
-func (l *AskLogic) askCore(question string, beid int64, maxCand int) *askCoreResult {
+func (l *AskLogic) askCore(question string, beid int64, maxCand int, contextJson string) *askCoreResult {
 	start := time.Now()
 
 	//1. 关键词提取（MVP 分词降级法：去停用词 → 整句 + 分词）
@@ -95,18 +97,31 @@ func (l *AskLogic) askCore(question string, beid int64, maxCand int) *askCoreRes
 
 	//3. 生成回答：LLM 可选路径（Config.Llm.Enabled），失败降级为纯检索，不返回 error
 	if l.svcCtx.Config.Llm.Enabled {
-		// TODO(联调): 需配置真实 LLM ApiKey 验证生成质量
 		client := llm.NewClient(l.svcCtx.Config.Llm.BaseUrl, l.svcCtx.Config.Llm.ApiKey,
 			l.svcCtx.Config.Llm.Model, l.svcCtx.HttpClient)
-		content, err := client.ChatCompletion(l.ctx, buildAskPrompt(question, core.candidates))
+		//system 放角色+严格规则+few-shot，user 放候选上下文+多轮上下文+本轮问题
+		content, err := client.ChatCompletionWithSystem(l.ctx, buildAskSystemPrompt(),
+			buildAskUserPrompt(question, core.candidates, contextJson))
 		if err != nil {
 			//降级：answer 写明降级原因 + 错误摘要，llm_enabled=false
 			l.Errorf("LLM 调用失败已降级为纯检索: %v", err)
 			core.answer = fmt.Sprintf("%s\n\n[LLM 调用失败已降级为纯检索] 错误摘要: %v", buildSearchSummary(candidates), err)
 		} else {
 			core.llmEnabled = true
-			core.generatedSql = extractSQLBlock(content)
 			core.answer = content
+			//发送侧安全校验（执行侧 ide 安全闸另有二次防护）：生成 SQL 必须是单条 SELECT，
+			//不通过则清空 generatedSql 并在回答中说明，AskAndRun 不会拿被拦截的 SQL 去执行
+			sql := extractSQLBlock(content)
+			if sql == "" {
+				//模型按规则合规拒答（未输出 sql 块）：正常业务态，AskAndRun 会提示无 SQL 可执行
+			} else if err := ValidateGeneratedSql(sql); err != nil {
+				//写语句/多语句片段：发送侧拦截，清空 generatedSql，AskAndRun 不再触达 ide
+				core.sqlGuardErr = err.Error()
+				l.Errorf("LLM 生成 SQL 未通过安全校验已拦截: question=%s err=%v", question, err)
+				core.answer += fmt.Sprintf("\n\n[安全校验未通过] 生成内容不是单条 SELECT 查询(%v)，已拦截不执行；请调整问法或完善候选元数据。", err)
+			} else {
+				core.generatedSql = sql
+			}
 		}
 	} else {
 		core.answer = buildSearchSummary(candidates)

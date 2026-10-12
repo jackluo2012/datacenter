@@ -8,6 +8,7 @@ import (
 
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
+	"datacenter/tag/rpc/tagClient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,14 @@ func NewCreateTagGroupLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cr
 }
 
 func (l *CreateTagGroupLogic) CreateTagGroup(req *types.CreateTagGroupReq) (resp *types.TagGroupInfo, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	reply, err := l.svcCtx.TagRpc.CreateGroup(l.ctx, &tagClient.CreateGroupReq{
+		Name:          req.Name,
+		ObjectId:      req.ObjectId,
+		CircleRuleSql: req.CircleRuleSql,
+		Beid:          req.Beid,
+	})
+	if err != nil {
+		return nil, err //业务错误直接透传 rpc error
+	}
+	return groupToTypes(reply.GetGroup()), nil
 }

@@ -27,6 +27,27 @@ type AddLineageReq struct {
 	Beid      int64  `json:"beid,optional"`
 }
 
+type AlertChannelInfo struct {
+	Id         int64  `json:"id,optional"`
+	Name       string `json:"name,optional"`
+	Type       string `json:"type,optional"`
+	WebhookUrl string `json:"webhook_url,optional"`
+	Secret     string `json:"secret,optional"`
+	MinLevel   string `json:"min_level,optional"`
+	Status     int32  `json:"status,optional"`
+}
+
+type AlertChannelListReq struct {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Page int64 `json:"page,optional" form:"page,optional"`
+	Size int64 `json:"size,optional" form:"size,optional"`
+}
+
+type AlertChannelListResp struct {
+	List  []AlertChannelInfo `json:"list"`
+	Total int64              `json:"total"`
+}
+
 type AnswerReq struct {
 	ActivityId int64  `json:"actid"`
 	Answers    string `json:"answers"`
@@ -213,6 +234,20 @@ type BindAtomsReq struct {
 	DeriveMetricId int64   `json:"derive_metric_id"`
 	AtomMetricIds  []int64 `json:"atom_metric_ids"`
 	Beid           int64   `json:"beid,optional"`
+}
+
+type CallLogListReq struct {
+	Beid   int64  `json:"beid,optional" form:"beid,optional"`
+	ApiId  int64  `json:"api_id,optional" form:"api_id,optional"`
+	AppId  int64  `json:"app_id,optional" form:"app_id,optional"`
+	Status string `json:"status,optional" form:"status,optional"`
+	Page   int64  `json:"page,optional" form:"page,optional"`
+	Size   int64  `json:"size,optional" form:"size,optional"`
+}
+
+type CallLogListResp struct {
+	List  []DsApiCallLog `json:"list"`
+	Total int64          `json:"total"`
 }
 
 type Candidate struct {
@@ -434,9 +469,64 @@ type DistributeMdmResp struct {
 	Distribution MdmDistribution `json:"distribution"`
 }
 
+type DsApiCallLog struct {
+	Id        int64  `json:"id,optional"`
+	ApiId     int64  `json:"api_id,optional"`
+	AppId     int64  `json:"app_id,optional"`
+	Path      string `json:"path,optional"`
+	Status    string `json:"status,optional"`
+	ErrorCode string `json:"error_code,optional"`
+	RowsCnt   int64  `json:"rows_cnt,optional"`
+	CostMs    int32  `json:"cost_ms,optional"`
+	CacheHit  bool   `json:"cache_hit"`
+	Ip        string `json:"ip,optional"`
+	CreatedAt int64  `json:"created_at,optional"`
+}
+
+type DsApiDocReq struct {
+	Path string `json:"path,optional" form:"path,optional"`
+	Beid int64  `json:"beid,optional" form:"beid,optional"`
+}
+
+type DsApiDocResp struct {
+	ApiName     string `json:"api_name,optional"`
+	Path        string `json:"path,optional"`
+	Markdown    string `json:"markdown,optional"`
+	OpenapiJson string `json:"openapi_json,optional"`
+}
+
 type DsIdReq struct {
 	Id   int64 `json:"id,optional" form:"id,optional"`
 	Beid int64 `json:"beid,optional" form:"beid,optional"`
+}
+
+type DsStatsOverall struct {
+	TotalCalls  int64   `json:"total_calls"`
+	OkCalls     int64   `json:"ok_calls"`
+	ErrorCalls  int64   `json:"error_calls"`
+	DeniedCalls int64   `json:"denied_calls"`
+	SuccessRate float64 `json:"success_rate"`
+	AvgCostMs   float64 `json:"avg_cost_ms"`
+	CacheHits   int64   `json:"cache_hits"`
+}
+
+type DsStatsReq struct {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Days int32 `json:"days,optional" form:"days,optional"`
+}
+
+type DsStatsResp struct {
+	Overall    DsStatsOverall `json:"overall"`
+	TopApis    []DsTopApi     `json:"top_apis"`
+	DailyCalls []int64        `json:"daily_calls"`
+	DailyDates []string       `json:"daily_dates"`
+}
+
+type DsTopApi struct {
+	ApiId     int64   `json:"api_id,optional"`
+	Path      string  `json:"path,optional"`
+	Calls     int64   `json:"calls,optional"`
+	AvgCostMs float64 `json:"avg_cost_ms,optional"`
 }
 
 type ElementListReq struct {
@@ -480,6 +570,18 @@ type EntityTagListReq struct {
 type EntityTagListResp struct {
 	List  []SecEntityTag `json:"list"`
 	Total int64          `json:"total"`
+}
+
+type ErrorDataListReq struct {
+	JobId  int64 `json:"job_id,optional" form:"job_id,optional"`
+	RuleId int64 `json:"rule_id,optional" form:"rule_id,optional"`
+	Page   int64 `json:"page,optional" form:"page,optional"`
+	Size   int64 `json:"size,optional" form:"size,optional"`
+}
+
+type ErrorDataListResp struct {
+	List  []QualityErrorData `json:"list"`
+	Total int64              `json:"total"`
 }
 
 type ExecuteApiReq struct {
@@ -828,6 +930,31 @@ type OpsLoginLog struct {
 	CreatedAt int64  `json:"created_at,optional"`
 }
 
+type ProfileListQReq struct {
+	Beid         int64  `json:"beid,optional" form:"beid,optional"`
+	DatasourceId int64  `json:"datasource_id,optional" form:"datasource_id,optional"`
+	TableName    string `json:"table_name,optional" form:"table_name,optional"`
+	Page         int64  `json:"page,optional" form:"page,optional"`
+	Size         int64  `json:"size,optional" form:"size,optional"`
+}
+
+type ProfileListResp struct {
+	List  []TableProfileInfo `json:"list"`
+	Total int64              `json:"total"`
+}
+
+type ProfileResp struct {
+	Profile TableProfileInfo `json:"profile"`
+}
+
+type ProfileTableReq struct {
+	DatasourceId int64  `json:"datasource_id"`
+	Beid         int64  `json:"beid,optional"`
+	DbName       string `json:"db_name,optional"`
+	TableName    string `json:"table_name"`
+	PkColumn     string `json:"pk_column,optional"`
+}
+
 type PublishStdModelReq struct {
 	Id       int64  `json:"id"`
 	Beid     int64  `json:"beid,optional"`
@@ -837,6 +964,14 @@ type PublishStdModelReq struct {
 type PublishStdModelResp struct {
 	Version      int32  `json:"version"`
 	SnapshotJson string `json:"snapshot_json"`
+}
+
+type QualityErrorData struct {
+	RuleId      int64  `json:"rule_id,optional"`
+	JobId       int64  `json:"job_id,optional"`
+	RowsJson    string `json:"rows_json,optional"`
+	SampleCount int32  `json:"sample_count,optional"`
+	RunAt       int64  `json:"run_at,optional"`
 }
 
 type QualityIdReq struct {
@@ -964,6 +1099,15 @@ type RunTagCircleReq struct {
 type RunTagCircleResp struct {
 	MemberCount int64  `json:"member_count"`
 	Msg         string `json:"msg,optional"`
+}
+
+type SaveAlertChannelReq struct {
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	WebhookUrl string `json:"webhook_url"`
+	Secret     string `json:"secret,optional"`
+	MinLevel   string `json:"min_level,optional"`
+	Beid       int64  `json:"beid,optional"`
 }
 
 type SaveDictReq struct {
@@ -1533,6 +1677,19 @@ type SysUserUpdateReq struct {
 	Beid     int64   `json:"beid,optional"`
 }
 
+type TableProfileInfo struct {
+	Id           int64   `json:"id,optional"`
+	DatasourceId int64   `json:"datasource_id,optional"`
+	TableName    string  `json:"table_name,optional"`
+	RowsCnt      int64   `json:"rows_cnt,optional"`
+	ColsCnt      int32   `json:"cols_cnt,optional"`
+	NullRate     float64 `json:"null_rate,optional"`
+	DupPkCnt     int64   `json:"dup_pk_cnt,optional"`
+	HealthScore  int32   `json:"health_score,optional"`
+	ProfileJson  string  `json:"profile_json,optional"`
+	RunAt        int64   `json:"run_at,optional"`
+}
+
 type TagAssetReq struct {
 	EntityId       int64  `json:"entity_id"`
 	CategoryId     int64  `json:"category_id,optional"`
@@ -1648,6 +1805,11 @@ type TaskStatusResp struct {
 	Status       string `json:"status,optional"`
 	DsInstanceId int32  `json:"ds_instance_id,optional"`
 	Msg          string `json:"msg,optional"`
+}
+
+type TestAlertResp struct {
+	Ok  bool   `json:"ok"`
+	Msg string `json:"msg,optional"`
 }
 
 type TestConnResp struct {

@@ -78,8 +78,8 @@ func TestBuildMenuTreeOrphan(t *testing.T) {
 // TestBuildMenuTreeCycle 环防护：互指成环的节点全部兜底挂根，节点不丢失、遍历不死循环
 func TestBuildMenuTreeCycle(t *testing.T) {
 	menus := []*sys.SysMenu{
-		menu(1, 2, "A", menuTypeDir, ""), //A→B
-		menu(2, 1, "B", menuTypeDir, ""), //B→A（成环）
+		menu(1, 2, "A", menuTypeDir, ""),  //A→B
+		menu(2, 1, "B", menuTypeDir, ""),  //B→A（成环）
 		menu(3, 2, "C", menuTypeMenu, ""), //C 挂在环内节点上
 		menu(4, 0, "正常", menuTypeDir, ""),
 		menu(5, 5, "自环", menuTypeDir, ""), //自环

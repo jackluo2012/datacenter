@@ -58,3 +58,54 @@ func qualityResultToTypes(result *qualityClient.QualityResult) *types.QualityRes
 		RunAt:      result.GetRunAt(),
 	}
 }
+
+// alertChannelToTypes 将 rpc 的 AlertChannel 逐字段转换为网关类型。
+// rpc 侧的 Beid 为租户内部字段, 网关类型未定义, 故不做映射。
+func alertChannelToTypes(channel *qualityClient.AlertChannel) types.AlertChannelInfo {
+	if channel == nil {
+		return types.AlertChannelInfo{}
+	}
+	return types.AlertChannelInfo{
+		Id:         channel.GetId(),
+		Name:       channel.GetName(),
+		Type:       channel.GetType(),
+		WebhookUrl: channel.GetWebhookUrl(),
+		Secret:     channel.GetSecret(),
+		MinLevel:   channel.GetMinLevel(),
+		Status:     channel.GetStatus(),
+	}
+}
+
+// tableProfileToTypes 将 rpc 的 TableProfile 逐字段转换为网关类型。
+// 契约差异: rpc 侧时间字段为 ran_at(json) / RanAt(Go 字段名), 网关侧统一为 run_at / RunAt。
+func tableProfileToTypes(p *qualityClient.TableProfile) types.TableProfileInfo {
+	if p == nil {
+		return types.TableProfileInfo{}
+	}
+	return types.TableProfileInfo{
+		Id:           p.GetId(),
+		DatasourceId: p.GetDatasourceId(),
+		TableName:    p.GetTableName(),
+		RowsCnt:      p.GetRowsCnt(),
+		ColsCnt:      p.GetColsCnt(),
+		NullRate:     p.GetNullRate(),
+		DupPkCnt:     p.GetDupPkCnt(),
+		HealthScore:  p.GetHealthScore(),
+		ProfileJson:  p.GetProfileJson(),
+		RunAt:        p.GetRanAt(),
+	}
+}
+
+// errorDataToTypes 将 rpc 的 ErrorData 逐字段转换为网关类型。
+func errorDataToTypes(data *qualityClient.ErrorData) types.QualityErrorData {
+	if data == nil {
+		return types.QualityErrorData{}
+	}
+	return types.QualityErrorData{
+		RuleId:      data.GetRuleId(),
+		JobId:       data.GetJobId(),
+		RowsJson:    data.GetRowsJson(),
+		SampleCount: data.GetSampleCount(),
+		RunAt:       data.GetRunAt(),
+	}
+}

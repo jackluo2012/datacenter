@@ -1691,6 +1691,9 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* 健康分配色 token（与全局设计系统/echarts gauge 梯度一致）：
+   <60 红 #f56c6c · 60-80 黄 #e6a23c · >=80 绿 #67c23a，
+   与 Dashboard 健康分 el-tag（danger/warning/success）完全同源 */
 .toolbar {
   display: flex;
   gap: 12px;
@@ -1713,9 +1716,9 @@ onBeforeUnmount(() => {
 .raw-pre {
   max-height: 420px;
   overflow: auto;
-  background: #f5f7fa;
+  background: var(--el-fill-color-lighter);
   border: 1px solid var(--el-border-color-light);
-  border-radius: 4px;
+  border-radius: var(--dc-radius-sm, 6px);
   padding: 12px;
   font-size: 12px;
   line-height: 1.6;
@@ -1736,6 +1739,8 @@ onBeforeUnmount(() => {
 .gauge-chart {
   width: 100%;
   height: 260px;
+  border-radius: var(--dc-radius, 10px);
+  background: radial-gradient(circle at 50% 58%, var(--el-color-primary-light-9) 0%, transparent 68%);
 }
 .hist-chart {
   width: 100%;
@@ -1748,32 +1753,56 @@ onBeforeUnmount(() => {
   margin: 14px 0 6px;
   font-size: 14px;
   font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+/* 区块标题左侧品牌色条（与全局 .card-title 规则同款） */
+.hist-title > span {
+  display: inline-flex;
+  align-items: center;
+}
+.hist-title > span::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--dc-grad-bar, linear-gradient(180deg, #2563eb, #06b6d4));
+  margin-right: 8px;
 }
 .score-tag {
   margin-left: 8px;
+  font-weight: 600;
 }
 .mini-stat {
   text-align: center;
-  padding: 10px 4px;
+  padding: 12px 4px;
   background: var(--el-fill-color-lighter);
-  border-radius: 6px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: var(--dc-radius, 10px);
+  transition: var(--dc-transition, all 0.22s);
+}
+.mini-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--dc-shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.08));
+  border-color: var(--el-color-primary-light-8);
 }
 .mini-value {
   font-size: 22px;
   font-weight: 600;
-  color: #303133;
+  color: var(--el-text-color-primary);
   line-height: 1.3;
+  font-variant-numeric: tabular-nums;
 }
 .mini-warn {
-  color: #e6a23c;
+  color: var(--dc-warning, #e6a23c);
 }
 .mini-bad {
-  color: #f56c6c;
+  color: var(--dc-danger, #f56c6c);
 }
 .mini-label {
   margin-top: 2px;
   font-size: 12px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 .mt16 {
   margin-top: 16px;

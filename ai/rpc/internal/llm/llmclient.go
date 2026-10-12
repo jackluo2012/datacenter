@@ -65,13 +65,26 @@ type chatResponse struct {
 // ChatCompletion 发送一次对话补全，返回 choices[0].message.content
 // 单 prompt 入参：调用方把系统提示+候选 JSON+用户问题拼成完整 prompt 后传入
 func (c *Client) ChatCompletion(ctx context.Context, prompt string) (string, error) {
+	return c.ChatCompletionWithSystem(ctx, "", prompt)
+}
+
+// ChatCompletionWithSystem 发送一次带独立 system 消息的对话补全（OpenAI 兼容 messages 数组）：
+// system 为空时退化为单条 user 消息（与 ChatCompletion 等价）；
+// 问数场景约定 system 放角色与规则、user 放候选元数据与用户问题，温度固定 0 保证确定性输出
+func (c *Client) ChatCompletionWithSystem(ctx context.Context, system, user string) (string, error) {
 	//30s 超时兜底：即使注入的 http.Client 未设置 Timeout 也不会无限等待
 	ctx, cancel := context.WithTimeout(ctx, RequestTimeout)
 	defer cancel()
 
+	messages := make([]chatMessage, 0, 2)
+	if system != "" {
+		messages = append(messages, chatMessage{Role: "system", Content: system})
+	}
+	messages = append(messages, chatMessage{Role: "user", Content: user})
+
 	body, err := json.Marshal(chatRequest{
 		Model:       c.model,
-		Messages:    []chatMessage{{Role: "user", Content: prompt}},
+		Messages:    messages,
 		Temperature: 0,
 	})
 	if err != nil {

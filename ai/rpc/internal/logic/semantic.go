@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 	"sort"
 	"strconv"
 	"strings"
@@ -18,13 +19,35 @@ const (
 	scoreDetailHit  = 1 //fqn/表达式命中关键词
 )
 
-// candidateJson 候选的稳定 JSON 形态（prompt 与审计 candidates_json 共用，避免 pb 结构序列化噪音）
+// candidateJson 候选的稳定 JSON 形态（审计 candidates_json 与 LLM prompt 共用，避免 pb 结构序列化噪音）
 type candidateJson struct {
 	Type    string `json:"type"`
 	Id      int64  `json:"id"`
 	Name    string `json:"name"`
 	Detail  string `json:"detail"`
 	Comment string `json:"comment"`
+}
+
+// marshalCandidates 候选序列化为 JSON（审计 candidates_json 用；序列化失败兜底空数组）
+func marshalCandidates(candidates []*ai.Candidate) string {
+	list := make([]candidateJson, 0, len(candidates))
+	for _, c := range candidates {
+		if c == nil {
+			continue
+		}
+		list = append(list, candidateJson{
+			Type:    c.Type,
+			Id:      c.Id,
+			Name:    c.Name,
+			Detail:  c.Detail,
+			Comment: c.Comment,
+		})
+	}
+	data, err := json.Marshal(list)
+	if err != nil {
+		return "[]"
+	}
+	return string(data)
 }
 
 // searchCandidates 语义检索：用提取的关键词分别调元数据实体与指标列表（keyword 模糊，size=max_candidates），

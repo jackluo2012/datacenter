@@ -39,7 +39,7 @@ type (
 		TargetDsId     int64     `db:"target_ds_id"`
 		Mode           string    `db:"mode"` // offline/cdc
 		MappingJson    string    `db:"mapping_json"`
-		Cron           string    `db:"cron"` // 调度周期（推送 DS 时使用，本期仅存档）
+		Cron           string    `db:"cron"`         // 调度周期（推送 DS 时使用，本期仅存档）
 		SourceSql      string    `db:"source_sql"`   // 源端查询（内置引擎 SELECT，V1 任务为空）
 		TargetDb       string    `db:"target_db"`    // 目标库（空=目标 DSN 默认库，proto 暂未透出）
 		TargetTable    string    `db:"target_table"` // 目标表（内置引擎写入，不存在自动建；V1 任务为空）

@@ -8,6 +8,7 @@ import (
 
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
+	"datacenter/tag/rpc/tagClient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,6 @@ func NewDeleteTagGroupLogic(ctx context.Context, svcCtx *svc.ServiceContext) *De
 }
 
 func (l *DeleteTagGroupLogic) DeleteTagGroup(req *types.TagDefIdReq) error {
-	// todo: add your logic here and delete this line
-
-	return nil
+	_, err := l.svcCtx.TagRpc.DeleteGroup(l.ctx, &tagClient.IdReq{Id: req.Id, Beid: req.Beid})
+	return err
 }

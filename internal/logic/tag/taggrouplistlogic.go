@@ -8,6 +8,7 @@ import (
 
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
+	"datacenter/tag/rpc/tagClient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,20 @@ func NewTagGroupListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *TagG
 }
 
 func (l *TagGroupListLogic) TagGroupList(req *types.TagGroupListReq) (resp *types.TagGroupListResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	page, size := req.Page, req.Size
+	if page <= 0 {
+		page = 1
+	}
+	if size <= 0 {
+		size = 10
+	}
+	reply, err := l.svcCtx.TagRpc.ListGroups(l.ctx, &tagClient.GroupListReq{
+		Beid: req.Beid,
+		Page: int64(page),
+		Size: int64(size),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &types.TagGroupListResp{List: groupListToTypes(reply.GetList()), Total: reply.GetTotal()}, nil
 }

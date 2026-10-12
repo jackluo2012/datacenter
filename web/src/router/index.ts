@@ -37,6 +37,13 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  // 数据大屏：独立全屏页（不在 MainLayout 内）；挂墙场景免登录（见下方 PUBLIC_PATHS 白名单）
+  {
+    path: '/bigscreen',
+    name: 'bigscreen',
+    component: () => import('@/views/bigscreen/index.vue'),
+    meta: { title: '数据大屏', icon: 'DataBoard' },
+  },
   { path: '/:pathMatch(.*)*', redirect: '/404' },
 ]
 
@@ -96,11 +103,14 @@ const router = createRouter({
  * - 登录后首次导航：await getInfo + getRouters → addRoute → 重放当前导航（{...to, replace}）
  *   两步接口失败均降级放行（静态菜单兜底），不允许白屏
  */
+/** 免登录白名单：登录页 / 404 / 数据大屏（挂墙展示场景，接口失败走面板占位不白屏） */
+const PUBLIC_PATHS = new Set(['/login', '/404', '/bigscreen'])
+
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
 
   if (!auth.isLogin) {
-    if (to.path === '/login') return true
+    if (PUBLIC_PATHS.has(to.path)) return true
     return { path: '/login', query: { redirect: to.fullPath } }
   }
   if (to.path === '/login') return { path: '/' }
@@ -123,7 +133,8 @@ router.beforeEach(async (to) => {
 router.afterEach((to) => {
   const title = to.meta.title as string | undefined
   document.title = title ? `${title} - 数据中台` : '数据中台'
-  useTagsViewStore().addView(to)
+  // 大屏是独立全屏页（不在 MainLayout 内），不进控制台标签页
+  if (to.path !== '/bigscreen') useTagsViewStore().addView(to)
 })
 
 export default router
