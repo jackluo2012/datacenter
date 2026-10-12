@@ -43,6 +43,11 @@ type (
 	TableProfile          = quality.TableProfile
 	TestAlertReply        = quality.TestAlertReply
 	UpdateRuleReq         = quality.UpdateRuleReq
+	StatsReq              = quality.StatsReq
+	StatsReply            = quality.StatsReply
+	DailyQualityStat      = quality.DailyQualityStat
+	FailTopRule           = quality.FailTopRule
+	HealthTrendPoint      = quality.HealthTrendPoint
 
 	Quality interface {
 		// 创建规则
@@ -73,6 +78,8 @@ type (
 		// 表剖析与健康分
 		ProfileTable(ctx context.Context, in *ProfileTableReq, opts ...grpc.CallOption) (*ProfileReply, error)
 		ListProfiles(ctx context.Context, in *ProfileListReq, opts ...grpc.CallOption) (*ProfileListReply, error)
+		// 质量统计大盘（通过率/失败 TopN/健康分趋势）
+		QualityStats(ctx context.Context, in *StatsReq, opts ...grpc.CallOption) (*StatsReply, error)
 	}
 
 	defaultQuality struct {
@@ -176,4 +183,11 @@ func (m *defaultQuality) ProfileTable(ctx context.Context, in *ProfileTableReq, 
 func (m *defaultQuality) ListProfiles(ctx context.Context, in *ProfileListReq, opts ...grpc.CallOption) (*ProfileListReply, error) {
 	client := quality.NewQualityClient(m.cli.Conn())
 	return client.ListProfiles(ctx, in, opts...)
+}
+
+// 质量统计大盘（通过率/失败 TopN/健康分趋势）
+// 注：与 server 同理，goctl regen 跳过现有驼峰文件，按生成模板手工合入
+func (m *defaultQuality) QualityStats(ctx context.Context, in *StatsReq, opts ...grpc.CallOption) (*StatsReply, error) {
+	client := quality.NewQualityClient(m.cli.Conn())
+	return client.QualityStats(ctx, in, opts...)
 }

@@ -241,6 +241,34 @@ type ProfileListResp {
 	Total int64              `json:"total"`
 }
 
+// ============ 质量统计大盘（近 N 天：通过率/失败 TopN/健康分趋势） ============
+type StatsQReq {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Days int64 `json:"days,optional" form:"days,optional"` //统计窗口天数：默认 7、上限 30
+}
+type QualityDailyStat {
+	Date   string `json:"date,optional"`            //YYYY-MM-DD
+	Runs   int64  `json:"runs,optional"`            //当日 RunJob 次数（job+日去重）
+	Passed int64  `json:"passed,optional"`          //当日通过的检查结果数
+	Failed int64  `json:"failed,optional"`          //当日不通过的检查结果数
+}
+type QualityFailTopRule {
+	RuleId   int64  `json:"rule_id,optional"`
+	RuleName string `json:"rule_name,optional"` //规则已删除时为空串
+	FailCnt  int64  `json:"fail_cnt,optional"`
+}
+type QualityHealthPoint {
+	Date           string  `json:"date,optional"`             //YYYY-MM-DD
+	AvgHealthScore float64 `json:"avg_health_score,optional"` //当日平均健康分 0-100
+}
+type QualityStatsResp {
+	TotalRuns    int64                `json:"total_runs,optional"`  //近 N 天 RunJob 次数
+	PassRate     float64              `json:"pass_rate,optional"`   //通过率 0-100
+	Daily        []QualityDailyStat   `json:"daily"`                //近 N 天逐日（升序、补零）
+	FailTopRules []QualityFailTopRule `json:"fail_top_rules"`       //失败次数 Top 5
+	HealthTrend  []QualityHealthPoint `json:"health_trend"`         //近 N 天逐日平均健康分（升序、补零）
+}
+
 @server(
 	jwt: Auth
 	group: quality
@@ -260,4 +288,9 @@ service datacenter-api {
 	post /quality/profile/table (ProfileTableReq) returns (ProfileResp)
 	@handler qualityProfileList
 	get /quality/profile/list (ProfileListQReq) returns (ProfileListResp)
+	@doc(
+		summary: "质量统计大盘"
+	)
+	@handler qualityStats
+	get /quality/stats (StatsQReq) returns (QualityStatsResp)
 }

@@ -2122,6 +2122,318 @@ func (x *ProfileListReq) GetSize() int64 {
 	return 0
 }
 
+// ============ 统计分析（质量大盘）：通过率趋势/失败 TopN/健康分趋势 ============
+type StatsReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Beid          int64                  `protobuf:"varint,1,opt,name=beid,proto3" json:"beid,omitempty"` //多租户 id（必带）
+	Days          int32                  `protobuf:"varint,2,opt,name=days,proto3" json:"days,omitempty"` //统计窗口天数：默认 7、上限 30
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StatsReq) Reset() {
+	*x = StatsReq{}
+	mi := &file_quality_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StatsReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatsReq) ProtoMessage() {}
+
+func (x *StatsReq) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatsReq.ProtoReflect.Descriptor instead.
+func (*StatsReq) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *StatsReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+func (x *StatsReq) GetDays() int32 {
+	if x != nil {
+		return x.Days
+	}
+	return 0
+}
+
+// DailyQualityStat 逐日统计点（近 N 天逐日，缺数日期补零与骨架对齐）
+type DailyQualityStat struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Date          string                 `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`      //YYYY-MM-DD
+	Runs          int64                  `protobuf:"varint,2,opt,name=runs,proto3" json:"runs,omitempty"`     //当日 RunJob 次数（job+日去重）
+	Passed        int64                  `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"` //当日通过的检查结果数
+	Failed        int64                  `protobuf:"varint,4,opt,name=failed,proto3" json:"failed,omitempty"` //当日不通过的检查结果数
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DailyQualityStat) Reset() {
+	*x = DailyQualityStat{}
+	mi := &file_quality_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DailyQualityStat) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DailyQualityStat) ProtoMessage() {}
+
+func (x *DailyQualityStat) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DailyQualityStat.ProtoReflect.Descriptor instead.
+func (*DailyQualityStat) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *DailyQualityStat) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+func (x *DailyQualityStat) GetRuns() int64 {
+	if x != nil {
+		return x.Runs
+	}
+	return 0
+}
+
+func (x *DailyQualityStat) GetPassed() int64 {
+	if x != nil {
+		return x.Passed
+	}
+	return 0
+}
+
+func (x *DailyQualityStat) GetFailed() int64 {
+	if x != nil {
+		return x.Failed
+	}
+	return 0
+}
+
+// FailTopRule 失败次数 TopN 规则（join dc_quality_rule 出名字，规则已删除时 name 为空串）
+type FailTopRule struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RuleId        int64                  `protobuf:"varint,1,opt,name=rule_id,json=ruleId,proto3" json:"rule_id,omitempty"`
+	RuleName      string                 `protobuf:"bytes,2,opt,name=rule_name,json=ruleName,proto3" json:"rule_name,omitempty"`
+	FailCnt       int64                  `protobuf:"varint,3,opt,name=fail_cnt,json=failCnt,proto3" json:"fail_cnt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FailTopRule) Reset() {
+	*x = FailTopRule{}
+	mi := &file_quality_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FailTopRule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FailTopRule) ProtoMessage() {}
+
+func (x *FailTopRule) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FailTopRule.ProtoReflect.Descriptor instead.
+func (*FailTopRule) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *FailTopRule) GetRuleId() int64 {
+	if x != nil {
+		return x.RuleId
+	}
+	return 0
+}
+
+func (x *FailTopRule) GetRuleName() string {
+	if x != nil {
+		return x.RuleName
+	}
+	return ""
+}
+
+func (x *FailTopRule) GetFailCnt() int64 {
+	if x != nil {
+		return x.FailCnt
+	}
+	return 0
+}
+
+// HealthTrendPoint 逐日平均健康分（dc_quality_profile 按日聚合，缺剖析日期补 0）
+type HealthTrendPoint struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Date           string                 `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`                                               //YYYY-MM-DD
+	AvgHealthScore float64                `protobuf:"fixed64,2,opt,name=avg_health_score,json=avgHealthScore,proto3" json:"avg_health_score,omitempty"` //当日平均健康分 0-100（保留 2 位小数）
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *HealthTrendPoint) Reset() {
+	*x = HealthTrendPoint{}
+	mi := &file_quality_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthTrendPoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthTrendPoint) ProtoMessage() {}
+
+func (x *HealthTrendPoint) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthTrendPoint.ProtoReflect.Descriptor instead.
+func (*HealthTrendPoint) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *HealthTrendPoint) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+func (x *HealthTrendPoint) GetAvgHealthScore() float64 {
+	if x != nil {
+		return x.AvgHealthScore
+	}
+	return 0
+}
+
+type StatsReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TotalRuns     int64                  `protobuf:"varint,1,opt,name=total_runs,json=totalRuns,proto3" json:"total_runs,omitempty"`           //近 N 天 RunJob 次数（结果表按 job+日去重计数）
+	PassRate      float64                `protobuf:"fixed64,2,opt,name=pass_rate,json=passRate,proto3" json:"pass_rate,omitempty"`             //通过率：窗口内 pass_flag=1 占比，百分数 0-100（保留 2 位小数）
+	Daily         []*DailyQualityStat    `protobuf:"bytes,3,rep,name=daily,proto3" json:"daily,omitempty"`                                     //近 N 天逐日（升序、补零）
+	FailTopRules  []*FailTopRule         `protobuf:"bytes,4,rep,name=fail_top_rules,json=failTopRules,proto3" json:"fail_top_rules,omitempty"` //失败次数 Top 5
+	HealthTrend   []*HealthTrendPoint    `protobuf:"bytes,5,rep,name=health_trend,json=healthTrend,proto3" json:"health_trend,omitempty"`      //近 N 天逐日平均健康分（升序、补零）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StatsReply) Reset() {
+	*x = StatsReply{}
+	mi := &file_quality_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StatsReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatsReply) ProtoMessage() {}
+
+func (x *StatsReply) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatsReply.ProtoReflect.Descriptor instead.
+func (*StatsReply) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *StatsReply) GetTotalRuns() int64 {
+	if x != nil {
+		return x.TotalRuns
+	}
+	return 0
+}
+
+func (x *StatsReply) GetPassRate() float64 {
+	if x != nil {
+		return x.PassRate
+	}
+	return 0
+}
+
+func (x *StatsReply) GetDaily() []*DailyQualityStat {
+	if x != nil {
+		return x.Daily
+	}
+	return nil
+}
+
+func (x *StatsReply) GetFailTopRules() []*FailTopRule {
+	if x != nil {
+		return x.FailTopRules
+	}
+	return nil
+}
+
+func (x *StatsReply) GetHealthTrend() []*HealthTrendPoint {
+	if x != nil {
+		return x.HealthTrend
+	}
+	return nil
+}
+
 var File_quality_proto protoreflect.FileDescriptor
 
 const file_quality_proto_rawDesc = "" +
@@ -2307,7 +2619,30 @@ const file_quality_proto_rawDesc = "" +
 	"\n" +
 	"table_name\x18\x03 \x01(\tR\ttableName\x12\x12\n" +
 	"\x04page\x18\x04 \x01(\x03R\x04page\x12\x12\n" +
-	"\x04size\x18\x05 \x01(\x03R\x04size2\xd0\a\n" +
+	"\x04size\x18\x05 \x01(\x03R\x04size\"2\n" +
+	"\bStatsReq\x12\x12\n" +
+	"\x04beid\x18\x01 \x01(\x03R\x04beid\x12\x12\n" +
+	"\x04days\x18\x02 \x01(\x05R\x04days\"j\n" +
+	"\x10DailyQualityStat\x12\x12\n" +
+	"\x04date\x18\x01 \x01(\tR\x04date\x12\x12\n" +
+	"\x04runs\x18\x02 \x01(\x03R\x04runs\x12\x16\n" +
+	"\x06passed\x18\x03 \x01(\x03R\x06passed\x12\x16\n" +
+	"\x06failed\x18\x04 \x01(\x03R\x06failed\"^\n" +
+	"\vFailTopRule\x12\x17\n" +
+	"\arule_id\x18\x01 \x01(\x03R\x06ruleId\x12\x1b\n" +
+	"\trule_name\x18\x02 \x01(\tR\bruleName\x12\x19\n" +
+	"\bfail_cnt\x18\x03 \x01(\x03R\afailCnt\"P\n" +
+	"\x10HealthTrendPoint\x12\x12\n" +
+	"\x04date\x18\x01 \x01(\tR\x04date\x12(\n" +
+	"\x10avg_health_score\x18\x02 \x01(\x01R\x0eavgHealthScore\"\xf3\x01\n" +
+	"\n" +
+	"StatsReply\x12\x1d\n" +
+	"\n" +
+	"total_runs\x18\x01 \x01(\x03R\ttotalRuns\x12\x1b\n" +
+	"\tpass_rate\x18\x02 \x01(\x01R\bpassRate\x12/\n" +
+	"\x05daily\x18\x03 \x03(\v2\x19.quality.DailyQualityStatR\x05daily\x12:\n" +
+	"\x0efail_top_rules\x18\x04 \x03(\v2\x14.quality.FailTopRuleR\ffailTopRules\x12<\n" +
+	"\fhealth_trend\x18\x05 \x03(\v2\x19.quality.HealthTrendPointR\vhealthTrend2\x88\b\n" +
 	"\aQuality\x128\n" +
 	"\n" +
 	"CreateRule\x12\x16.quality.CreateRuleReq\x1a\x12.quality.RuleReply\x128\n" +
@@ -2327,7 +2662,8 @@ const file_quality_proto_rawDesc = "" +
 	"\x10TestAlertChannel\x12\x0e.quality.IdReq\x1a\x17.quality.TestAlertReply\x12G\n" +
 	"\rListErrorData\x12\x19.quality.ErrorDataListReq\x1a\x1b.quality.ErrorDataListReply\x12?\n" +
 	"\fProfileTable\x12\x18.quality.ProfileTableReq\x1a\x15.quality.ProfileReply\x12B\n" +
-	"\fListProfiles\x12\x17.quality.ProfileListReq\x1a\x19.quality.ProfileListReplyB\vZ\t./qualityb\x06proto3"
+	"\fListProfiles\x12\x17.quality.ProfileListReq\x1a\x19.quality.ProfileListReply\x126\n" +
+	"\fQualityStats\x12\x11.quality.StatsReq\x1a\x13.quality.StatsReplyB\vZ\t./qualityb\x06proto3"
 
 var (
 	file_quality_proto_rawDescOnce sync.Once
@@ -2341,7 +2677,7 @@ func file_quality_proto_rawDescGZIP() []byte {
 	return file_quality_proto_rawDescData
 }
 
-var file_quality_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
+var file_quality_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
 var file_quality_proto_goTypes = []any{
 	(*QualityRule)(nil),           // 0: quality.QualityRule
 	(*RuleReply)(nil),             // 1: quality.RuleReply
@@ -2372,6 +2708,11 @@ var file_quality_proto_goTypes = []any{
 	(*ProfileReply)(nil),          // 26: quality.ProfileReply
 	(*ProfileListReply)(nil),      // 27: quality.ProfileListReply
 	(*ProfileListReq)(nil),        // 28: quality.ProfileListReq
+	(*StatsReq)(nil),              // 29: quality.StatsReq
+	(*DailyQualityStat)(nil),      // 30: quality.DailyQualityStat
+	(*FailTopRule)(nil),           // 31: quality.FailTopRule
+	(*HealthTrendPoint)(nil),      // 32: quality.HealthTrendPoint
+	(*StatsReply)(nil),            // 33: quality.StatsReply
 }
 var file_quality_proto_depIdxs = []int32{
 	0,  // 0: quality.RuleReply.rule:type_name -> quality.QualityRule
@@ -2383,43 +2724,48 @@ var file_quality_proto_depIdxs = []int32{
 	21, // 6: quality.ErrorDataListReply.list:type_name -> quality.ErrorData
 	24, // 7: quality.ProfileReply.profile:type_name -> quality.TableProfile
 	24, // 8: quality.ProfileListReply.list:type_name -> quality.TableProfile
-	3,  // 9: quality.Quality.CreateRule:input_type -> quality.CreateRuleReq
-	4,  // 10: quality.Quality.UpdateRule:input_type -> quality.UpdateRuleReq
-	5,  // 11: quality.Quality.DeleteRule:input_type -> quality.IdReq
-	6,  // 12: quality.Quality.ListRules:input_type -> quality.RuleListReq
-	7,  // 13: quality.Quality.CreateJob:input_type -> quality.CreateJobReq
-	5,  // 14: quality.Quality.DeleteJob:input_type -> quality.IdReq
-	11, // 15: quality.Quality.ListJobs:input_type -> quality.JobListReq
-	5,  // 16: quality.Quality.RunJob:input_type -> quality.IdReq
-	15, // 17: quality.Quality.ListResults:input_type -> quality.ResultListReq
-	17, // 18: quality.Quality.SaveAlertChannel:input_type -> quality.SaveAlertChannelReq
-	5,  // 19: quality.Quality.DeleteAlertChannel:input_type -> quality.IdReq
-	19, // 20: quality.Quality.ListAlertChannels:input_type -> quality.AlertChannelListReq
-	5,  // 21: quality.Quality.TestAlertChannel:input_type -> quality.IdReq
-	23, // 22: quality.Quality.ListErrorData:input_type -> quality.ErrorDataListReq
-	25, // 23: quality.Quality.ProfileTable:input_type -> quality.ProfileTableReq
-	28, // 24: quality.Quality.ListProfiles:input_type -> quality.ProfileListReq
-	1,  // 25: quality.Quality.CreateRule:output_type -> quality.RuleReply
-	1,  // 26: quality.Quality.UpdateRule:output_type -> quality.RuleReply
-	5,  // 27: quality.Quality.DeleteRule:output_type -> quality.IdReq
-	2,  // 28: quality.Quality.ListRules:output_type -> quality.RuleListReply
-	9,  // 29: quality.Quality.CreateJob:output_type -> quality.JobReply
-	5,  // 30: quality.Quality.DeleteJob:output_type -> quality.IdReq
-	10, // 31: quality.Quality.ListJobs:output_type -> quality.JobListReply
-	13, // 32: quality.Quality.RunJob:output_type -> quality.RunJobReply
-	14, // 33: quality.Quality.ListResults:output_type -> quality.ResultListReply
-	16, // 34: quality.Quality.SaveAlertChannel:output_type -> quality.AlertChannel
-	5,  // 35: quality.Quality.DeleteAlertChannel:output_type -> quality.IdReq
-	18, // 36: quality.Quality.ListAlertChannels:output_type -> quality.AlertChannelListReply
-	20, // 37: quality.Quality.TestAlertChannel:output_type -> quality.TestAlertReply
-	22, // 38: quality.Quality.ListErrorData:output_type -> quality.ErrorDataListReply
-	26, // 39: quality.Quality.ProfileTable:output_type -> quality.ProfileReply
-	27, // 40: quality.Quality.ListProfiles:output_type -> quality.ProfileListReply
-	25, // [25:41] is the sub-list for method output_type
-	9,  // [9:25] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	30, // 9: quality.StatsReply.daily:type_name -> quality.DailyQualityStat
+	31, // 10: quality.StatsReply.fail_top_rules:type_name -> quality.FailTopRule
+	32, // 11: quality.StatsReply.health_trend:type_name -> quality.HealthTrendPoint
+	3,  // 12: quality.Quality.CreateRule:input_type -> quality.CreateRuleReq
+	4,  // 13: quality.Quality.UpdateRule:input_type -> quality.UpdateRuleReq
+	5,  // 14: quality.Quality.DeleteRule:input_type -> quality.IdReq
+	6,  // 15: quality.Quality.ListRules:input_type -> quality.RuleListReq
+	7,  // 16: quality.Quality.CreateJob:input_type -> quality.CreateJobReq
+	5,  // 17: quality.Quality.DeleteJob:input_type -> quality.IdReq
+	11, // 18: quality.Quality.ListJobs:input_type -> quality.JobListReq
+	5,  // 19: quality.Quality.RunJob:input_type -> quality.IdReq
+	15, // 20: quality.Quality.ListResults:input_type -> quality.ResultListReq
+	17, // 21: quality.Quality.SaveAlertChannel:input_type -> quality.SaveAlertChannelReq
+	5,  // 22: quality.Quality.DeleteAlertChannel:input_type -> quality.IdReq
+	19, // 23: quality.Quality.ListAlertChannels:input_type -> quality.AlertChannelListReq
+	5,  // 24: quality.Quality.TestAlertChannel:input_type -> quality.IdReq
+	23, // 25: quality.Quality.ListErrorData:input_type -> quality.ErrorDataListReq
+	25, // 26: quality.Quality.ProfileTable:input_type -> quality.ProfileTableReq
+	28, // 27: quality.Quality.ListProfiles:input_type -> quality.ProfileListReq
+	29, // 28: quality.Quality.QualityStats:input_type -> quality.StatsReq
+	1,  // 29: quality.Quality.CreateRule:output_type -> quality.RuleReply
+	1,  // 30: quality.Quality.UpdateRule:output_type -> quality.RuleReply
+	5,  // 31: quality.Quality.DeleteRule:output_type -> quality.IdReq
+	2,  // 32: quality.Quality.ListRules:output_type -> quality.RuleListReply
+	9,  // 33: quality.Quality.CreateJob:output_type -> quality.JobReply
+	5,  // 34: quality.Quality.DeleteJob:output_type -> quality.IdReq
+	10, // 35: quality.Quality.ListJobs:output_type -> quality.JobListReply
+	13, // 36: quality.Quality.RunJob:output_type -> quality.RunJobReply
+	14, // 37: quality.Quality.ListResults:output_type -> quality.ResultListReply
+	16, // 38: quality.Quality.SaveAlertChannel:output_type -> quality.AlertChannel
+	5,  // 39: quality.Quality.DeleteAlertChannel:output_type -> quality.IdReq
+	18, // 40: quality.Quality.ListAlertChannels:output_type -> quality.AlertChannelListReply
+	20, // 41: quality.Quality.TestAlertChannel:output_type -> quality.TestAlertReply
+	22, // 42: quality.Quality.ListErrorData:output_type -> quality.ErrorDataListReply
+	26, // 43: quality.Quality.ProfileTable:output_type -> quality.ProfileReply
+	27, // 44: quality.Quality.ListProfiles:output_type -> quality.ProfileListReply
+	33, // 45: quality.Quality.QualityStats:output_type -> quality.StatsReply
+	29, // [29:46] is the sub-list for method output_type
+	12, // [12:29] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_quality_proto_init() }
@@ -2433,7 +2779,7 @@ func file_quality_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_quality_proto_rawDesc), len(file_quality_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   29,
+			NumMessages:   34,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

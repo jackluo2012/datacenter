@@ -681,6 +681,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/quality/profile/table",
 				Handler: quality.ProfileTableHandler(serverCtx),
 			},
+			{
+				// 质量统计大盘
+				Method:  http.MethodGet,
+				Path:    "/quality/stats",
+				Handler: quality.QualityStatsHandler(serverCtx),
+			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)

@@ -20,6 +20,7 @@ type ServiceContext struct {
 	AlertLogModel     model.AlertLogModel         // 告警发送日志
 	ErrorDataModel    model.ErrorDataModel        // 错误数据样本（失败规则下钻）
 	ProfileModel      model.ProfileModel          // 表剖析与健康分
+	StatsModel        model.StatsModel            // 质量统计聚合（质量大盘：通过率/失败 TopN/健康分趋势）
 	DataSourceCli     dataSourceClient.DataSource // 数据源服务客户端（RunJob/ProfileTable 取目标库 DSN）
 }
 
@@ -35,6 +36,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		AlertLogModel:     model.NewAlertLogModel(conn),
 		ErrorDataModel:    model.NewErrorDataModel(conn),
 		ProfileModel:      model.NewProfileModel(conn),
+		StatsModel:        model.NewStatsModel(conn),
 		// 数据源服务走 etcd 发现（key 固定 datasource.rpc）；NonBlock 启动不阻塞，首次调用才建连
 		DataSourceCli: dataSourceClient.NewDataSource(zrpc.MustNewClient(zrpc.RpcClientConf{
 			Etcd:     discov.EtcdConf{Hosts: c.Etcd.Hosts, Key: "datasource.rpc"},

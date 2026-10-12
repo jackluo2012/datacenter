@@ -1,5 +1,6 @@
 # ============================================================
 # 数据中台一键编排：4 个依赖（mysql/redis/etcd/elasticsearch）+ 11 个服务
+#                 + 1 个调度进程（scheduler，内置轻量调度引擎，见 docs/delivery/01-部署手册.md §8）
 #                 + 2 个外挂 profile 服务（viz=DataEase / ds=DolphinScheduler）
 #
 # 用法：
@@ -212,6 +213,37 @@ services:
     <<: *go-service
     container_name: datacenter-ai
     command: ["./ai-server", "-f", "/app/etc/ai.yaml"]
+
+  # -------------------- 调度引擎（内置轻量调度，单实例） --------------------
+  # 独立调度进程（cmd/scheduler）：每 30s 一轮扫中台主库三张任务表
+  # （dc_quality_job / dc_ops_archive_task 的 cron 非空行、dc_theme_mv 的
+  # refresh_mode='schedule' 行），到期经 etcd 发现 quality/ops/theme rpc 触发执行。
+  # 无 yaml 配置：连库串/etcd 地址全走环境变量（internal/scheduler/scan.go、
+  # cmd/scheduler/main.go），详见 docs/delivery/01-部署手册.md §8。
+  # 注意：单实例运行（暂无分布式锁），勿 docker compose up --scale scheduler；
+  # 每 30s 重扫表增量注册新建任务，删除任务需重启本进程生效。
+  scheduler:
+    <<: *go-service
+    container_name: datacenter-scheduler
+    command: ["./scheduler"]
+    environment:
+      TZ: Asia/Shanghai
+      # Go DSN 格式 用户:密码@tcp(主机:端口)/库?参数 —— 主机名用 compose 服务名 mysql
+      SCHED_MYSQL_DSN: "root:admin@tcp(mysql:3306)/datacenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai"
+      # rpc 服务发现 etcd（代码默认 127.0.0.1:2379，容器内必须改服务名）
+      SCHED_ETCD_HOSTS: etcd:2379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      etcd:
+        condition: service_healthy
+      # 到期任务经 etcd 调 quality.rpc 执行（NonBlock 不阻塞启动，此为顺序优化）。
+      # ops/theme rpc 不在本编排内（归档/物化视图任务需按部署手册 §5.2 补起后
+      # 注册到同一 etcd 才会被执行），故此处不做 depends_on。
+      quality:
+        condition: service_started
 
   # -------------------- 网关（唯一对外端口） --------------------
   datacenter-api:

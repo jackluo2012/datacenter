@@ -230,6 +230,15 @@ func menuSeeds() []seedMenu {
 		dataModule("AI 问数", "ai", "AiChat", "ChatDotRound", 22,
 			buttonSeed("AI 提问", "ask", 5)),
 		dataModule("数据运维", "ops", "List", "Monitor", 23),
+		dataModule("数仓建模", "theme", "ThemeList", "OfficeBuilding", 24,
+			buttonSeed("模型部署", "deploy", 5),
+			buttonSeed("物化刷新", "refresh", 6)),
+		dataModule("数据安全", "security", "SecurityList", "Lock", 25,
+			buttonSeed("分级保存", "level", 5),
+			buttonSeed("实体打标", "tag", 6),
+			buttonSeed("规则保存", "rule", 7),
+			buttonSeed("脱敏预览", "preview", 8),
+			buttonSeed("授权保存", "grant", 9)),
 	}
 	return seeds
 }

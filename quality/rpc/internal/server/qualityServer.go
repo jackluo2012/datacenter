@@ -114,3 +114,10 @@ func (s *QualityServer) DeleteJob(ctx context.Context, in *quality.IdReq) (*qual
 	l := logic.NewDeleteJobLogic(ctx, s.svcCtx)
 	return l.DeleteJob(in)
 }
+
+// 质量统计大盘（通过率/失败 TopN/健康分趋势）
+// 注：goctl regen 按小写命名生成重复文件，此处按项目驼峰文件惯例手工合入（与生成模板同构）
+func (s *QualityServer) QualityStats(ctx context.Context, in *quality.StatsReq) (*quality.StatsReply, error) {
+	l := logic.NewQualityStatsLogic(ctx, s.svcCtx)
+	return l.QualityStats(in)
+}

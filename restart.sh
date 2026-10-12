@@ -83,6 +83,17 @@ RpcServerPlus ${getewayPath} theme
 RpcServerPlus ${getewayPath} security
 #问答抽奖服务
 RpcServerPlus ${getewayPath} questions
+#调度引擎（内置轻量调度：扫 dc_quality_job/dc_ops_archive_task/dc_theme_mv 的 cron 到期任务，
+#经 etcd 调 quality/ops/theme rpc 执行；无 yaml 配置，DSN/etcd 走环境变量，
+#默认连 127.0.0.1:3306 / 127.0.0.1:2379，与 server.sh 起的依赖端口映射一致；
+#单实例运行，勿多副本。详见 docs/delivery/01-部署手册.md §8）
+SchedulerRun(){
+    cd ${getewayPath}
+    go build -o scheduler ./cmd/scheduler
+    kill -9 $(ps -ef|grep "\./scheduler"|awk '{print $2}') >/dev/null 2>&1
+    nohup ./scheduler >> scheduler.log 2>&1 &
+}
+SchedulerRun
 #Api服务
 StartServer ${getewayPath} ${geteWayApi} ${geteWayCnf}
 

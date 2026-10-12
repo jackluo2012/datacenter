@@ -1008,12 +1008,30 @@ type PublishStdModelResp struct {
 	SnapshotJson string `json:"snapshot_json"`
 }
 
+type QualityDailyStat struct {
+	Date   string `json:"date,optional"`   //YYYY-MM-DD
+	Runs   int64  `json:"runs,optional"`   //当日 RunJob 次数（job+日去重）
+	Passed int64  `json:"passed,optional"` //当日通过的检查结果数
+	Failed int64  `json:"failed,optional"` //当日不通过的检查结果数
+}
+
 type QualityErrorData struct {
 	RuleId      int64  `json:"rule_id,optional"`
 	JobId       int64  `json:"job_id,optional"`
 	RowsJson    string `json:"rows_json,optional"`
 	SampleCount int32  `json:"sample_count,optional"`
 	RunAt       int64  `json:"run_at,optional"`
+}
+
+type QualityFailTopRule struct {
+	RuleId   int64  `json:"rule_id,optional"`
+	RuleName string `json:"rule_name,optional"` //规则已删除时为空串
+	FailCnt  int64  `json:"fail_cnt,optional"`
+}
+
+type QualityHealthPoint struct {
+	Date           string  `json:"date,optional"`             //YYYY-MM-DD
+	AvgHealthScore float64 `json:"avg_health_score,optional"` //当日平均健康分 0-100
 }
 
 type QualityIdReq struct {
@@ -1066,6 +1084,14 @@ type QualityRuleListReq struct {
 type QualityRuleListResp struct {
 	List  []QualityRule `json:"list"`
 	Total int64         `json:"total"`
+}
+
+type QualityStatsResp struct {
+	TotalRuns    int64                `json:"total_runs,optional"` //近 N 天 RunJob 次数
+	PassRate     float64              `json:"pass_rate,optional"`  //通过率 0-100
+	Daily        []QualityDailyStat   `json:"daily"`               //近 N 天逐日（升序、补零）
+	FailTopRules []QualityFailTopRule `json:"fail_top_rules"`      //失败次数 Top 5
+	HealthTrend  []QualityHealthPoint `json:"health_trend"`        //近 N 天逐日平均健康分（升序、补零）
 }
 
 type QuestionsAwardReq struct {
@@ -1409,6 +1435,11 @@ type SnsResp struct {
 	Appid    string `json:"appid"`     //sns 平台的id
 	Title    string `json:"title"`     //名称
 	LoginUrl string `json:"login_url"` //微信登陆的地址
+}
+
+type StatsQReq struct {
+	Beid int64 `json:"beid,optional" form:"beid,optional"`
+	Days int64 `json:"days,optional" form:"days,optional"` //统计窗口天数：默认 7、上限 30
 }
 
 type StdCheckListReq struct {

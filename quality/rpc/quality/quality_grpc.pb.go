@@ -35,6 +35,7 @@ const (
 	Quality_ListErrorData_FullMethodName      = "/quality.Quality/ListErrorData"
 	Quality_ProfileTable_FullMethodName       = "/quality.Quality/ProfileTable"
 	Quality_ListProfiles_FullMethodName       = "/quality.Quality/ListProfiles"
+	Quality_QualityStats_FullMethodName       = "/quality.Quality/QualityStats"
 )
 
 // QualityClient is the client API for Quality service.
@@ -69,6 +70,8 @@ type QualityClient interface {
 	//表剖析与健康分
 	ProfileTable(ctx context.Context, in *ProfileTableReq, opts ...grpc.CallOption) (*ProfileReply, error)
 	ListProfiles(ctx context.Context, in *ProfileListReq, opts ...grpc.CallOption) (*ProfileListReply, error)
+	//质量统计大盘（通过率/失败 TopN/健康分趋势）
+	QualityStats(ctx context.Context, in *StatsReq, opts ...grpc.CallOption) (*StatsReply, error)
 }
 
 type qualityClient struct {
@@ -239,6 +242,16 @@ func (c *qualityClient) ListProfiles(ctx context.Context, in *ProfileListReq, op
 	return out, nil
 }
 
+func (c *qualityClient) QualityStats(ctx context.Context, in *StatsReq, opts ...grpc.CallOption) (*StatsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StatsReply)
+	err := c.cc.Invoke(ctx, Quality_QualityStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QualityServer is the server API for Quality service.
 // All implementations must embed UnimplementedQualityServer
 // for forward compatibility.
@@ -271,6 +284,8 @@ type QualityServer interface {
 	//表剖析与健康分
 	ProfileTable(context.Context, *ProfileTableReq) (*ProfileReply, error)
 	ListProfiles(context.Context, *ProfileListReq) (*ProfileListReply, error)
+	//质量统计大盘（通过率/失败 TopN/健康分趋势）
+	QualityStats(context.Context, *StatsReq) (*StatsReply, error)
 	mustEmbedUnimplementedQualityServer()
 }
 
@@ -328,6 +343,9 @@ func (UnimplementedQualityServer) ProfileTable(context.Context, *ProfileTableReq
 }
 func (UnimplementedQualityServer) ListProfiles(context.Context, *ProfileListReq) (*ProfileListReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListProfiles not implemented")
+}
+func (UnimplementedQualityServer) QualityStats(context.Context, *StatsReq) (*StatsReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method QualityStats not implemented")
 }
 func (UnimplementedQualityServer) mustEmbedUnimplementedQualityServer() {}
 func (UnimplementedQualityServer) testEmbeddedByValue()                 {}
@@ -638,6 +656,24 @@ func _Quality_ListProfiles_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Quality_QualityStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StatsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QualityServer).QualityStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Quality_QualityStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QualityServer).QualityStats(ctx, req.(*StatsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Quality_ServiceDesc is the grpc.ServiceDesc for Quality service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -708,6 +744,10 @@ var Quality_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListProfiles",
 			Handler:    _Quality_ListProfiles_Handler,
+		},
+		{
+			MethodName: "QualityStats",
+			Handler:    _Quality_QualityStats_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
