@@ -1,0 +1,50 @@
+# ============================================================
+# DataEase v1.18 安装器同款配置模板（standalone 模式）
+#
+# 用法：
+#   cp dataease.properties.template dataease.properties   # 首次部署复制一份
+#   # 按需修改后重启：docker compose -f docker-compose.dataease.yml up -d
+#
+# 说明：
+#   1. docker-compose.dataease.yml 会把本目录的 dataease.properties 挂载为
+#      容器内 /opt/dataease/conf/dataease.properties（官方安装器同款路径）；
+#   2. compose 里的 SPRING_DATASOURCE_* 环境变量优先级高于本文件，
+#      连接信息建议两处保持一致（或统一用 DATAEASE_DB_* 环境变量覆盖）；
+#   3. 主机名 mysql 是平台 docker-compose.yml（project=datacenter）里的服务名，
+#      同在 datacenter 网络内可直接解析；独立部署时改为 mysql 可达地址
+#      （内网 IP / host.docker.internal / 172.17.0.1）。
+# ============================================================
+
+# ---------------- 数据库配置：平台 MySQL 的 dataease 元数据库 ----------------
+# 库需一次性手工创建（应用首次启动经 Flyway 自动建全量表结构，无需手工导 SQL）：
+#   CREATE DATABASE IF NOT EXISTS dataease
+#     DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+spring.datasource.url=jdbc:mysql://mysql:3306/dataease?useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+spring.datasource.username=root
+spring.datasource.password=admin
+
+# ---------------- 可视化引擎（Doris）配置 ----------------
+# engine_mode=simple：不启用外接引擎，直连业务数据源即可出图（推荐起步配置）；
+# 后续接 Doris 做加速引擎时改为 cluster 并补齐 doris.* 连接信息
+engine_mode=simple
+doris.host=127.0.0.1
+doris.port=9030
+doris.httpPort=8030
+doris.db=dataease
+doris.user=root
+doris.password=
+
+# ---------------- Kettle(carte) 集群配置 ----------------
+# 仅"抽取数据集"（数据集开启全量/定时抽取）用，纯直连不需要；占位防启动期缺配置
+carte.host=127.0.0.1
+carte.port=18080
+carte.user=cluster
+carte.passwd=cluster
+
+# ---------------- 运行参数 ----------------
+# 日志级别：INFO / WARN / DEBUG
+logger.level=INFO
+# 系统内新建用户的初始密码（admin 默认密码 dataease 为镜像内置，与此项无关）
+dataease.init_password=DataEase123456
+# 登录会话超时（分钟）
+dataease.login_timeout=480

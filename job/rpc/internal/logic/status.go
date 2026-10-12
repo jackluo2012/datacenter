@@ -21,10 +21,26 @@ func IsValidMode(mode string) bool {
 	return mode == model.TaskModeOffline || mode == model.TaskModeCdc
 }
 
-// ValidateSyncTask 创建同步任务前的静态校验（纯函数，内部做首尾空白防御）：
+// ValidateSyncTask 创建同步任务前的静态校验（V1/DS 推送任务，纯函数，内部做首尾空白防御）：
 // 名称非空且 ≤128 字符、mode 白名单（offline/cdc）、source_ds_id>0、
-// mapping_json 允许为空，非空时须为 JSON 对象
+// mapping_json 允许为空，非空时须为 JSON 对象。
+// 内置引擎（V2）任务走 syncengine.ValidateSyncTaskV2（mapping 语义为列映射数组）
 func ValidateSyncTask(name, mode string, sourceDsId int64, mappingJson string) error {
+	if err := validateBase(name, mode, sourceDsId); err != nil {
+		return err
+	}
+	if s := strings.TrimSpace(mappingJson); s != "" {
+		var m map[string]any
+		if err := json.Unmarshal([]byte(s), &m); err != nil {
+			return fmt.Errorf("%w: %v", ErrInvalidMappingJson, err)
+		}
+	}
+	return nil
+}
+
+// validateBase 任务基础三要素校验（V1/V2 共用规则，纯函数）：名称非空且 ≤128 字符、
+// mode 白名单（offline/cdc）、source_ds_id>0；mapping_json 语义两代不同，由各自入口校验
+func validateBase(name, mode string, sourceDsId int64) error {
 	name = strings.TrimSpace(name)
 	if utf8.RuneCountInString(name) == 0 {
 		return ErrTaskNameRequired
@@ -37,12 +53,6 @@ func ValidateSyncTask(name, mode string, sourceDsId int64, mappingJson string) e
 	}
 	if sourceDsId <= 0 {
 		return ErrSourceDsRequired
-	}
-	if s := strings.TrimSpace(mappingJson); s != "" {
-		var m map[string]any
-		if err := json.Unmarshal([]byte(s), &m); err != nil {
-			return fmt.Errorf("%w: %v", ErrInvalidMappingJson, err)
-		}
 	}
 	return nil
 }

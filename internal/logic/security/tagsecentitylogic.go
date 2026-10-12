@@ -8,6 +8,7 @@ import (
 
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
+	"datacenter/security/rpc/securityClient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -18,6 +19,7 @@ type TagSecEntityLogic struct {
 	svcCtx *svc.ServiceContext
 }
 
+// 元数据实体分级打标
 func NewTagSecEntityLogic(ctx context.Context, svcCtx *svc.ServiceContext) *TagSecEntityLogic {
 	return &TagSecEntityLogic{
 		Logger: logx.WithContext(ctx),
@@ -26,8 +28,18 @@ func NewTagSecEntityLogic(ctx context.Context, svcCtx *svc.ServiceContext) *TagS
 	}
 }
 
+// 实体打标: 网关请求逐字段映射为 rpc 请求(同名字段一一对应), 转发后把打标结果转为网关类型返回。
 func (l *TagSecEntityLogic) TagSecEntity(req *types.TagSecEntityReq) (resp *types.SecEntityTag, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	reply, err := l.svcCtx.SecurityRpc.TagEntity(l.ctx, &securityClient.TagEntityReq{
+		EntityId:     req.EntityId,
+		EntityName:   req.EntityName,
+		LevelCode:    req.LevelCode,
+		MaskRuleCode: req.MaskRuleCode,
+		Beid:         req.Beid,
+	})
+	if err != nil {
+		// 业务错误直接透传 rpc error
+		return nil, err
+	}
+	return entityTagToTypes(reply.GetTag()), nil
 }

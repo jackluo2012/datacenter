@@ -8,6 +8,7 @@ import (
 
 	"datacenter/internal/svc"
 	"datacenter/internal/types"
+	"datacenter/security/rpc/securityClient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -18,6 +19,7 @@ type DeleteSecGrantLogic struct {
 	svcCtx *svc.ServiceContext
 }
 
+// 删除授权
 func NewDeleteSecGrantLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DeleteSecGrantLogic {
 	return &DeleteSecGrantLogic{
 		Logger: logx.WithContext(ctx),
@@ -26,8 +28,11 @@ func NewDeleteSecGrantLogic(ctx context.Context, svcCtx *svc.ServiceContext) *De
 	}
 }
 
+// 删除授权: 网关请求逐字段映射为 rpc 请求后转发; pb DeleteGrant 虽返回 IdReq, 网关无返回体, 仅透传错误
 func (l *DeleteSecGrantLogic) DeleteSecGrant(req *types.SecIdReq) error {
-	// todo: add your logic here and delete this line
-
-	return nil
+	_, err := l.svcCtx.SecurityRpc.DeleteGrant(l.ctx, &securityClient.IdReq{
+		Id:   req.Id,
+		Beid: req.Beid,
+	})
+	return err
 }

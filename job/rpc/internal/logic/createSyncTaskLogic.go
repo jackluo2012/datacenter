@@ -42,6 +42,11 @@ func (l *CreateSyncTaskLogic) CreateSyncTask(in *job.CreateSyncTaskReq) (*job.Ta
 		Mode:        in.Mode,
 		MappingJson: strings.TrimSpace(in.MappingJson),
 		Cron:        strings.TrimSpace(in.Cron),
+		// V1 为 DS 推送任务，无内置引擎字段：源查询/目标库/目标表留空，batch_size 落默认值
+		SourceSql:   "",
+		TargetDb:    "",
+		TargetTable: "",
+		BatchSize:   model.DefaultSyncBatchSize,
 		Beid:        in.Beid,
 	})
 	if err != nil {

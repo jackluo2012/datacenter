@@ -1,0 +1,95 @@
+# ============================================================
+# DataEase v1.18.27 独立安装编排（standalone 片段）
+#
+# 与平台根编排的 viz profile（docker-compose.yml 内 dataease 服务）功能等价，
+# 二选一部署（container_name 同为 datacenter-dataease，同时启动会冲突）：
+#   - 平台一键：docker compose --profile viz up -d dataease（连接参数已内置）
+#   - 本片段：  适合单独部署/升级 DataEase、或平台编排之外维护可视化组件
+#
+# 用法（仓库根目录执行）：
+#   cp deploy/dataease/dataease.properties.template deploy/dataease/dataease.properties
+#   docker compose -f deploy/dataease/docker-compose.dataease.yml up -d
+#   docker compose -f deploy/dataease/docker-compose.dataease.yml logs -f dataease
+#
+# 外部 MySQL（本片段刻意不包含 mysql 服务，复用平台的）：
+#   1. 平台网络模式（默认）：加入根编排创建的网络 datacenter_datacenter，
+#      数据源主机直接填 compose 服务名 mysql:3306（root/admin）；
+#      元数据库 dataease 需一次性手工创建（见 docs/DEPLOY-DATAEASE.md 第 2 步）
+#   2. 独立模式：平台编排未启动时，把下方 networks.platform 段改为普通网络
+#      （去掉 external/name 两行），并设置 DATAEASE_DB_HOST 为 mysql 可达地址
+#      （Docker Desktop 用 host.docker.internal；Linux 宿主机/内网用实际 IP）
+#   3. 连接参数均可环境变量覆盖（改完 up -d 重建生效）：
+#        DATAEASE_DB_HOST / DATAEASE_DB_PORT / DATAEASE_DB_NAME
+#        DATAEASE_DB_USER / DATAEASE_DB_PASSWORD
+#        DATAEASE_PORT（宿主机端口，默认 8088）
+#        DATACENTER_NETWORK（外部网络名，默认 datacenter_datacenter）
+#
+# 访问：http://localhost:8088（容器内固定监听 8081）；默认账号 admin/dataease。
+# 持久化：与平台编排共用仓库根 ./data/dataease（子目录挂载对齐官方安装器，
+#         不覆盖镜像内置文件）；配置文件单独挂载（见 volumes 首行）。
+# ============================================================
+name: datacenter-dataease
+
+services:
+  dataease:
+    # 官方镜像仅发布在 DataEase 阿里云仓库（Docker Hub 无 dataease/dataease 官方库，
+    # 2026-10 已核实），故用完整仓库地址；v1.18.27 为 v1.18 稳定线最后一版
+    image: registry.cn-qingdao.aliyuncs.com/dataease/dataease:v1.18.27
+    container_name: datacenter-dataease
+    restart: unless-stopped
+    ports:
+      - "${DATAEASE_PORT:-8088}:8081"
+    environment:
+      TZ: Asia/Shanghai
+      # —— 元数据库连接：指向平台 MySQL 的 dataease 库 ——
+      # Spring 环境变量优先级高于挂载的 dataease.properties（双保险，环境变量为准；
+      # properties 为官方安装器同款落盘配置，便于查看与临时手改）
+      SPRING_DATASOURCE_URL: jdbc:mysql://${DATAEASE_DB_HOST:-mysql}:${DATAEASE_DB_PORT:-3306}/${DATAEASE_DB_NAME:-dataease}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${DATAEASE_DB_USER:-root}
+      SPRING_DATASOURCE_PASSWORD: ${DATAEASE_DB_PASSWORD:-admin}
+      ENGINE_MODE: simple
+      LOGGER_LEVEL: INFO
+      # Kettle(carte)/Doris：仅"抽取数据集/引擎加速"场景用，纯直连可视化不需要，
+      # 先给占位值避免启动期缺配置；后续接 Doris 时改 DORIS_* 即可
+      CARTE_HOST: 127.0.0.1
+      CARTE_PORT: "18080"
+      CARTE_USER: cluster
+      CARTE_PASSWORD: cluster
+      DORIS_HOST: 127.0.0.1
+      DORIS_PORT: "9030"
+      DORIS_HTTPPORT: "8030"
+      DORIS_DB: dataease
+      DORIS_USER: root
+      DORIS_PASSWORD: ""
+      # 系统内新建用户的初始密码（admin 默认密码 dataease 为镜像内置，不受此项影响）
+      DATAEASE_INIT_PASSWORD: DataEase123456
+      DATAEASE_LOGIN_TIMEOUT: "480"
+    healthcheck:
+      # 官方镜像内置 HEALTHCHECK 即 nc 8081，此处显式声明以便调 start_period：
+      # v1.18 首次启动要跑 Flyway 建全量表结构，冷启动 1-3 分钟属正常
+      test: ["CMD", "nc", "-z", "127.0.0.1", "8081"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 180s
+    volumes:
+      # 官方安装器同款配置（由 template 复制而来，改连接信息两处需同步，见文件头注释）
+      - ./dataease.properties:/opt/dataease/conf/dataease.properties
+      # 配置外的持久化：与平台编排共用仓库根 ./data/dataease（路径相对本文件）
+      - ../../data/dataease/logs:/opt/dataease/logs
+      - ../../data/dataease/data/kettle:/opt/dataease/data/kettle
+      - ../../data/dataease/data/static-resource:/opt/dataease/data/static-resource
+      - ../../data/dataease/data/custom:/opt/dataease/data/custom
+      - ../../data/dataease/data/business:/opt/dataease/data/business
+      - ../../data/dataease/data/ehcache:/opt/dataease/data/ehcache
+      - ../../data/dataease/custom-drivers:/opt/dataease/custom-drivers
+    networks:
+      - platform
+
+# 外部网络：平台根编排（name: datacenter）创建的 datacenter 网络实际名为
+# datacenter_datacenter。用 `docker network ls | grep datacenter` 核对；
+# 独立模式改法见文件头"外部 MySQL"第 2 条。
+networks:
+  platform:
+    name: ${DATACENTER_NETWORK:-datacenter_datacenter}
+    external: true

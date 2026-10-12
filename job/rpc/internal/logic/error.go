@@ -24,4 +24,19 @@ var (
 	ErrTaskDeployed = errors.New("任务已部署到调度器，请先下线后再删除")
 	// ErrTaskNotDeployed 未部署任务不能手动触发
 	ErrTaskNotDeployed = errors.New("任务尚未部署到调度器，请先执行部署")
+
+	// ---- 内置同步执行引擎（Phase 8）----
+
+	// ErrSourceSqlRequired 内置引擎任务缺源查询
+	ErrSourceSqlRequired = errors.New("source_sql 不能为空(内置引擎任务必填)")
+	// ErrInvalidSourceSql 源查询非法（仅允许单条 SELECT，禁止分号/注释）
+	ErrInvalidSourceSql = errors.New("source_sql 非法：仅允许单条 SELECT 且禁止分号/注释")
+	// ErrTargetTableRequired 内置引擎任务缺目标表
+	ErrTargetTableRequired = errors.New("target_table 不能为空(内置引擎任务必填)")
+	// ErrInvalidIdentifier 库/表/列名不在白名单（仅允许字母/数字/下划线）
+	ErrInvalidIdentifier = errors.New("标识符非法：仅允许字母/数字/下划线")
+	// ErrInvalidColumnMapping 内置引擎列映射 JSON 非法（需为 [{src,dst,type}] 数组）
+	ErrInvalidColumnMapping = errors.New("mapping_json 非法：需为 [{src,dst,type}] 列映射数组")
+	// ErrDataSourceDsn 数据源服务未返回可用连接串（或非 mysql 类型）
+	ErrDataSourceDsn = errors.New("数据源未返回可用连接串(DSN)")
 )

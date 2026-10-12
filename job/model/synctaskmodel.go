@@ -11,15 +11,20 @@ import (
 
 const (
 	taskTable           = "`dc_sync_task`"
-	taskInsertFieldSize = 7 // 插入字段数（与 taskInsertColumns 对应）
+	taskInsertFieldSize = 11 // 插入字段数（与 taskInsertColumns 对应）
 	// taskInsertColumns 插入字段（不含自增 id、时间列与部署/运行状态列，
-	// ds_workflow_code/status 由部署回填，last_run_at 由触发运行回填）
-	taskInsertColumns = "name,source_ds_id,target_ds_id,mode,mapping_json,cron,beid"
-	// taskRows 查询列（mapping_json/last_run_at 允许 NULL，分别用 ifnull 兜底为空串/0 毫秒时间戳，
-	// 避免扫描报错；查询列数与 SyncTask 字段数一一对应，
+	// ds_workflow_code/status 由部署回填，last_run_at 由触发运行回填；
+	// source_sql/target_db/target_table/batch_size 为内置引擎列：V1（DS 推送）任务落空串/默认值，
+	// target_db 预留（proto 暂无该字段，走目标数据源 DSN 默认库））
+	taskInsertColumns = "name,source_ds_id,target_ds_id,mode,mapping_json,cron," +
+		"source_sql,target_db,target_table,batch_size,beid"
+	// taskRows 查询列（mapping_json/source_sql/last_run_at 允许 NULL，分别用 ifnull 兜底为
+	// 空串/0 毫秒时间戳，避免扫描报错；查询列数与 SyncTask 字段数一一对应，
 	// 规避 go-zero 少列扫宽 struct 的 not matching destination to scan 报错）
 	taskRows = "id,name,source_ds_id,target_ds_id,mode," +
-		"ifnull(mapping_json,'') as mapping_json,cron,ds_workflow_code,status," +
+		"ifnull(mapping_json,'') as mapping_json,cron," +
+		"ifnull(source_sql,'') as source_sql,target_db,target_table,batch_size," +
+		"ds_workflow_code,status," +
 		"ifnull(cast(unix_timestamp(last_run_at) * 1000 as signed), 0) as last_run_at," +
 		"beid,created_at,updated_at"
 )
@@ -35,6 +40,10 @@ type (
 		Mode           string    `db:"mode"` // offline/cdc
 		MappingJson    string    `db:"mapping_json"`
 		Cron           string    `db:"cron"` // 调度周期（推送 DS 时使用，本期仅存档）
+		SourceSql      string    `db:"source_sql"`   // 源端查询（内置引擎 SELECT，V1 任务为空）
+		TargetDb       string    `db:"target_db"`    // 目标库（空=目标 DSN 默认库，proto 暂未透出）
+		TargetTable    string    `db:"target_table"` // 目标表（内置引擎写入，不存在自动建；V1 任务为空）
+		BatchSize      int64     `db:"batch_size"`   // 分批大小（内置引擎每批行数）
 		DsWorkflowCode int64     `db:"ds_workflow_code"`
 		Status         string    `db:"status"`
 		LastRunAt      int64     `db:"last_run_at"` // 最近运行时间（毫秒时间戳，未运行为 0）
@@ -75,13 +84,14 @@ func NewSyncTaskModel(conn sqlx.SqlConn) SyncTaskModel {
 	}
 }
 
-// Insert 新增同步任务（草稿态）
+// Insert 新增同步任务（草稿态；含内置引擎列：V1 任务由调用方传零值/默认值）
 func (m *defaultSyncTaskModel) Insert(ctx context.Context, data *SyncTask) (int64, error) {
 	query := fmt.Sprintf("insert into %s (%s) values (%s)",
 		m.table, taskInsertColumns, placeholders(taskInsertFieldSize))
 	ret, err := m.conn.ExecCtx(ctx, query,
 		data.Name, data.SourceDsId, data.TargetDsId, data.Mode,
-		data.MappingJson, data.Cron, data.Beid)
+		data.MappingJson, data.Cron,
+		data.SourceSql, data.TargetDb, data.TargetTable, data.BatchSize, data.Beid)
 	if err != nil {
 		return 0, err
 	}

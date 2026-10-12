@@ -43,6 +43,30 @@ func IsValidTaskStatus(status string) bool {
 	return ok
 }
 
+// 同步执行日志状态（dc_sync_task_log.status：一次内置同步执行的终态）
+const (
+	SyncLogStatusSuccess = "success"
+	SyncLogStatusFailed  = "failed"
+)
+
+// 分批大小缺省值与上限（dc_sync_task.batch_size，内置同步引擎每批行数）
+const (
+	DefaultSyncBatchSize = 1000
+	MaxSyncBatchSize     = 10000
+)
+
+// NormalizeBatchSize 分批大小防御（纯函数）：<=0 兜底默认 1000，超过上限封顶 10000
+//（多行 values 一次写入，批过大会撑爆单语句长度与事务内存）
+func NormalizeBatchSize(n int64) int64 {
+	if n <= 0 {
+		return DefaultSyncBatchSize
+	}
+	if n > MaxSyncBatchSize {
+		return MaxSyncBatchSize
+	}
+	return n
+}
+
 // 分页缺省值与上限
 const (
 	defaultPageSize = 10
