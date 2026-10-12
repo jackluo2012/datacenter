@@ -54,10 +54,40 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
+				// 资产申请列表
+				Method:  http.MethodGet,
+				Path:    "/catalog/apply/list",
+				Handler: catalog.AssetApplyListHandler(serverCtx),
+			},
+			{
+				// 审批资产申请
+				Method:  http.MethodPost,
+				Path:    "/catalog/apply/review",
+				Handler: catalog.ReviewAssetApplyHandler(serverCtx),
+			},
+			{
+				// 申请使用资产
+				Method:  http.MethodPost,
+				Path:    "/catalog/asset/apply",
+				Handler: catalog.ApplyAssetHandler(serverCtx),
+			},
+			{
+				// 删除资产
+				Method:  http.MethodPost,
+				Path:    "/catalog/asset/delete",
+				Handler: catalog.DeleteAssetHandler(serverCtx),
+			},
+			{
 				// 资产列表
 				Method:  http.MethodGet,
 				Path:    "/catalog/asset/list",
 				Handler: catalog.AssetListHandler(serverCtx),
+			},
+			{
+				// 移动资产（切换/移出分类）
+				Method:  http.MethodPost,
+				Path:    "/catalog/asset/move",
+				Handler: catalog.MoveAssetHandler(serverCtx),
 			},
 			{
 				// 登记资产
@@ -72,10 +102,22 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: catalog.CreateCategoryHandler(serverCtx),
 			},
 			{
+				// 删除分类（有子分类或挂有资产时拒绝）
+				Method:  http.MethodPost,
+				Path:    "/catalog/category/delete",
+				Handler: catalog.DeleteCategoryHandler(serverCtx),
+			},
+			{
 				// 分类列表
 				Method:  http.MethodGet,
 				Path:    "/catalog/category/list",
 				Handler: catalog.CategoryListHandler(serverCtx),
+			},
+			{
+				// 更新分类
+				Method:  http.MethodPost,
+				Path:    "/catalog/category/update",
+				Handler: catalog.UpdateCategoryHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
@@ -551,6 +593,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: quality.CreateQualityJobHandler(serverCtx),
 			},
 			{
+				// 删除质量任务
+				Method:  http.MethodPost,
+				Path:    "/quality/job/delete",
+				Handler: quality.DeleteQualityJobHandler(serverCtx),
+			},
+			{
 				// 质量任务列表
 				Method:  http.MethodGet,
 				Path:    "/quality/job/list",
@@ -585,6 +633,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/quality/rule/list",
 				Handler: quality.QualityRuleListHandler(serverCtx),
+			},
+			{
+				// 更新质量规则
+				Method:  http.MethodPost,
+				Path:    "/quality/rule/update",
+				Handler: quality.UpdateQualityRuleHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
@@ -991,10 +1045,22 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: tag.TagDefListHandler(serverCtx),
 			},
 			{
+				// 更新标签定义
+				Method:  http.MethodPost,
+				Path:    "/tag/def/update",
+				Handler: tag.UpdateTagDefHandler(serverCtx),
+			},
+			{
 				// 创建标签对象
 				Method:  http.MethodPost,
 				Path:    "/tag/object/create",
 				Handler: tag.CreateTagObjectHandler(serverCtx),
+			},
+			{
+				// 删除标签对象（对象下仍有标签定义或人群时拒绝）
+				Method:  http.MethodPost,
+				Path:    "/tag/object/delete",
+				Handler: tag.DeleteTagObjectHandler(serverCtx),
 			},
 			{
 				// 标签对象列表

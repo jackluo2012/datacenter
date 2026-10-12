@@ -53,6 +53,8 @@ type (
 		Delete(ctx context.Context, id, beid int64) error
 		// FindList 条件分页（beid 必带，objectType 可选），返回列表与总数
 		FindList(ctx context.Context, beid int64, objectType string, page, size int64) ([]*TagObject, int64, error)
+		// FindListByIds 按主键批量查询（beid>0 时追加多租户过滤），列表回显 object_name 用
+		FindListByIds(ctx context.Context, beid int64, ids []int64) ([]*TagObject, error)
 	}
 
 	defaultObjectModel struct {
@@ -157,4 +159,40 @@ func (m *defaultObjectModel) FindList(ctx context.Context, beid int64, objectTyp
 		return nil, 0, err
 	}
 	return list, total, nil
+}
+
+// FindListByIds 按主键批量查询标签对象（自动去重，beid>0 时追加多租户过滤），
+// 标签定义列表回显 object_name 用
+func (m *defaultObjectModel) FindListByIds(ctx context.Context, beid int64, ids []int64) ([]*TagObject, error) {
+	// 去重并过滤非法 id
+	uniq := make([]int64, 0, len(ids))
+	seen := make(map[int64]struct{}, len(ids))
+	for _, id := range ids {
+		if id <= 0 {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		uniq = append(uniq, id)
+	}
+	if len(uniq) == 0 {
+		return nil, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `id` in (%s)", objectRows, m.table, placeholders(len(uniq)))
+	args := make([]any, 0, len(uniq)+1)
+	for _, id := range uniq {
+		args = append(args, id)
+	}
+	if beid > 0 {
+		query += " and `beid` = ?"
+		args = append(args, beid)
+	}
+	var list []*TagObject
+	err := m.conn.QueryRowsCtx(ctx, &list, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }

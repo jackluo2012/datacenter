@@ -32,6 +32,18 @@ message CreateRuleReq {
   string owner          = 7;
   int64  beid           = 8;
 }
+message UpdateRuleReq {
+  int64  id             = 1;
+  string name           = 2;
+  string rule_type      = 3;
+  string target_table   = 4;
+  string target_column  = 5;
+  string params_json    = 6;
+  string threshold_json = 7;
+  int32  status         = 8; //1.启用 0.停用（全量更新契约，调用方必传）
+  string owner          = 9; //空则保留原负责人
+  int64  beid           = 10;
+}
 message IdReq    { int64 id = 1; int64 beid = 2; }
 message RuleListReq {
   int64  beid   = 1;
@@ -150,12 +162,16 @@ message ProfileListReq { int64 beid = 1; int64 datasource_id = 2; string table_n
 service Quality {
   //创建规则
   rpc CreateRule(CreateRuleReq) returns (RuleReply);
+  //更新规则（全量更新）
+  rpc UpdateRule(UpdateRuleReq) returns (RuleReply);
   //删除规则
   rpc DeleteRule(IdReq) returns (IdReq);
   //规则列表
   rpc ListRules(RuleListReq) returns (RuleListReply);
   //创建任务
   rpc CreateJob(CreateJobReq) returns (JobReply);
+  //删除任务（结果历史不级联清理，供问题追溯）
+  rpc DeleteJob(IdReq) returns (IdReq);
   //任务列表
   rpc ListJobs(JobListReq) returns (JobListReply);
   //执行任务（同步跑完规则并落结果）

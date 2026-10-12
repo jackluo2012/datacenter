@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// 组件 name 与动态路由 name 一致（keep-alive include 匹配用）
+defineOptions({ name: 'DatasvcDatasvc' })
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
 import * as echarts from 'echarts'

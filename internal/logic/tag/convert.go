@@ -37,5 +37,6 @@ func tagDefToTypes(def *tagClient.TagDef) *types.TagDef {
 		RefreshCron: def.GetRefreshCron(),
 		Status:      def.GetStatus(),
 		Beid:        def.GetBeid(),
+		ObjectName:  def.GetObjectName(),
 	}
 }

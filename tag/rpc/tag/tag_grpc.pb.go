@@ -21,9 +21,11 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	Tag_CreateObject_FullMethodName     = "/tag.Tag/CreateObject"
 	Tag_ListObjects_FullMethodName      = "/tag.Tag/ListObjects"
+	Tag_DeleteObject_FullMethodName     = "/tag.Tag/DeleteObject"
 	Tag_CreateTag_FullMethodName        = "/tag.Tag/CreateTag"
 	Tag_ListTags_FullMethodName         = "/tag.Tag/ListTags"
 	Tag_DeleteTag_FullMethodName        = "/tag.Tag/DeleteTag"
+	Tag_UpdateTag_FullMethodName        = "/tag.Tag/UpdateTag"
 	Tag_Tagging_FullMethodName          = "/tag.Tag/Tagging"
 	Tag_GetObjectTags_FullMethodName    = "/tag.Tag/GetObjectTags"
 	Tag_CreateGroup_FullMethodName      = "/tag.Tag/CreateGroup"
@@ -41,12 +43,16 @@ type TagClient interface {
 	CreateObject(ctx context.Context, in *CreateObjectReq, opts ...grpc.CallOption) (*ObjectReply, error)
 	//对象列表
 	ListObjects(ctx context.Context, in *ObjectListReq, opts ...grpc.CallOption) (*ObjectListReply, error)
+	//删除标签对象（对象下仍有标签定义或人群时拒绝）
+	DeleteObject(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
 	//创建标签定义
 	CreateTag(ctx context.Context, in *CreateTagReq, opts ...grpc.CallOption) (*TagDefReply, error)
 	//标签定义列表
 	ListTags(ctx context.Context, in *TagDefListReq, opts ...grpc.CallOption) (*TagDefListReply, error)
 	//删除标签定义
 	DeleteTag(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
+	//更新标签定义（全量更新）
+	UpdateTag(ctx context.Context, in *UpdateTagReq, opts ...grpc.CallOption) (*TagDefReply, error)
 	//执行打标（规则 SQL 跑目标库，结果写 dc_tag_value）
 	Tagging(ctx context.Context, in *TaggingReq, opts ...grpc.CallOption) (*TaggingReply, error)
 	//查对象标签画像
@@ -91,6 +97,16 @@ func (c *tagClient) ListObjects(ctx context.Context, in *ObjectListReq, opts ...
 	return out, nil
 }
 
+func (c *tagClient) DeleteObject(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IdReq)
+	err := c.cc.Invoke(ctx, Tag_DeleteObject_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *tagClient) CreateTag(ctx context.Context, in *CreateTagReq, opts ...grpc.CallOption) (*TagDefReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(TagDefReply)
@@ -115,6 +131,16 @@ func (c *tagClient) DeleteTag(ctx context.Context, in *IdReq, opts ...grpc.CallO
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(IdReq)
 	err := c.cc.Invoke(ctx, Tag_DeleteTag_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tagClient) UpdateTag(ctx context.Context, in *UpdateTagReq, opts ...grpc.CallOption) (*TagDefReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TagDefReply)
+	err := c.cc.Invoke(ctx, Tag_UpdateTag_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -199,12 +225,16 @@ type TagServer interface {
 	CreateObject(context.Context, *CreateObjectReq) (*ObjectReply, error)
 	//对象列表
 	ListObjects(context.Context, *ObjectListReq) (*ObjectListReply, error)
+	//删除标签对象（对象下仍有标签定义或人群时拒绝）
+	DeleteObject(context.Context, *IdReq) (*IdReq, error)
 	//创建标签定义
 	CreateTag(context.Context, *CreateTagReq) (*TagDefReply, error)
 	//标签定义列表
 	ListTags(context.Context, *TagDefListReq) (*TagDefListReply, error)
 	//删除标签定义
 	DeleteTag(context.Context, *IdReq) (*IdReq, error)
+	//更新标签定义（全量更新）
+	UpdateTag(context.Context, *UpdateTagReq) (*TagDefReply, error)
 	//执行打标（规则 SQL 跑目标库，结果写 dc_tag_value）
 	Tagging(context.Context, *TaggingReq) (*TaggingReply, error)
 	//查对象标签画像
@@ -235,6 +265,9 @@ func (UnimplementedTagServer) CreateObject(context.Context, *CreateObjectReq) (*
 func (UnimplementedTagServer) ListObjects(context.Context, *ObjectListReq) (*ObjectListReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListObjects not implemented")
 }
+func (UnimplementedTagServer) DeleteObject(context.Context, *IdReq) (*IdReq, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteObject not implemented")
+}
 func (UnimplementedTagServer) CreateTag(context.Context, *CreateTagReq) (*TagDefReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateTag not implemented")
 }
@@ -243,6 +276,9 @@ func (UnimplementedTagServer) ListTags(context.Context, *TagDefListReq) (*TagDef
 }
 func (UnimplementedTagServer) DeleteTag(context.Context, *IdReq) (*IdReq, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteTag not implemented")
+}
+func (UnimplementedTagServer) UpdateTag(context.Context, *UpdateTagReq) (*TagDefReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateTag not implemented")
 }
 func (UnimplementedTagServer) Tagging(context.Context, *TaggingReq) (*TaggingReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method Tagging not implemented")
@@ -322,6 +358,24 @@ func _Tag_ListObjects_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Tag_DeleteObject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TagServer).DeleteObject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Tag_DeleteObject_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TagServer).DeleteObject(ctx, req.(*IdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Tag_CreateTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateTagReq)
 	if err := dec(in); err != nil {
@@ -372,6 +426,24 @@ func _Tag_DeleteTag_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TagServer).DeleteTag(ctx, req.(*IdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Tag_UpdateTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTagReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TagServer).UpdateTag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Tag_UpdateTag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TagServer).UpdateTag(ctx, req.(*UpdateTagReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -518,6 +590,10 @@ var Tag_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Tag_ListObjects_Handler,
 		},
 		{
+			MethodName: "DeleteObject",
+			Handler:    _Tag_DeleteObject_Handler,
+		},
+		{
 			MethodName: "CreateTag",
 			Handler:    _Tag_CreateTag_Handler,
 		},
@@ -528,6 +604,10 @@ var Tag_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteTag",
 			Handler:    _Tag_DeleteTag_Handler,
+		},
+		{
+			MethodName: "UpdateTag",
+			Handler:    _Tag_UpdateTag_Handler,
 		},
 		{
 			MethodName: "Tagging",

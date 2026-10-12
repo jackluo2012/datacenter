@@ -59,6 +59,10 @@ type (
 		Update(ctx context.Context, data *TagDef) error
 		// Delete 删除定义并级联删除其全部标签值（同一事务内先删值后删定义）
 		Delete(ctx context.Context, id, beid int64) error
+		// FindOneByKey 按对象+标签键查询（beid>0 时追加多租户过滤），更新换 key 查重用
+		FindOneByKey(ctx context.Context, objectId int64, tagKey string, beid int64) (*TagDef, error)
+		// CountByObject 统计对象下的标签定义数（删除对象前引用校验用）
+		CountByObject(ctx context.Context, objectId, beid int64) (int64, error)
 	}
 
 	defaultTagDefModel struct {
@@ -92,7 +96,7 @@ func (m *defaultTagDefModel) Create(ctx context.Context, data *TagDef) (int64, e
 	ret, err := m.conn.ExecCtx(ctx, query, data.ObjectId, data.TagKey, data.TagName, data.TagType,
 		data.RuleSql, data.RefreshCron, data.Status, data.Beid)
 	if err != nil {
-		if isDuplicateEntry(err) {
+		if IsDuplicateEntry(err) {
 			return 0, ErrDupTagKey
 		}
 		return 0, err
@@ -201,4 +205,37 @@ func (m *defaultTagDefModel) Delete(ctx context.Context, id, beid int64) error {
 		}
 		return nil
 	})
+}
+
+// FindOneByKey 按对象+标签键查询标签定义（唯一键 uk_obj_key 口径），未找到返回 ErrNotFound
+func (m *defaultTagDefModel) FindOneByKey(ctx context.Context, objectId int64, tagKey string, beid int64) (*TagDef, error) {
+	query := fmt.Sprintf("select %s from %s where `object_id` = ? and `tag_key` = ?", tagDefRows, m.table)
+	args := []any{objectId, tagKey}
+	if beid > 0 {
+		query += " and `beid` = ?"
+		args = append(args, beid)
+	}
+	var resp TagDef
+	err := m.conn.QueryRowCtx(ctx, &resp, query+" limit 1", args...)
+	switch {
+	case err == nil:
+		return &resp, nil
+	case errors.Is(err, sqlx.ErrNotFound):
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+// CountByObject 统计对象下的标签定义数，>0 表示对象仍被标签引用不可删
+func (m *defaultTagDefModel) CountByObject(ctx context.Context, objectId, beid int64) (int64, error) {
+	query := fmt.Sprintf("select count(*) from %s where `object_id` = ?", m.table)
+	args := []any{objectId}
+	if beid > 0 {
+		query += " and `beid` = ?"
+		args = append(args, beid)
+	}
+	var n int64
+	err := m.conn.QueryRowCtx(ctx, &n, query, args...)
+	return n, err
 }

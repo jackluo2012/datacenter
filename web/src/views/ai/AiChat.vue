@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// 组件 name 与动态路由 name 一致（keep-alive include 匹配用）
+defineOptions({ name: 'AiAi' })
 import { nextTick, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ask, askAndRun, type Candidate } from '@/api/ai'

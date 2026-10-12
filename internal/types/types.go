@@ -166,6 +166,7 @@ type AskReq struct {
 	Question      string `json:"question"`
 	Beid          int64  `json:"beid,optional"`
 	MaxCandidates int32  `json:"max_candidates,optional"`
+	ContextJson   string `json:"context_json,optional"` //多轮上下文（上一轮 question/SQL）
 }
 
 type AskResp struct {
@@ -186,6 +187,36 @@ type Asset struct {
 	Classification string `json:"classification,optional"`
 	AssetTagsJson  string `json:"asset_tags_json,optional"`
 	Visibility     string `json:"visibility,optional"`
+}
+
+type AssetApplyInfo struct {
+	Id        int64  `json:"id,optional"`
+	AssetId   int64  `json:"asset_id,optional"`
+	Reason    string `json:"reason,optional"`
+	Applicant string `json:"applicant,optional"`
+	Status    string `json:"status,optional"`
+	Reviewer  string `json:"reviewer,optional"`
+	Beid      int64  `json:"beid,optional"`
+	CreatedAt int64  `json:"created_at,optional"`
+}
+
+type AssetApplyListReq struct {
+	Beid   int64  `json:"beid,optional" form:"beid,optional"`
+	Status string `json:"status,optional" form:"status,optional"` //pending/approved/rejected，空为全部
+	Page   int64  `json:"page,optional" form:"page,optional"`
+	Size   int64  `json:"size,optional" form:"size,optional"`
+}
+
+type AssetApplyListResp struct {
+	List  []AssetApplyInfo `json:"list"`
+	Total int64            `json:"total"`
+}
+
+type AssetApplyReq struct {
+	AssetId   int64  `json:"asset_id"`
+	Reason    string `json:"reason,optional"`
+	Applicant string `json:"applicant,optional"`
+	Beid      int64  `json:"beid,optional"`
 }
 
 type AssetCategory struct {
@@ -256,6 +287,11 @@ type Candidate struct {
 	Name    string `json:"name,optional"`
 	Detail  string `json:"detail,optional"`
 	Comment string `json:"comment,optional"`
+}
+
+type CatalogIdReq struct {
+	Id   int64 `json:"id"`
+	Beid int64 `json:"beid,optional"`
 }
 
 type CategoryListReq struct {
@@ -863,6 +899,12 @@ type MetricListResp struct {
 	Total int64        `json:"total"`
 }
 
+type MoveAssetReq struct {
+	Id         int64 `json:"id"`
+	CategoryId int64 `json:"category_id,optional"` //目标分类id，0=移出分类
+	Beid       int64 `json:"beid,optional"`
+}
+
 type NextCodeResp struct {
 	BizCode string `json:"biz_code"`
 }
@@ -1062,6 +1104,13 @@ type ResultListReq struct {
 type ResultListResp struct {
 	List  []QualityResult `json:"list"`
 	Total int64           `json:"total"`
+}
+
+type ReviewAssetApplyReq struct {
+	Id       int64  `json:"id"`
+	Approve  bool   `json:"approve"`
+	Reviewer string `json:"reviewer"`
+	Beid     int64  `json:"beid,optional"`
 }
 
 type RunArchiveResp struct {
@@ -1712,6 +1761,7 @@ type TagDef struct {
 	RefreshCron string `json:"refresh_cron,optional"`
 	Status      int32  `json:"status,optional"`
 	Beid        int64  `json:"beid,optional"`
+	ObjectName  string `json:"object_name,optional"` //所属对象名（列表回显）
 }
 
 type TagDefIdReq struct {
@@ -1928,6 +1978,13 @@ type UpdateApiReq struct {
 	CacheTtl   int64  `json:"cache_ttl,optional"`
 }
 
+type UpdateCategoryReq struct {
+	Id       int64  `json:"id"`
+	ParentId int64  `json:"parent_id,optional"`
+	Name     string `json:"name"`
+	Beid     int64  `json:"beid,optional"`
+}
+
 type UpdateDataSourceReq struct {
 	Id         int64  `json:"id"`
 	Beid       int64  `json:"beid,optional"`
@@ -1951,6 +2008,31 @@ type UpdateMetricReq struct {
 	DimensionJson string `json:"dimension_json,optional"`
 	Comment       string `json:"comment,optional"`
 	Status        int32  `json:"status,optional"`
+}
+
+type UpdateQualityRuleReq struct {
+	Id            int64  `json:"id"`
+	Name          string `json:"name"`
+	RuleType      string `json:"rule_type"`
+	TargetTable   string `json:"target_table"`
+	TargetColumn  string `json:"target_column,optional"`
+	ParamsJson    string `json:"params_json,optional"`
+	ThresholdJson string `json:"threshold_json,optional"`
+	Status        int32  `json:"status"`         //1.启用 0.停用（全量更新契约，必传）
+	Owner         string `json:"owner,optional"` //空则保留原负责人
+	Beid          int64  `json:"beid,optional"`
+}
+
+type UpdateTagDefReq struct {
+	Id          int64  `json:"id"`
+	ObjectId    int64  `json:"object_id"`
+	TagKey      string `json:"tag_key"`
+	TagName     string `json:"tag_name"`
+	TagType     string `json:"tag_type"`
+	RuleSql     string `json:"rule_sql,optional"`
+	RefreshCron string `json:"refresh_cron,optional"`
+	Status      int32  `json:"status"` //1.启用 0.停用（全量更新契约，必传）
+	Beid        int64  `json:"beid,optional"`
 }
 
 type UserReply struct {

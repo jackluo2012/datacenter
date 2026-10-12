@@ -16,6 +16,12 @@ var (
 	ErrObjectNotFound = errors.New("标签对象不存在")
 	// ErrTagNotFound 标签定义不存在
 	ErrTagNotFound = errors.New("标签定义不存在")
+	// ErrInvalidTagStatus 标签状态非法（仅 0.停用/1.启用）
+	ErrInvalidTagStatus = errors.New("status 仅支持 0.停用/1.启用")
+	// ErrObjectHasTagDefs 对象下仍有标签定义，不能删除
+	ErrObjectHasTagDefs = errors.New("标签对象下仍存在标签定义，不能删除")
+	// ErrObjectHasGroups 对象仍被人群圈选引用，不能删除
+	ErrObjectHasGroups = errors.New("标签对象仍被人群引用，不能删除")
 	// ErrDupTagKey 同一对象下 tag_key 重复
 	ErrDupTagKey = errors.New("同一对象下 tag_key 已存在")
 	// ErrInvalidRuleSql 规则 SQL 未通过校验（非 select 开头/缺别名列/含分号等）

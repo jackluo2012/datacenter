@@ -15,3 +15,32 @@ func toCategory(c *catalogClient.AssetCategory) types.AssetCategory {
 		Beid:     c.GetBeid(),
 	}
 }
+
+// toAsset 将 rpc 侧的 Asset 逐字段映射为网关侧的 Asset（网关契约无 beid，不透出）。
+func toAsset(a *catalogClient.Asset) types.Asset {
+	return types.Asset{
+		Id:             a.GetId(),
+		EntityId:       a.GetEntityId(),
+		CategoryId:     a.GetCategoryId(),
+		Name:           a.GetName(),
+		EntityType:     a.GetEntityType(),
+		Comment:        a.GetComment(),
+		Classification: a.GetClassification(),
+		AssetTagsJson:  a.GetAssetTagsJson(),
+		Visibility:     a.GetVisibility(),
+	}
+}
+
+// toAssetApply 将 rpc 侧的 AssetApply 逐字段映射为网关侧的 AssetApplyInfo。
+func toAssetApply(a *catalogClient.AssetApply) types.AssetApplyInfo {
+	return types.AssetApplyInfo{
+		Id:        a.GetId(),
+		AssetId:   a.GetAssetId(),
+		Reason:    a.GetReason(),
+		Applicant: a.GetApplicant(),
+		Status:    a.GetStatus(),
+		Reviewer:  a.GetReviewer(),
+		Beid:      a.GetBeid(),
+		CreatedAt: a.GetCreatedAt(),
+	}
+}

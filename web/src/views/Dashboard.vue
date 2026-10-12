@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// 组件 name 与动态路由 name 一致（keep-alive include 匹配用）
+defineOptions({ name: 'dashboard' })
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import * as echarts from 'echarts'
 import { useRouter } from 'vue-router'

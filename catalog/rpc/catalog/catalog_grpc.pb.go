@@ -26,6 +26,10 @@ const (
 	Catalog_ApplyAsset_FullMethodName     = "/catalog.Catalog/ApplyAsset"
 	Catalog_ReviewApply_FullMethodName    = "/catalog.Catalog/ReviewApply"
 	Catalog_ListApplies_FullMethodName    = "/catalog.Catalog/ListApplies"
+	Catalog_UpdateCategory_FullMethodName = "/catalog.Catalog/UpdateCategory"
+	Catalog_DeleteCategory_FullMethodName = "/catalog.Catalog/DeleteCategory"
+	Catalog_DeleteAsset_FullMethodName    = "/catalog.Catalog/DeleteAsset"
+	Catalog_MoveAsset_FullMethodName      = "/catalog.Catalog/MoveAsset"
 )
 
 // CatalogClient is the client API for Catalog service.
@@ -46,6 +50,14 @@ type CatalogClient interface {
 	ReviewApply(ctx context.Context, in *ReviewApplyReq, opts ...grpc.CallOption) (*ApplyReply, error)
 	//申请列表
 	ListApplies(ctx context.Context, in *ApplyListReq, opts ...grpc.CallOption) (*ApplyListReply, error)
+	//更新分类（改名/挂父）
+	UpdateCategory(ctx context.Context, in *UpdateCategoryReq, opts ...grpc.CallOption) (*CategoryReply, error)
+	//删除分类（软删；有子分类或挂有资产时拒绝）
+	DeleteCategory(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
+	//删除资产
+	DeleteAsset(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
+	//移动资产（切换分类，category_id=0 表示移出分类）
+	MoveAsset(ctx context.Context, in *MoveAssetReq, opts ...grpc.CallOption) (*AssetReply, error)
 }
 
 type catalogClient struct {
@@ -126,6 +138,46 @@ func (c *catalogClient) ListApplies(ctx context.Context, in *ApplyListReq, opts 
 	return out, nil
 }
 
+func (c *catalogClient) UpdateCategory(ctx context.Context, in *UpdateCategoryReq, opts ...grpc.CallOption) (*CategoryReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CategoryReply)
+	err := c.cc.Invoke(ctx, Catalog_UpdateCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) DeleteCategory(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IdReq)
+	err := c.cc.Invoke(ctx, Catalog_DeleteCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) DeleteAsset(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IdReq)
+	err := c.cc.Invoke(ctx, Catalog_DeleteAsset_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogClient) MoveAsset(ctx context.Context, in *MoveAssetReq, opts ...grpc.CallOption) (*AssetReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AssetReply)
+	err := c.cc.Invoke(ctx, Catalog_MoveAsset_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CatalogServer is the server API for Catalog service.
 // All implementations must embed UnimplementedCatalogServer
 // for forward compatibility.
@@ -144,6 +196,14 @@ type CatalogServer interface {
 	ReviewApply(context.Context, *ReviewApplyReq) (*ApplyReply, error)
 	//申请列表
 	ListApplies(context.Context, *ApplyListReq) (*ApplyListReply, error)
+	//更新分类（改名/挂父）
+	UpdateCategory(context.Context, *UpdateCategoryReq) (*CategoryReply, error)
+	//删除分类（软删；有子分类或挂有资产时拒绝）
+	DeleteCategory(context.Context, *IdReq) (*IdReq, error)
+	//删除资产
+	DeleteAsset(context.Context, *IdReq) (*IdReq, error)
+	//移动资产（切换分类，category_id=0 表示移出分类）
+	MoveAsset(context.Context, *MoveAssetReq) (*AssetReply, error)
 	mustEmbedUnimplementedCatalogServer()
 }
 
@@ -174,6 +234,18 @@ func (UnimplementedCatalogServer) ReviewApply(context.Context, *ReviewApplyReq) 
 }
 func (UnimplementedCatalogServer) ListApplies(context.Context, *ApplyListReq) (*ApplyListReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListApplies not implemented")
+}
+func (UnimplementedCatalogServer) UpdateCategory(context.Context, *UpdateCategoryReq) (*CategoryReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateCategory not implemented")
+}
+func (UnimplementedCatalogServer) DeleteCategory(context.Context, *IdReq) (*IdReq, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteCategory not implemented")
+}
+func (UnimplementedCatalogServer) DeleteAsset(context.Context, *IdReq) (*IdReq, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteAsset not implemented")
+}
+func (UnimplementedCatalogServer) MoveAsset(context.Context, *MoveAssetReq) (*AssetReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method MoveAsset not implemented")
 }
 func (UnimplementedCatalogServer) mustEmbedUnimplementedCatalogServer() {}
 func (UnimplementedCatalogServer) testEmbeddedByValue()                 {}
@@ -322,6 +394,78 @@ func _Catalog_ListApplies_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Catalog_UpdateCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCategoryReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).UpdateCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Catalog_UpdateCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).UpdateCategory(ctx, req.(*UpdateCategoryReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_DeleteCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).DeleteCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Catalog_DeleteCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).DeleteCategory(ctx, req.(*IdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_DeleteAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).DeleteAsset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Catalog_DeleteAsset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).DeleteAsset(ctx, req.(*IdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Catalog_MoveAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MoveAssetReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServer).MoveAsset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Catalog_MoveAsset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServer).MoveAsset(ctx, req.(*MoveAssetReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Catalog_ServiceDesc is the grpc.ServiceDesc for Catalog service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -356,6 +500,22 @@ var Catalog_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListApplies",
 			Handler:    _Catalog_ListApplies_Handler,
+		},
+		{
+			MethodName: "UpdateCategory",
+			Handler:    _Catalog_UpdateCategory_Handler,
+		},
+		{
+			MethodName: "DeleteCategory",
+			Handler:    _Catalog_DeleteCategory_Handler,
+		},
+		{
+			MethodName: "DeleteAsset",
+			Handler:    _Catalog_DeleteAsset_Handler,
+		},
+		{
+			MethodName: "MoveAsset",
+			Handler:    _Catalog_MoveAsset_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

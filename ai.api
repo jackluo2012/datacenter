@@ -2,7 +2,7 @@ syntax = "v1"
 
 //AI 问数（Phase 4：语义检索 + 可选 LLM，全程审计）
 type Candidate {
-	Type    string `json:"type,optional"`   //entity/metric
+	Type    string `json:"type,optional"` //entity/metric
 	Id      int64  `json:"id,optional"`
 	Name    string `json:"name,optional"`
 	Detail  string `json:"detail,optional"`
@@ -13,7 +13,9 @@ type AskReq {
 	Question      string `json:"question"`
 	Beid          int64  `json:"beid,optional"`
 	MaxCandidates int32  `json:"max_candidates,optional"`
+	ContextJson   string `json:"context_json,optional"` //多轮上下文（上一轮 question/SQL）
 }
+
 type AskResp {
 	Candidates   []Candidate `json:"candidates"`
 	LlmEnabled   bool        `json:"llm_enabled"`
@@ -26,10 +28,11 @@ type AskAndRunReq {
 	Question      string `json:"question"`
 	Beid          int64  `json:"beid,optional"`
 	MaxCandidates int32  `json:"max_candidates,optional"`
-	AutoRun       bool   `json:"auto_run,optional"`      //生成 SQL 后经 ide 安全闸自动执行
+	AutoRun       bool   `json:"auto_run,optional"` //生成 SQL 后经 ide 安全闸自动执行
 	DatasourceId  int64  `json:"datasource_id,optional"` //auto_run 时必填：执行目标库
-	MaxRows       int32  `json:"max_rows,optional"`      //默认 20,上限 100
+	MaxRows       int32  `json:"max_rows,optional"` //默认 20,上限 100
 }
+
 type AskAndRunResp {
 	Candidates   []Candidate `json:"candidates"`
 	LlmEnabled   bool        `json:"llm_enabled"`
@@ -43,19 +46,21 @@ type AskAndRunResp {
 	RunError     string      `json:"run_error,optional"`
 }
 
-@server(
-	jwt: Auth
+@server (
+	jwt:   Auth
 	group: ai
 )
 service datacenter-api {
-	@doc(
+	@doc (
 		summary: "AI 问数"
 	)
 	@handler ask
 	post /ai/ask (AskReq) returns (AskResp)
-	@doc(
+
+	@doc (
 		summary: "AI 问数并执行（LLM 生成 SQL 后经 ide 安全闸自动执行）"
 	)
 	@handler askAndRun
 	post /ai/ask_and_run (AskAndRunReq) returns (AskAndRunResp)
 }
+

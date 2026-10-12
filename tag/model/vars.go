@@ -22,9 +22,9 @@ func placeholders(n int) string {
 	return strings.TrimSuffix(strings.Repeat("?,", n), ",")
 }
 
-// isDuplicateEntry 识别 MySQL 唯一键冲突（驱动报错文本含 duplicate entry / 错误码 1062），
-// 用于 Create 查重后并发插入撞 uk_obj_key 的兜底
-func isDuplicateEntry(err error) bool {
+// IsDuplicateEntry 识别 MySQL 唯一键冲突（驱动报错文本含 duplicate entry / 错误码 1062），
+// 用于 Create/Update 查重后并发插入撞 uk_obj_key 的兜底
+func IsDuplicateEntry(err error) bool {
 	if err == nil {
 		return false
 	}

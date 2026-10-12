@@ -440,6 +440,7 @@ type TagDef struct {
 	RefreshCron   string                 `protobuf:"bytes,7,opt,name=refresh_cron,json=refreshCron,proto3" json:"refresh_cron,omitempty"`
 	Status        int32                  `protobuf:"varint,8,opt,name=status,proto3" json:"status,omitempty"`
 	Beid          int64                  `protobuf:"varint,9,opt,name=beid,proto3" json:"beid,omitempty"`
+	ObjectName    string                 `protobuf:"bytes,10,opt,name=object_name,json=objectName,proto3" json:"object_name,omitempty"` //所属对象名（列表回显，冗余非落库字段）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -535,6 +536,13 @@ func (x *TagDef) GetBeid() int64 {
 		return x.Beid
 	}
 	return 0
+}
+
+func (x *TagDef) GetObjectName() string {
+	if x != nil {
+		return x.ObjectName
+	}
+	return ""
 }
 
 type TagDefReply struct {
@@ -725,6 +733,114 @@ func (x *CreateTagReq) GetBeid() int64 {
 	return 0
 }
 
+type UpdateTagReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ObjectId      int64                  `protobuf:"varint,2,opt,name=object_id,json=objectId,proto3" json:"object_id,omitempty"`
+	TagKey        string                 `protobuf:"bytes,3,opt,name=tag_key,json=tagKey,proto3" json:"tag_key,omitempty"`
+	TagName       string                 `protobuf:"bytes,4,opt,name=tag_name,json=tagName,proto3" json:"tag_name,omitempty"`
+	TagType       string                 `protobuf:"bytes,5,opt,name=tag_type,json=tagType,proto3" json:"tag_type,omitempty"`
+	RuleSql       string                 `protobuf:"bytes,6,opt,name=rule_sql,json=ruleSql,proto3" json:"rule_sql,omitempty"`
+	RefreshCron   string                 `protobuf:"bytes,7,opt,name=refresh_cron,json=refreshCron,proto3" json:"refresh_cron,omitempty"`
+	Status        int32                  `protobuf:"varint,8,opt,name=status,proto3" json:"status,omitempty"` //1.启用 0.停用（全量更新契约，调用方必传）
+	Beid          int64                  `protobuf:"varint,9,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateTagReq) Reset() {
+	*x = UpdateTagReq{}
+	mi := &file_tag_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateTagReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateTagReq) ProtoMessage() {}
+
+func (x *UpdateTagReq) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateTagReq.ProtoReflect.Descriptor instead.
+func (*UpdateTagReq) Descriptor() ([]byte, []int) {
+	return file_tag_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *UpdateTagReq) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UpdateTagReq) GetObjectId() int64 {
+	if x != nil {
+		return x.ObjectId
+	}
+	return 0
+}
+
+func (x *UpdateTagReq) GetTagKey() string {
+	if x != nil {
+		return x.TagKey
+	}
+	return ""
+}
+
+func (x *UpdateTagReq) GetTagName() string {
+	if x != nil {
+		return x.TagName
+	}
+	return ""
+}
+
+func (x *UpdateTagReq) GetTagType() string {
+	if x != nil {
+		return x.TagType
+	}
+	return ""
+}
+
+func (x *UpdateTagReq) GetRuleSql() string {
+	if x != nil {
+		return x.RuleSql
+	}
+	return ""
+}
+
+func (x *UpdateTagReq) GetRefreshCron() string {
+	if x != nil {
+		return x.RefreshCron
+	}
+	return ""
+}
+
+func (x *UpdateTagReq) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *UpdateTagReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
 type TagDefListReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Beid          int64                  `protobuf:"varint,1,opt,name=beid,proto3" json:"beid,omitempty"`
@@ -737,7 +853,7 @@ type TagDefListReq struct {
 
 func (x *TagDefListReq) Reset() {
 	*x = TagDefListReq{}
-	mi := &file_tag_proto_msgTypes[10]
+	mi := &file_tag_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -749,7 +865,7 @@ func (x *TagDefListReq) String() string {
 func (*TagDefListReq) ProtoMessage() {}
 
 func (x *TagDefListReq) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[10]
+	mi := &file_tag_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -762,7 +878,7 @@ func (x *TagDefListReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TagDefListReq.ProtoReflect.Descriptor instead.
 func (*TagDefListReq) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{10}
+	return file_tag_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *TagDefListReq) GetBeid() int64 {
@@ -804,7 +920,7 @@ type TaggingReq struct {
 
 func (x *TaggingReq) Reset() {
 	*x = TaggingReq{}
-	mi := &file_tag_proto_msgTypes[11]
+	mi := &file_tag_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -816,7 +932,7 @@ func (x *TaggingReq) String() string {
 func (*TaggingReq) ProtoMessage() {}
 
 func (x *TaggingReq) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[11]
+	mi := &file_tag_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -829,7 +945,7 @@ func (x *TaggingReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaggingReq.ProtoReflect.Descriptor instead.
 func (*TaggingReq) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{11}
+	return file_tag_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *TaggingReq) GetTagId() int64 {
@@ -863,7 +979,7 @@ type TaggingReply struct {
 
 func (x *TaggingReply) Reset() {
 	*x = TaggingReply{}
-	mi := &file_tag_proto_msgTypes[12]
+	mi := &file_tag_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -875,7 +991,7 @@ func (x *TaggingReply) String() string {
 func (*TaggingReply) ProtoMessage() {}
 
 func (x *TaggingReply) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[12]
+	mi := &file_tag_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -888,7 +1004,7 @@ func (x *TaggingReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaggingReply.ProtoReflect.Descriptor instead.
 func (*TaggingReply) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{12}
+	return file_tag_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *TaggingReply) GetTaggedRows() int64 {
@@ -916,7 +1032,7 @@ type ObjectTagsReq struct {
 
 func (x *ObjectTagsReq) Reset() {
 	*x = ObjectTagsReq{}
-	mi := &file_tag_proto_msgTypes[13]
+	mi := &file_tag_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -928,7 +1044,7 @@ func (x *ObjectTagsReq) String() string {
 func (*ObjectTagsReq) ProtoMessage() {}
 
 func (x *ObjectTagsReq) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[13]
+	mi := &file_tag_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -941,7 +1057,7 @@ func (x *ObjectTagsReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ObjectTagsReq.ProtoReflect.Descriptor instead.
 func (*ObjectTagsReq) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{13}
+	return file_tag_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ObjectTagsReq) GetObjectPk() string {
@@ -977,7 +1093,7 @@ type TagValueItem struct {
 
 func (x *TagValueItem) Reset() {
 	*x = TagValueItem{}
-	mi := &file_tag_proto_msgTypes[14]
+	mi := &file_tag_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -989,7 +1105,7 @@ func (x *TagValueItem) String() string {
 func (*TagValueItem) ProtoMessage() {}
 
 func (x *TagValueItem) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[14]
+	mi := &file_tag_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1002,7 +1118,7 @@ func (x *TagValueItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TagValueItem.ProtoReflect.Descriptor instead.
 func (*TagValueItem) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{14}
+	return file_tag_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *TagValueItem) GetTagKey() string {
@@ -1042,7 +1158,7 @@ type ObjectTagsReply struct {
 
 func (x *ObjectTagsReply) Reset() {
 	*x = ObjectTagsReply{}
-	mi := &file_tag_proto_msgTypes[15]
+	mi := &file_tag_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1054,7 +1170,7 @@ func (x *ObjectTagsReply) String() string {
 func (*ObjectTagsReply) ProtoMessage() {}
 
 func (x *ObjectTagsReply) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[15]
+	mi := &file_tag_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1067,7 +1183,7 @@ func (x *ObjectTagsReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ObjectTagsReply.ProtoReflect.Descriptor instead.
 func (*ObjectTagsReply) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{15}
+	return file_tag_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ObjectTagsReply) GetTags() []*TagValueItem {
@@ -1094,7 +1210,7 @@ type TagGroup struct {
 
 func (x *TagGroup) Reset() {
 	*x = TagGroup{}
-	mi := &file_tag_proto_msgTypes[16]
+	mi := &file_tag_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1106,7 +1222,7 @@ func (x *TagGroup) String() string {
 func (*TagGroup) ProtoMessage() {}
 
 func (x *TagGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[16]
+	mi := &file_tag_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1119,7 +1235,7 @@ func (x *TagGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TagGroup.ProtoReflect.Descriptor instead.
 func (*TagGroup) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{16}
+	return file_tag_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *TagGroup) GetId() int64 {
@@ -1187,7 +1303,7 @@ type GroupReply struct {
 
 func (x *GroupReply) Reset() {
 	*x = GroupReply{}
-	mi := &file_tag_proto_msgTypes[17]
+	mi := &file_tag_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1199,7 +1315,7 @@ func (x *GroupReply) String() string {
 func (*GroupReply) ProtoMessage() {}
 
 func (x *GroupReply) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[17]
+	mi := &file_tag_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1212,7 +1328,7 @@ func (x *GroupReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroupReply.ProtoReflect.Descriptor instead.
 func (*GroupReply) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{17}
+	return file_tag_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *GroupReply) GetGroup() *TagGroup {
@@ -1232,7 +1348,7 @@ type GroupListReply struct {
 
 func (x *GroupListReply) Reset() {
 	*x = GroupListReply{}
-	mi := &file_tag_proto_msgTypes[18]
+	mi := &file_tag_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1244,7 +1360,7 @@ func (x *GroupListReply) String() string {
 func (*GroupListReply) ProtoMessage() {}
 
 func (x *GroupListReply) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[18]
+	mi := &file_tag_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1257,7 +1373,7 @@ func (x *GroupListReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroupListReply.ProtoReflect.Descriptor instead.
 func (*GroupListReply) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{18}
+	return file_tag_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *GroupListReply) GetList() []*TagGroup {
@@ -1286,7 +1402,7 @@ type CreateGroupReq struct {
 
 func (x *CreateGroupReq) Reset() {
 	*x = CreateGroupReq{}
-	mi := &file_tag_proto_msgTypes[19]
+	mi := &file_tag_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1298,7 +1414,7 @@ func (x *CreateGroupReq) String() string {
 func (*CreateGroupReq) ProtoMessage() {}
 
 func (x *CreateGroupReq) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[19]
+	mi := &file_tag_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1311,7 +1427,7 @@ func (x *CreateGroupReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGroupReq.ProtoReflect.Descriptor instead.
 func (*CreateGroupReq) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{19}
+	return file_tag_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *CreateGroupReq) GetName() string {
@@ -1353,7 +1469,7 @@ type GroupListReq struct {
 
 func (x *GroupListReq) Reset() {
 	*x = GroupListReq{}
-	mi := &file_tag_proto_msgTypes[20]
+	mi := &file_tag_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1365,7 +1481,7 @@ func (x *GroupListReq) String() string {
 func (*GroupListReq) ProtoMessage() {}
 
 func (x *GroupListReq) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[20]
+	mi := &file_tag_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1378,7 +1494,7 @@ func (x *GroupListReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroupListReq.ProtoReflect.Descriptor instead.
 func (*GroupListReq) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{20}
+	return file_tag_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *GroupListReq) GetBeid() int64 {
@@ -1412,7 +1528,7 @@ type RunCircleReq struct {
 
 func (x *RunCircleReq) Reset() {
 	*x = RunCircleReq{}
-	mi := &file_tag_proto_msgTypes[21]
+	mi := &file_tag_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1424,7 +1540,7 @@ func (x *RunCircleReq) String() string {
 func (*RunCircleReq) ProtoMessage() {}
 
 func (x *RunCircleReq) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[21]
+	mi := &file_tag_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1437,7 +1553,7 @@ func (x *RunCircleReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunCircleReq.ProtoReflect.Descriptor instead.
 func (*RunCircleReq) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{21}
+	return file_tag_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *RunCircleReq) GetGroupId() int64 {
@@ -1464,7 +1580,7 @@ type RunCircleReply struct {
 
 func (x *RunCircleReply) Reset() {
 	*x = RunCircleReply{}
-	mi := &file_tag_proto_msgTypes[22]
+	mi := &file_tag_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1476,7 +1592,7 @@ func (x *RunCircleReply) String() string {
 func (*RunCircleReply) ProtoMessage() {}
 
 func (x *RunCircleReply) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[22]
+	mi := &file_tag_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1489,7 +1605,7 @@ func (x *RunCircleReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunCircleReply.ProtoReflect.Descriptor instead.
 func (*RunCircleReply) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{22}
+	return file_tag_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *RunCircleReply) GetMemberCount() int64 {
@@ -1518,7 +1634,7 @@ type GroupMembersReq struct {
 
 func (x *GroupMembersReq) Reset() {
 	*x = GroupMembersReq{}
-	mi := &file_tag_proto_msgTypes[23]
+	mi := &file_tag_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1530,7 +1646,7 @@ func (x *GroupMembersReq) String() string {
 func (*GroupMembersReq) ProtoMessage() {}
 
 func (x *GroupMembersReq) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[23]
+	mi := &file_tag_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1543,7 +1659,7 @@ func (x *GroupMembersReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroupMembersReq.ProtoReflect.Descriptor instead.
 func (*GroupMembersReq) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{23}
+	return file_tag_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *GroupMembersReq) GetGroupId() int64 {
@@ -1584,7 +1700,7 @@ type GroupMember struct {
 
 func (x *GroupMember) Reset() {
 	*x = GroupMember{}
-	mi := &file_tag_proto_msgTypes[24]
+	mi := &file_tag_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1596,7 +1712,7 @@ func (x *GroupMember) String() string {
 func (*GroupMember) ProtoMessage() {}
 
 func (x *GroupMember) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[24]
+	mi := &file_tag_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1609,7 +1725,7 @@ func (x *GroupMember) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroupMember.ProtoReflect.Descriptor instead.
 func (*GroupMember) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{24}
+	return file_tag_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *GroupMember) GetObjectPk() string {
@@ -1636,7 +1752,7 @@ type GroupMembersReply struct {
 
 func (x *GroupMembersReply) Reset() {
 	*x = GroupMembersReply{}
-	mi := &file_tag_proto_msgTypes[25]
+	mi := &file_tag_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1648,7 +1764,7 @@ func (x *GroupMembersReply) String() string {
 func (*GroupMembersReply) ProtoMessage() {}
 
 func (x *GroupMembersReply) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_proto_msgTypes[25]
+	mi := &file_tag_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1661,7 +1777,7 @@ func (x *GroupMembersReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroupMembersReply.ProtoReflect.Descriptor instead.
 func (*GroupMembersReply) Descriptor() ([]byte, []int) {
-	return file_tag_proto_rawDescGZIP(), []int{25}
+	return file_tag_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *GroupMembersReply) GetMembers() []*GroupMember {
@@ -1717,7 +1833,7 @@ const file_tag_proto_rawDesc = "" +
 	"\x04size\x18\x04 \x01(\x03R\x04size\"+\n" +
 	"\x05IdReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
-	"\x04beid\x18\x02 \x01(\x03R\x04beid\"\xee\x01\n" +
+	"\x04beid\x18\x02 \x01(\x03R\x04beid\"\x8f\x02\n" +
 	"\x06TagDef\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1b\n" +
 	"\tobject_id\x18\x02 \x01(\x03R\bobjectId\x12\x17\n" +
@@ -1727,7 +1843,10 @@ const file_tag_proto_rawDesc = "" +
 	"\brule_sql\x18\x06 \x01(\tR\aruleSql\x12!\n" +
 	"\frefresh_cron\x18\a \x01(\tR\vrefreshCron\x12\x16\n" +
 	"\x06status\x18\b \x01(\x05R\x06status\x12\x12\n" +
-	"\x04beid\x18\t \x01(\x03R\x04beid\",\n" +
+	"\x04beid\x18\t \x01(\x03R\x04beid\x12\x1f\n" +
+	"\vobject_name\x18\n" +
+	" \x01(\tR\n" +
+	"objectName\",\n" +
 	"\vTagDefReply\x12\x1d\n" +
 	"\x03def\x18\x01 \x01(\v2\v.tag.TagDefR\x03def\"H\n" +
 	"\x0fTagDefListReply\x12\x1f\n" +
@@ -1740,7 +1859,17 @@ const file_tag_proto_rawDesc = "" +
 	"\btag_type\x18\x04 \x01(\tR\atagType\x12\x19\n" +
 	"\brule_sql\x18\x05 \x01(\tR\aruleSql\x12!\n" +
 	"\frefresh_cron\x18\x06 \x01(\tR\vrefreshCron\x12\x12\n" +
-	"\x04beid\x18\a \x01(\x03R\x04beid\"h\n" +
+	"\x04beid\x18\a \x01(\x03R\x04beid\"\xf4\x01\n" +
+	"\fUpdateTagReq\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1b\n" +
+	"\tobject_id\x18\x02 \x01(\x03R\bobjectId\x12\x17\n" +
+	"\atag_key\x18\x03 \x01(\tR\x06tagKey\x12\x19\n" +
+	"\btag_name\x18\x04 \x01(\tR\atagName\x12\x19\n" +
+	"\btag_type\x18\x05 \x01(\tR\atagType\x12\x19\n" +
+	"\brule_sql\x18\x06 \x01(\tR\aruleSql\x12!\n" +
+	"\frefresh_cron\x18\a \x01(\tR\vrefreshCron\x12\x16\n" +
+	"\x06status\x18\b \x01(\x05R\x06status\x12\x12\n" +
+	"\x04beid\x18\t \x01(\x03R\x04beid\"h\n" +
 	"\rTagDefListReq\x12\x12\n" +
 	"\x04beid\x18\x01 \x01(\x03R\x04beid\x12\x1b\n" +
 	"\tobject_id\x18\x02 \x01(\x03R\bobjectId\x12\x12\n" +
@@ -1806,15 +1935,19 @@ const file_tag_proto_rawDesc = "" +
 	"\ttag_value\x18\x02 \x01(\tR\btagValue\"U\n" +
 	"\x11GroupMembersReply\x12*\n" +
 	"\amembers\x18\x01 \x03(\v2\x10.tag.GroupMemberR\amembers\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x03R\x05total2\xf6\x04\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total2\xd0\x05\n" +
 	"\x03Tag\x126\n" +
 	"\fCreateObject\x12\x14.tag.CreateObjectReq\x1a\x10.tag.ObjectReply\x127\n" +
-	"\vListObjects\x12\x12.tag.ObjectListReq\x1a\x14.tag.ObjectListReply\x120\n" +
+	"\vListObjects\x12\x12.tag.ObjectListReq\x1a\x14.tag.ObjectListReply\x12&\n" +
+	"\fDeleteObject\x12\n" +
+	".tag.IdReq\x1a\n" +
+	".tag.IdReq\x120\n" +
 	"\tCreateTag\x12\x11.tag.CreateTagReq\x1a\x10.tag.TagDefReply\x124\n" +
 	"\bListTags\x12\x12.tag.TagDefListReq\x1a\x14.tag.TagDefListReply\x12#\n" +
 	"\tDeleteTag\x12\n" +
 	".tag.IdReq\x1a\n" +
-	".tag.IdReq\x12-\n" +
+	".tag.IdReq\x120\n" +
+	"\tUpdateTag\x12\x11.tag.UpdateTagReq\x1a\x10.tag.TagDefReply\x12-\n" +
 	"\aTagging\x12\x0f.tag.TaggingReq\x1a\x11.tag.TaggingReply\x129\n" +
 	"\rGetObjectTags\x12\x12.tag.ObjectTagsReq\x1a\x14.tag.ObjectTagsReply\x123\n" +
 	"\vCreateGroup\x12\x13.tag.CreateGroupReq\x1a\x0f.tag.GroupReply\x124\n" +
@@ -1838,7 +1971,7 @@ func file_tag_proto_rawDescGZIP() []byte {
 	return file_tag_proto_rawDescData
 }
 
-var file_tag_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_tag_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_tag_proto_goTypes = []any{
 	(*TagObject)(nil),         // 0: tag.TagObject
 	(*ObjectReply)(nil),       // 1: tag.ObjectReply
@@ -1850,58 +1983,63 @@ var file_tag_proto_goTypes = []any{
 	(*TagDefReply)(nil),       // 7: tag.TagDefReply
 	(*TagDefListReply)(nil),   // 8: tag.TagDefListReply
 	(*CreateTagReq)(nil),      // 9: tag.CreateTagReq
-	(*TagDefListReq)(nil),     // 10: tag.TagDefListReq
-	(*TaggingReq)(nil),        // 11: tag.TaggingReq
-	(*TaggingReply)(nil),      // 12: tag.TaggingReply
-	(*ObjectTagsReq)(nil),     // 13: tag.ObjectTagsReq
-	(*TagValueItem)(nil),      // 14: tag.TagValueItem
-	(*ObjectTagsReply)(nil),   // 15: tag.ObjectTagsReply
-	(*TagGroup)(nil),          // 16: tag.TagGroup
-	(*GroupReply)(nil),        // 17: tag.GroupReply
-	(*GroupListReply)(nil),    // 18: tag.GroupListReply
-	(*CreateGroupReq)(nil),    // 19: tag.CreateGroupReq
-	(*GroupListReq)(nil),      // 20: tag.GroupListReq
-	(*RunCircleReq)(nil),      // 21: tag.RunCircleReq
-	(*RunCircleReply)(nil),    // 22: tag.RunCircleReply
-	(*GroupMembersReq)(nil),   // 23: tag.GroupMembersReq
-	(*GroupMember)(nil),       // 24: tag.GroupMember
-	(*GroupMembersReply)(nil), // 25: tag.GroupMembersReply
+	(*UpdateTagReq)(nil),      // 10: tag.UpdateTagReq
+	(*TagDefListReq)(nil),     // 11: tag.TagDefListReq
+	(*TaggingReq)(nil),        // 12: tag.TaggingReq
+	(*TaggingReply)(nil),      // 13: tag.TaggingReply
+	(*ObjectTagsReq)(nil),     // 14: tag.ObjectTagsReq
+	(*TagValueItem)(nil),      // 15: tag.TagValueItem
+	(*ObjectTagsReply)(nil),   // 16: tag.ObjectTagsReply
+	(*TagGroup)(nil),          // 17: tag.TagGroup
+	(*GroupReply)(nil),        // 18: tag.GroupReply
+	(*GroupListReply)(nil),    // 19: tag.GroupListReply
+	(*CreateGroupReq)(nil),    // 20: tag.CreateGroupReq
+	(*GroupListReq)(nil),      // 21: tag.GroupListReq
+	(*RunCircleReq)(nil),      // 22: tag.RunCircleReq
+	(*RunCircleReply)(nil),    // 23: tag.RunCircleReply
+	(*GroupMembersReq)(nil),   // 24: tag.GroupMembersReq
+	(*GroupMember)(nil),       // 25: tag.GroupMember
+	(*GroupMembersReply)(nil), // 26: tag.GroupMembersReply
 }
 var file_tag_proto_depIdxs = []int32{
 	0,  // 0: tag.ObjectReply.object:type_name -> tag.TagObject
 	0,  // 1: tag.ObjectListReply.list:type_name -> tag.TagObject
 	6,  // 2: tag.TagDefReply.def:type_name -> tag.TagDef
 	6,  // 3: tag.TagDefListReply.list:type_name -> tag.TagDef
-	14, // 4: tag.ObjectTagsReply.tags:type_name -> tag.TagValueItem
-	16, // 5: tag.GroupReply.group:type_name -> tag.TagGroup
-	16, // 6: tag.GroupListReply.list:type_name -> tag.TagGroup
-	24, // 7: tag.GroupMembersReply.members:type_name -> tag.GroupMember
+	15, // 4: tag.ObjectTagsReply.tags:type_name -> tag.TagValueItem
+	17, // 5: tag.GroupReply.group:type_name -> tag.TagGroup
+	17, // 6: tag.GroupListReply.list:type_name -> tag.TagGroup
+	25, // 7: tag.GroupMembersReply.members:type_name -> tag.GroupMember
 	3,  // 8: tag.Tag.CreateObject:input_type -> tag.CreateObjectReq
 	4,  // 9: tag.Tag.ListObjects:input_type -> tag.ObjectListReq
-	9,  // 10: tag.Tag.CreateTag:input_type -> tag.CreateTagReq
-	10, // 11: tag.Tag.ListTags:input_type -> tag.TagDefListReq
-	5,  // 12: tag.Tag.DeleteTag:input_type -> tag.IdReq
-	11, // 13: tag.Tag.Tagging:input_type -> tag.TaggingReq
-	13, // 14: tag.Tag.GetObjectTags:input_type -> tag.ObjectTagsReq
-	19, // 15: tag.Tag.CreateGroup:input_type -> tag.CreateGroupReq
-	20, // 16: tag.Tag.ListGroups:input_type -> tag.GroupListReq
-	5,  // 17: tag.Tag.DeleteGroup:input_type -> tag.IdReq
-	21, // 18: tag.Tag.RunCircle:input_type -> tag.RunCircleReq
-	23, // 19: tag.Tag.ListGroupMembers:input_type -> tag.GroupMembersReq
-	1,  // 20: tag.Tag.CreateObject:output_type -> tag.ObjectReply
-	2,  // 21: tag.Tag.ListObjects:output_type -> tag.ObjectListReply
-	7,  // 22: tag.Tag.CreateTag:output_type -> tag.TagDefReply
-	8,  // 23: tag.Tag.ListTags:output_type -> tag.TagDefListReply
-	5,  // 24: tag.Tag.DeleteTag:output_type -> tag.IdReq
-	12, // 25: tag.Tag.Tagging:output_type -> tag.TaggingReply
-	15, // 26: tag.Tag.GetObjectTags:output_type -> tag.ObjectTagsReply
-	17, // 27: tag.Tag.CreateGroup:output_type -> tag.GroupReply
-	18, // 28: tag.Tag.ListGroups:output_type -> tag.GroupListReply
-	5,  // 29: tag.Tag.DeleteGroup:output_type -> tag.IdReq
-	22, // 30: tag.Tag.RunCircle:output_type -> tag.RunCircleReply
-	25, // 31: tag.Tag.ListGroupMembers:output_type -> tag.GroupMembersReply
-	20, // [20:32] is the sub-list for method output_type
-	8,  // [8:20] is the sub-list for method input_type
+	5,  // 10: tag.Tag.DeleteObject:input_type -> tag.IdReq
+	9,  // 11: tag.Tag.CreateTag:input_type -> tag.CreateTagReq
+	11, // 12: tag.Tag.ListTags:input_type -> tag.TagDefListReq
+	5,  // 13: tag.Tag.DeleteTag:input_type -> tag.IdReq
+	10, // 14: tag.Tag.UpdateTag:input_type -> tag.UpdateTagReq
+	12, // 15: tag.Tag.Tagging:input_type -> tag.TaggingReq
+	14, // 16: tag.Tag.GetObjectTags:input_type -> tag.ObjectTagsReq
+	20, // 17: tag.Tag.CreateGroup:input_type -> tag.CreateGroupReq
+	21, // 18: tag.Tag.ListGroups:input_type -> tag.GroupListReq
+	5,  // 19: tag.Tag.DeleteGroup:input_type -> tag.IdReq
+	22, // 20: tag.Tag.RunCircle:input_type -> tag.RunCircleReq
+	24, // 21: tag.Tag.ListGroupMembers:input_type -> tag.GroupMembersReq
+	1,  // 22: tag.Tag.CreateObject:output_type -> tag.ObjectReply
+	2,  // 23: tag.Tag.ListObjects:output_type -> tag.ObjectListReply
+	5,  // 24: tag.Tag.DeleteObject:output_type -> tag.IdReq
+	7,  // 25: tag.Tag.CreateTag:output_type -> tag.TagDefReply
+	8,  // 26: tag.Tag.ListTags:output_type -> tag.TagDefListReply
+	5,  // 27: tag.Tag.DeleteTag:output_type -> tag.IdReq
+	7,  // 28: tag.Tag.UpdateTag:output_type -> tag.TagDefReply
+	13, // 29: tag.Tag.Tagging:output_type -> tag.TaggingReply
+	16, // 30: tag.Tag.GetObjectTags:output_type -> tag.ObjectTagsReply
+	18, // 31: tag.Tag.CreateGroup:output_type -> tag.GroupReply
+	19, // 32: tag.Tag.ListGroups:output_type -> tag.GroupListReply
+	5,  // 33: tag.Tag.DeleteGroup:output_type -> tag.IdReq
+	23, // 34: tag.Tag.RunCircle:output_type -> tag.RunCircleReply
+	26, // 35: tag.Tag.ListGroupMembers:output_type -> tag.GroupMembersReply
+	22, // [22:36] is the sub-list for method output_type
+	8,  // [8:22] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
 	8,  // [8:8] is the sub-list for extension extendee
 	0,  // [0:8] is the sub-list for field type_name
@@ -1918,7 +2056,7 @@ func file_tag_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tag_proto_rawDesc), len(file_tag_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   26,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -20,9 +20,11 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	Quality_CreateRule_FullMethodName         = "/quality.Quality/CreateRule"
+	Quality_UpdateRule_FullMethodName         = "/quality.Quality/UpdateRule"
 	Quality_DeleteRule_FullMethodName         = "/quality.Quality/DeleteRule"
 	Quality_ListRules_FullMethodName          = "/quality.Quality/ListRules"
 	Quality_CreateJob_FullMethodName          = "/quality.Quality/CreateJob"
+	Quality_DeleteJob_FullMethodName          = "/quality.Quality/DeleteJob"
 	Quality_ListJobs_FullMethodName           = "/quality.Quality/ListJobs"
 	Quality_RunJob_FullMethodName             = "/quality.Quality/RunJob"
 	Quality_ListResults_FullMethodName        = "/quality.Quality/ListResults"
@@ -41,12 +43,16 @@ const (
 type QualityClient interface {
 	//创建规则
 	CreateRule(ctx context.Context, in *CreateRuleReq, opts ...grpc.CallOption) (*RuleReply, error)
+	//更新规则（全量更新）
+	UpdateRule(ctx context.Context, in *UpdateRuleReq, opts ...grpc.CallOption) (*RuleReply, error)
 	//删除规则
 	DeleteRule(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
 	//规则列表
 	ListRules(ctx context.Context, in *RuleListReq, opts ...grpc.CallOption) (*RuleListReply, error)
 	//创建任务
 	CreateJob(ctx context.Context, in *CreateJobReq, opts ...grpc.CallOption) (*JobReply, error)
+	//删除任务（结果历史不级联清理，供问题追溯）
+	DeleteJob(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
 	//任务列表
 	ListJobs(ctx context.Context, in *JobListReq, opts ...grpc.CallOption) (*JobListReply, error)
 	//执行任务（同步跑完规则并落结果）
@@ -83,6 +89,16 @@ func (c *qualityClient) CreateRule(ctx context.Context, in *CreateRuleReq, opts 
 	return out, nil
 }
 
+func (c *qualityClient) UpdateRule(ctx context.Context, in *UpdateRuleReq, opts ...grpc.CallOption) (*RuleReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RuleReply)
+	err := c.cc.Invoke(ctx, Quality_UpdateRule_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *qualityClient) DeleteRule(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(IdReq)
@@ -107,6 +123,16 @@ func (c *qualityClient) CreateJob(ctx context.Context, in *CreateJobReq, opts ..
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(JobReply)
 	err := c.cc.Invoke(ctx, Quality_CreateJob_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *qualityClient) DeleteJob(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IdReq)
+	err := c.cc.Invoke(ctx, Quality_DeleteJob_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -219,12 +245,16 @@ func (c *qualityClient) ListProfiles(ctx context.Context, in *ProfileListReq, op
 type QualityServer interface {
 	//创建规则
 	CreateRule(context.Context, *CreateRuleReq) (*RuleReply, error)
+	//更新规则（全量更新）
+	UpdateRule(context.Context, *UpdateRuleReq) (*RuleReply, error)
 	//删除规则
 	DeleteRule(context.Context, *IdReq) (*IdReq, error)
 	//规则列表
 	ListRules(context.Context, *RuleListReq) (*RuleListReply, error)
 	//创建任务
 	CreateJob(context.Context, *CreateJobReq) (*JobReply, error)
+	//删除任务（结果历史不级联清理，供问题追溯）
+	DeleteJob(context.Context, *IdReq) (*IdReq, error)
 	//任务列表
 	ListJobs(context.Context, *JobListReq) (*JobListReply, error)
 	//执行任务（同步跑完规则并落结果）
@@ -254,6 +284,9 @@ type UnimplementedQualityServer struct{}
 func (UnimplementedQualityServer) CreateRule(context.Context, *CreateRuleReq) (*RuleReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateRule not implemented")
 }
+func (UnimplementedQualityServer) UpdateRule(context.Context, *UpdateRuleReq) (*RuleReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateRule not implemented")
+}
 func (UnimplementedQualityServer) DeleteRule(context.Context, *IdReq) (*IdReq, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteRule not implemented")
 }
@@ -262,6 +295,9 @@ func (UnimplementedQualityServer) ListRules(context.Context, *RuleListReq) (*Rul
 }
 func (UnimplementedQualityServer) CreateJob(context.Context, *CreateJobReq) (*JobReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateJob not implemented")
+}
+func (UnimplementedQualityServer) DeleteJob(context.Context, *IdReq) (*IdReq, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteJob not implemented")
 }
 func (UnimplementedQualityServer) ListJobs(context.Context, *JobListReq) (*JobListReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListJobs not implemented")
@@ -332,6 +368,24 @@ func _Quality_CreateRule_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Quality_UpdateRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRuleReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QualityServer).UpdateRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Quality_UpdateRule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QualityServer).UpdateRule(ctx, req.(*UpdateRuleReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Quality_DeleteRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IdReq)
 	if err := dec(in); err != nil {
@@ -382,6 +436,24 @@ func _Quality_CreateJob_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QualityServer).CreateJob(ctx, req.(*CreateJobReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Quality_DeleteJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QualityServer).DeleteJob(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Quality_DeleteJob_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QualityServer).DeleteJob(ctx, req.(*IdReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -578,6 +650,10 @@ var Quality_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Quality_CreateRule_Handler,
 		},
 		{
+			MethodName: "UpdateRule",
+			Handler:    _Quality_UpdateRule_Handler,
+		},
+		{
 			MethodName: "DeleteRule",
 			Handler:    _Quality_DeleteRule_Handler,
 		},
@@ -588,6 +664,10 @@ var Quality_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateJob",
 			Handler:    _Quality_CreateJob_Handler,
+		},
+		{
+			MethodName: "DeleteJob",
+			Handler:    _Quality_DeleteJob_Handler,
 		},
 		{
 			MethodName: "ListJobs",

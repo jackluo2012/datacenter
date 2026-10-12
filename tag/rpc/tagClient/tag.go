@@ -40,18 +40,23 @@ type (
 	TagValueItem      = tag.TagValueItem
 	TaggingReply      = tag.TaggingReply
 	TaggingReq        = tag.TaggingReq
+	UpdateTagReq      = tag.UpdateTagReq
 
 	Tag interface {
 		// 创建标签对象
 		CreateObject(ctx context.Context, in *CreateObjectReq, opts ...grpc.CallOption) (*ObjectReply, error)
 		// 对象列表
 		ListObjects(ctx context.Context, in *ObjectListReq, opts ...grpc.CallOption) (*ObjectListReply, error)
+		// 删除标签对象（对象下仍有标签定义或人群时拒绝）
+		DeleteObject(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
 		// 创建标签定义
 		CreateTag(ctx context.Context, in *CreateTagReq, opts ...grpc.CallOption) (*TagDefReply, error)
 		// 标签定义列表
 		ListTags(ctx context.Context, in *TagDefListReq, opts ...grpc.CallOption) (*TagDefListReply, error)
 		// 删除标签定义
 		DeleteTag(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
+		// 更新标签定义（全量更新）
+		UpdateTag(ctx context.Context, in *UpdateTagReq, opts ...grpc.CallOption) (*TagDefReply, error)
 		// 执行打标（规则 SQL 跑目标库，结果写 dc_tag_value）
 		Tagging(ctx context.Context, in *TaggingReq, opts ...grpc.CallOption) (*TaggingReply, error)
 		// 查对象标签画像
@@ -91,6 +96,12 @@ func (m *defaultTag) ListObjects(ctx context.Context, in *ObjectListReq, opts ..
 	return client.ListObjects(ctx, in, opts...)
 }
 
+// 删除标签对象（对象下仍有标签定义或人群时拒绝）
+func (m *defaultTag) DeleteObject(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	client := tag.NewTagClient(m.cli.Conn())
+	return client.DeleteObject(ctx, in, opts...)
+}
+
 // 创建标签定义
 func (m *defaultTag) CreateTag(ctx context.Context, in *CreateTagReq, opts ...grpc.CallOption) (*TagDefReply, error) {
 	client := tag.NewTagClient(m.cli.Conn())
@@ -107,6 +118,12 @@ func (m *defaultTag) ListTags(ctx context.Context, in *TagDefListReq, opts ...gr
 func (m *defaultTag) DeleteTag(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
 	client := tag.NewTagClient(m.cli.Conn())
 	return client.DeleteTag(ctx, in, opts...)
+}
+
+// 更新标签定义（全量更新）
+func (m *defaultTag) UpdateTag(ctx context.Context, in *UpdateTagReq, opts ...grpc.CallOption) (*TagDefReply, error) {
+	client := tag.NewTagClient(m.cli.Conn())
+	return client.UpdateTag(ctx, in, opts...)
 }
 
 // 执行打标（规则 SQL 跑目标库，结果写 dc_tag_value）

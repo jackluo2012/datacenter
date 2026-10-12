@@ -39,3 +39,20 @@ func toPbTagDef(d *model.TagDef) *tag.TagDef {
 		Beid:        d.Beid,
 	}
 }
+
+// withObjectName 给标签定义 pb 回填所属对象名（d/o 任一为 nil 时安全跳过）
+func withObjectName(d *tag.TagDef, o *model.TagObject) *tag.TagDef {
+	if d != nil && o != nil {
+		d.ObjectName = o.Name
+	}
+	return d
+}
+
+// objectNameMap 对象列表 → id 到名字的映射（纯函数，列表回显 object_name 用）
+func objectNameMap(objs []*model.TagObject) map[int64]string {
+	m := make(map[int64]string, len(objs))
+	for _, o := range objs {
+		m[o.Id] = o.Name
+	}
+	return m
+}

@@ -27,3 +27,12 @@ var (
 	// ErrInvalidParam 请求参数不合法
 	ErrInvalidParam = errors.New("请求参数不合法")
 )
+
+var (
+	// ErrCategoryHasChildren 分类下存在子分类，不能删除
+	ErrCategoryHasChildren = errors.New("分类下存在子分类，不能删除")
+	// ErrCategoryHasAssets 分类下挂有资产，不能删除
+	ErrCategoryHasAssets = errors.New("分类下存在资产，不能删除")
+	// ErrCategoryCircle 父分类不能是自身或自身的子分类（防成环）
+	ErrCategoryCircle = errors.New("父分类不能是自身或自身的子分类")
+)

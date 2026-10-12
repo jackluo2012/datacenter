@@ -54,6 +54,59 @@ type AssetListResp {
 	Total int64   `json:"total"`
 }
 
+type UpdateCategoryReq {
+	Id       int64  `json:"id"`
+	ParentId int64  `json:"parent_id,optional"`
+	Name     string `json:"name"`
+	Beid     int64  `json:"beid,optional"`
+}
+
+type CatalogIdReq {
+	Id   int64 `json:"id"`
+	Beid int64 `json:"beid,optional"`
+}
+
+type MoveAssetReq {
+	Id         int64 `json:"id"`
+	CategoryId int64 `json:"category_id,optional"` //目标分类id，0=移出分类
+	Beid       int64 `json:"beid,optional"`
+}
+
+type AssetApplyReq {
+	AssetId   int64  `json:"asset_id"`
+	Reason    string `json:"reason,optional"`
+	Applicant string `json:"applicant,optional"`
+	Beid      int64  `json:"beid,optional"`
+}
+
+type ReviewAssetApplyReq {
+	Id       int64  `json:"id"`
+	Approve  bool   `json:"approve"`
+	Reviewer string `json:"reviewer"`
+	Beid     int64  `json:"beid,optional"`
+}
+
+type AssetApplyListReq {
+	Beid   int64  `json:"beid,optional" form:"beid,optional"`
+	Status string `json:"status,optional" form:"status,optional"` //pending/approved/rejected，空为全部
+	Page   int64  `json:"page,optional" form:"page,optional"`
+	Size   int64  `json:"size,optional" form:"size,optional"`
+}
+type AssetApplyInfo {
+	Id        int64  `json:"id,optional"`
+	AssetId   int64  `json:"asset_id,optional"`
+	Reason    string `json:"reason,optional"`
+	Applicant string `json:"applicant,optional"`
+	Status    string `json:"status,optional"`
+	Reviewer  string `json:"reviewer,optional"`
+	Beid      int64  `json:"beid,optional"`
+	CreatedAt int64  `json:"created_at,optional"`
+}
+type AssetApplyListResp {
+	List  []AssetApplyInfo `json:"list"`
+	Total int64            `json:"total"`
+}
+
 @server(
 	jwt: Auth
 	group: catalog
@@ -79,4 +132,39 @@ service datacenter-api {
 	)
 	@handler assetList
 	get /catalog/asset/list (AssetListReq) returns (AssetListResp)
+	@doc(
+		summary: "更新分类"
+	)
+	@handler updateCategory
+	post /catalog/category/update (UpdateCategoryReq) returns (AssetCategory)
+	@doc(
+		summary: "删除分类（有子分类或挂有资产时拒绝）"
+	)
+	@handler deleteCategory
+	post /catalog/category/delete (CatalogIdReq)
+	@doc(
+		summary: "删除资产"
+	)
+	@handler deleteAsset
+	post /catalog/asset/delete (CatalogIdReq)
+	@doc(
+		summary: "移动资产（切换/移出分类）"
+	)
+	@handler moveAsset
+	post /catalog/asset/move (MoveAssetReq) returns (Asset)
+	@doc(
+		summary: "申请使用资产"
+	)
+	@handler applyAsset
+	post /catalog/asset/apply (AssetApplyReq) returns (AssetApplyInfo)
+	@doc(
+		summary: "审批资产申请"
+	)
+	@handler reviewAssetApply
+	post /catalog/apply/review (ReviewAssetApplyReq) returns (AssetApplyInfo)
+	@doc(
+		summary: "资产申请列表"
+	)
+	@handler assetApplyList
+	get /catalog/apply/list (AssetApplyListReq) returns (AssetApplyListResp)
 }

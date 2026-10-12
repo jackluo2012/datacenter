@@ -32,11 +32,11 @@ func (l *ListAppliesLogic) ListApplies(in *catalog.ApplyListReq) (*catalog.Apply
 	if err != nil {
 		return nil, err
 	}
-	// pb 契约中 ApplyListReply 无 total 字段，总数记录日志供排查
+	// pb 契约已补 total 字段，随列表一并返回供网关分页
 	l.Debugf("ListApplies beid=%d status=%s total=%d", in.Beid, in.Status, total)
 	reply := make([]*catalog.AssetApply, 0, len(list))
 	for _, a := range list {
 		reply = append(reply, applyToPb(a))
 	}
-	return &catalog.ApplyListReply{List: reply}, nil
+	return &catalog.ApplyListReply{List: reply, Total: total}, nil
 }

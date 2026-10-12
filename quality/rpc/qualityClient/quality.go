@@ -42,16 +42,21 @@ type (
 	SaveAlertChannelReq   = quality.SaveAlertChannelReq
 	TableProfile          = quality.TableProfile
 	TestAlertReply        = quality.TestAlertReply
+	UpdateRuleReq         = quality.UpdateRuleReq
 
 	Quality interface {
 		// 创建规则
 		CreateRule(ctx context.Context, in *CreateRuleReq, opts ...grpc.CallOption) (*RuleReply, error)
+		// 更新规则（全量更新）
+		UpdateRule(ctx context.Context, in *UpdateRuleReq, opts ...grpc.CallOption) (*RuleReply, error)
 		// 删除规则
 		DeleteRule(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
 		// 规则列表
 		ListRules(ctx context.Context, in *RuleListReq, opts ...grpc.CallOption) (*RuleListReply, error)
 		// 创建任务
 		CreateJob(ctx context.Context, in *CreateJobReq, opts ...grpc.CallOption) (*JobReply, error)
+		// 删除任务（结果历史不级联清理，供问题追溯）
+		DeleteJob(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
 		// 任务列表
 		ListJobs(ctx context.Context, in *JobListReq, opts ...grpc.CallOption) (*JobListReply, error)
 		// 执行任务（同步跑完规则并落结果）
@@ -87,6 +92,12 @@ func (m *defaultQuality) CreateRule(ctx context.Context, in *CreateRuleReq, opts
 	return client.CreateRule(ctx, in, opts...)
 }
 
+// 更新规则（全量更新）
+func (m *defaultQuality) UpdateRule(ctx context.Context, in *UpdateRuleReq, opts ...grpc.CallOption) (*RuleReply, error) {
+	client := quality.NewQualityClient(m.cli.Conn())
+	return client.UpdateRule(ctx, in, opts...)
+}
+
 // 删除规则
 func (m *defaultQuality) DeleteRule(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
 	client := quality.NewQualityClient(m.cli.Conn())
@@ -103,6 +114,12 @@ func (m *defaultQuality) ListRules(ctx context.Context, in *RuleListReq, opts ..
 func (m *defaultQuality) CreateJob(ctx context.Context, in *CreateJobReq, opts ...grpc.CallOption) (*JobReply, error) {
 	client := quality.NewQualityClient(m.cli.Conn())
 	return client.CreateJob(ctx, in, opts...)
+}
+
+// 删除任务（结果历史不级联清理，供问题追溯）
+func (m *defaultQuality) DeleteJob(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	client := quality.NewQualityClient(m.cli.Conn())
+	return client.DeleteJob(ctx, in, opts...)
 }
 
 // 任务列表

@@ -42,6 +42,7 @@ message TagDef {
   string refresh_cron = 7;
   int32  status       = 8;
   int64  beid         = 9;
+  string object_name  = 10; //所属对象名（列表回显，冗余非落库字段）
 }
 message TagDefReply { TagDef def = 1; }
 message TagDefListReply {
@@ -57,6 +58,17 @@ message CreateTagReq {
   string rule_sql     = 5;
   string refresh_cron = 6;
   int64  beid         = 7;
+}
+message UpdateTagReq {
+  int64  id           = 1;
+  int64  object_id    = 2;
+  string tag_key      = 3;
+  string tag_name     = 4;
+  string tag_type     = 5;
+  string rule_sql     = 6;
+  string refresh_cron = 7;
+  int32  status       = 8; //1.启用 0.停用（全量更新契约，调用方必传）
+  int64  beid         = 9;
 }
 message TagDefListReq {
   int64  beid      = 1;
@@ -139,12 +151,16 @@ service Tag {
   rpc CreateObject(CreateObjectReq) returns (ObjectReply);
   //对象列表
   rpc ListObjects(ObjectListReq) returns (ObjectListReply);
+  //删除标签对象（对象下仍有标签定义或人群时拒绝）
+  rpc DeleteObject(IdReq) returns (IdReq);
   //创建标签定义
   rpc CreateTag(CreateTagReq) returns (TagDefReply);
   //标签定义列表
   rpc ListTags(TagDefListReq) returns (TagDefListReply);
   //删除标签定义
   rpc DeleteTag(IdReq) returns (IdReq);
+  //更新标签定义（全量更新）
+  rpc UpdateTag(UpdateTagReq) returns (TagDefReply);
   //执行打标（规则 SQL 跑目标库，结果写 dc_tag_value）
   rpc Tagging(TaggingReq) returns (TaggingReply);
   //查对象标签画像

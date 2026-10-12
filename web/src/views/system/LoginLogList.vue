@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// 组件 name 与动态路由 name 一致（keep-alive include 匹配用）
+defineOptions({ name: 'SystemLoginlog' })
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { loginLogList, type OpsLoginLog } from '@/api/ops'

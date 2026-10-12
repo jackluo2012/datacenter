@@ -38,6 +38,7 @@ func (l *AskLogic) Ask(req *types.AskReq) (resp *types.AskResp, err error) {
 		Question:      req.Question,
 		Beid:          req.Beid,
 		MaxCandidates: maxCandidates,
+		ContextJson:   req.ContextJson,
 	})
 	if err != nil {
 		// 业务错误直接透传 rpc error

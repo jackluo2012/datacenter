@@ -127,9 +127,13 @@ CREATE TABLE IF NOT EXISTS `dc_asset_category` (
   `name` varchar(128) NOT NULL,
   `beid` bigint NOT NULL DEFAULT 0,
   `created_at` datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
+  `deleted_at` datetime(3) DEFAULT NULL COMMENT '软删标记,NULL为未删除',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_beid_parent` (`beid`,`parent_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='资产目录分类表';
+
+-- 增量迁移：已建过 dc_asset_category 的库执行（新增软删列）
+-- ALTER TABLE `dc_asset_category` ADD COLUMN `deleted_at` datetime(3) DEFAULT NULL COMMENT '软删标记,NULL为未删除';
 
 -- 资产表（元数据实体入目录,冗余快照避免跨服务联查）
 CREATE TABLE IF NOT EXISTS `dc_asset` (

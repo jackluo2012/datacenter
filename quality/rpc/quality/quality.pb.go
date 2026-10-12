@@ -333,6 +333,122 @@ func (x *CreateRuleReq) GetBeid() int64 {
 	return 0
 }
 
+type UpdateRuleReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	RuleType      string                 `protobuf:"bytes,3,opt,name=rule_type,json=ruleType,proto3" json:"rule_type,omitempty"`
+	TargetTable   string                 `protobuf:"bytes,4,opt,name=target_table,json=targetTable,proto3" json:"target_table,omitempty"`
+	TargetColumn  string                 `protobuf:"bytes,5,opt,name=target_column,json=targetColumn,proto3" json:"target_column,omitempty"`
+	ParamsJson    string                 `protobuf:"bytes,6,opt,name=params_json,json=paramsJson,proto3" json:"params_json,omitempty"`
+	ThresholdJson string                 `protobuf:"bytes,7,opt,name=threshold_json,json=thresholdJson,proto3" json:"threshold_json,omitempty"`
+	Status        int32                  `protobuf:"varint,8,opt,name=status,proto3" json:"status,omitempty"` //1.启用 0.停用（全量更新契约，调用方必传）
+	Owner         string                 `protobuf:"bytes,9,opt,name=owner,proto3" json:"owner,omitempty"`    //空则保留原负责人
+	Beid          int64                  `protobuf:"varint,10,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateRuleReq) Reset() {
+	*x = UpdateRuleReq{}
+	mi := &file_quality_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateRuleReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateRuleReq) ProtoMessage() {}
+
+func (x *UpdateRuleReq) ProtoReflect() protoreflect.Message {
+	mi := &file_quality_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateRuleReq.ProtoReflect.Descriptor instead.
+func (*UpdateRuleReq) Descriptor() ([]byte, []int) {
+	return file_quality_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateRuleReq) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UpdateRuleReq) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *UpdateRuleReq) GetRuleType() string {
+	if x != nil {
+		return x.RuleType
+	}
+	return ""
+}
+
+func (x *UpdateRuleReq) GetTargetTable() string {
+	if x != nil {
+		return x.TargetTable
+	}
+	return ""
+}
+
+func (x *UpdateRuleReq) GetTargetColumn() string {
+	if x != nil {
+		return x.TargetColumn
+	}
+	return ""
+}
+
+func (x *UpdateRuleReq) GetParamsJson() string {
+	if x != nil {
+		return x.ParamsJson
+	}
+	return ""
+}
+
+func (x *UpdateRuleReq) GetThresholdJson() string {
+	if x != nil {
+		return x.ThresholdJson
+	}
+	return ""
+}
+
+func (x *UpdateRuleReq) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *UpdateRuleReq) GetOwner() string {
+	if x != nil {
+		return x.Owner
+	}
+	return ""
+}
+
+func (x *UpdateRuleReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
 type IdReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -343,7 +459,7 @@ type IdReq struct {
 
 func (x *IdReq) Reset() {
 	*x = IdReq{}
-	mi := &file_quality_proto_msgTypes[4]
+	mi := &file_quality_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -355,7 +471,7 @@ func (x *IdReq) String() string {
 func (*IdReq) ProtoMessage() {}
 
 func (x *IdReq) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[4]
+	mi := &file_quality_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -368,7 +484,7 @@ func (x *IdReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdReq.ProtoReflect.Descriptor instead.
 func (*IdReq) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{4}
+	return file_quality_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *IdReq) GetId() int64 {
@@ -397,7 +513,7 @@ type RuleListReq struct {
 
 func (x *RuleListReq) Reset() {
 	*x = RuleListReq{}
-	mi := &file_quality_proto_msgTypes[5]
+	mi := &file_quality_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -409,7 +525,7 @@ func (x *RuleListReq) String() string {
 func (*RuleListReq) ProtoMessage() {}
 
 func (x *RuleListReq) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[5]
+	mi := &file_quality_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -422,7 +538,7 @@ func (x *RuleListReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RuleListReq.ProtoReflect.Descriptor instead.
 func (*RuleListReq) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{5}
+	return file_quality_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *RuleListReq) GetBeid() int64 {
@@ -467,7 +583,7 @@ type CreateJobReq struct {
 
 func (x *CreateJobReq) Reset() {
 	*x = CreateJobReq{}
-	mi := &file_quality_proto_msgTypes[6]
+	mi := &file_quality_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -479,7 +595,7 @@ func (x *CreateJobReq) String() string {
 func (*CreateJobReq) ProtoMessage() {}
 
 func (x *CreateJobReq) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[6]
+	mi := &file_quality_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -492,7 +608,7 @@ func (x *CreateJobReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateJobReq.ProtoReflect.Descriptor instead.
 func (*CreateJobReq) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{6}
+	return file_quality_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *CreateJobReq) GetName() string {
@@ -554,7 +670,7 @@ type QualityJob struct {
 
 func (x *QualityJob) Reset() {
 	*x = QualityJob{}
-	mi := &file_quality_proto_msgTypes[7]
+	mi := &file_quality_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -566,7 +682,7 @@ func (x *QualityJob) String() string {
 func (*QualityJob) ProtoMessage() {}
 
 func (x *QualityJob) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[7]
+	mi := &file_quality_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -579,7 +695,7 @@ func (x *QualityJob) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QualityJob.ProtoReflect.Descriptor instead.
 func (*QualityJob) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{7}
+	return file_quality_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *QualityJob) GetId() int64 {
@@ -654,7 +770,7 @@ type JobReply struct {
 
 func (x *JobReply) Reset() {
 	*x = JobReply{}
-	mi := &file_quality_proto_msgTypes[8]
+	mi := &file_quality_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -666,7 +782,7 @@ func (x *JobReply) String() string {
 func (*JobReply) ProtoMessage() {}
 
 func (x *JobReply) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[8]
+	mi := &file_quality_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -679,7 +795,7 @@ func (x *JobReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JobReply.ProtoReflect.Descriptor instead.
 func (*JobReply) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{8}
+	return file_quality_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *JobReply) GetJob() *QualityJob {
@@ -699,7 +815,7 @@ type JobListReply struct {
 
 func (x *JobListReply) Reset() {
 	*x = JobListReply{}
-	mi := &file_quality_proto_msgTypes[9]
+	mi := &file_quality_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -711,7 +827,7 @@ func (x *JobListReply) String() string {
 func (*JobListReply) ProtoMessage() {}
 
 func (x *JobListReply) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[9]
+	mi := &file_quality_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -724,7 +840,7 @@ func (x *JobListReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JobListReply.ProtoReflect.Descriptor instead.
 func (*JobListReply) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{9}
+	return file_quality_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *JobListReply) GetList() []*QualityJob {
@@ -752,7 +868,7 @@ type JobListReq struct {
 
 func (x *JobListReq) Reset() {
 	*x = JobListReq{}
-	mi := &file_quality_proto_msgTypes[10]
+	mi := &file_quality_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -764,7 +880,7 @@ func (x *JobListReq) String() string {
 func (*JobListReq) ProtoMessage() {}
 
 func (x *JobListReq) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[10]
+	mi := &file_quality_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -777,7 +893,7 @@ func (x *JobListReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JobListReq.ProtoReflect.Descriptor instead.
 func (*JobListReq) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{10}
+	return file_quality_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *JobListReq) GetBeid() int64 {
@@ -817,7 +933,7 @@ type QualityResult struct {
 
 func (x *QualityResult) Reset() {
 	*x = QualityResult{}
-	mi := &file_quality_proto_msgTypes[11]
+	mi := &file_quality_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -829,7 +945,7 @@ func (x *QualityResult) String() string {
 func (*QualityResult) ProtoMessage() {}
 
 func (x *QualityResult) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[11]
+	mi := &file_quality_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -842,7 +958,7 @@ func (x *QualityResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QualityResult.ProtoReflect.Descriptor instead.
 func (*QualityResult) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{11}
+	return file_quality_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *QualityResult) GetId() int64 {
@@ -913,7 +1029,7 @@ type RunJobReply struct {
 
 func (x *RunJobReply) Reset() {
 	*x = RunJobReply{}
-	mi := &file_quality_proto_msgTypes[12]
+	mi := &file_quality_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -925,7 +1041,7 @@ func (x *RunJobReply) String() string {
 func (*RunJobReply) ProtoMessage() {}
 
 func (x *RunJobReply) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[12]
+	mi := &file_quality_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -938,7 +1054,7 @@ func (x *RunJobReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunJobReply.ProtoReflect.Descriptor instead.
 func (*RunJobReply) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{12}
+	return file_quality_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *RunJobReply) GetJobId() int64 {
@@ -979,7 +1095,7 @@ type ResultListReply struct {
 
 func (x *ResultListReply) Reset() {
 	*x = ResultListReply{}
-	mi := &file_quality_proto_msgTypes[13]
+	mi := &file_quality_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -991,7 +1107,7 @@ func (x *ResultListReply) String() string {
 func (*ResultListReply) ProtoMessage() {}
 
 func (x *ResultListReply) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[13]
+	mi := &file_quality_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1004,7 +1120,7 @@ func (x *ResultListReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResultListReply.ProtoReflect.Descriptor instead.
 func (*ResultListReply) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{13}
+	return file_quality_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ResultListReply) GetList() []*QualityResult {
@@ -1033,7 +1149,7 @@ type ResultListReq struct {
 
 func (x *ResultListReq) Reset() {
 	*x = ResultListReq{}
-	mi := &file_quality_proto_msgTypes[14]
+	mi := &file_quality_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1045,7 +1161,7 @@ func (x *ResultListReq) String() string {
 func (*ResultListReq) ProtoMessage() {}
 
 func (x *ResultListReq) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[14]
+	mi := &file_quality_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1058,7 +1174,7 @@ func (x *ResultListReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResultListReq.ProtoReflect.Descriptor instead.
 func (*ResultListReq) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{14}
+	return file_quality_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ResultListReq) GetJobId() int64 {
@@ -1106,7 +1222,7 @@ type AlertChannel struct {
 
 func (x *AlertChannel) Reset() {
 	*x = AlertChannel{}
-	mi := &file_quality_proto_msgTypes[15]
+	mi := &file_quality_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1118,7 +1234,7 @@ func (x *AlertChannel) String() string {
 func (*AlertChannel) ProtoMessage() {}
 
 func (x *AlertChannel) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[15]
+	mi := &file_quality_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1131,7 +1247,7 @@ func (x *AlertChannel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AlertChannel.ProtoReflect.Descriptor instead.
 func (*AlertChannel) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{15}
+	return file_quality_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *AlertChannel) GetId() int64 {
@@ -1205,7 +1321,7 @@ type SaveAlertChannelReq struct {
 
 func (x *SaveAlertChannelReq) Reset() {
 	*x = SaveAlertChannelReq{}
-	mi := &file_quality_proto_msgTypes[16]
+	mi := &file_quality_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1217,7 +1333,7 @@ func (x *SaveAlertChannelReq) String() string {
 func (*SaveAlertChannelReq) ProtoMessage() {}
 
 func (x *SaveAlertChannelReq) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[16]
+	mi := &file_quality_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1230,7 +1346,7 @@ func (x *SaveAlertChannelReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveAlertChannelReq.ProtoReflect.Descriptor instead.
 func (*SaveAlertChannelReq) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{16}
+	return file_quality_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *SaveAlertChannelReq) GetId() int64 {
@@ -1292,7 +1408,7 @@ type AlertChannelListReply struct {
 
 func (x *AlertChannelListReply) Reset() {
 	*x = AlertChannelListReply{}
-	mi := &file_quality_proto_msgTypes[17]
+	mi := &file_quality_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1304,7 +1420,7 @@ func (x *AlertChannelListReply) String() string {
 func (*AlertChannelListReply) ProtoMessage() {}
 
 func (x *AlertChannelListReply) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[17]
+	mi := &file_quality_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1317,7 +1433,7 @@ func (x *AlertChannelListReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AlertChannelListReply.ProtoReflect.Descriptor instead.
 func (*AlertChannelListReply) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{17}
+	return file_quality_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *AlertChannelListReply) GetList() []*AlertChannel {
@@ -1345,7 +1461,7 @@ type AlertChannelListReq struct {
 
 func (x *AlertChannelListReq) Reset() {
 	*x = AlertChannelListReq{}
-	mi := &file_quality_proto_msgTypes[18]
+	mi := &file_quality_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1357,7 +1473,7 @@ func (x *AlertChannelListReq) String() string {
 func (*AlertChannelListReq) ProtoMessage() {}
 
 func (x *AlertChannelListReq) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[18]
+	mi := &file_quality_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1370,7 +1486,7 @@ func (x *AlertChannelListReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AlertChannelListReq.ProtoReflect.Descriptor instead.
 func (*AlertChannelListReq) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{18}
+	return file_quality_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *AlertChannelListReq) GetBeid() int64 {
@@ -1404,7 +1520,7 @@ type TestAlertReply struct {
 
 func (x *TestAlertReply) Reset() {
 	*x = TestAlertReply{}
-	mi := &file_quality_proto_msgTypes[19]
+	mi := &file_quality_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1416,7 +1532,7 @@ func (x *TestAlertReply) String() string {
 func (*TestAlertReply) ProtoMessage() {}
 
 func (x *TestAlertReply) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[19]
+	mi := &file_quality_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1429,7 +1545,7 @@ func (x *TestAlertReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestAlertReply.ProtoReflect.Descriptor instead.
 func (*TestAlertReply) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{19}
+	return file_quality_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *TestAlertReply) GetOk() bool {
@@ -1459,7 +1575,7 @@ type ErrorData struct {
 
 func (x *ErrorData) Reset() {
 	*x = ErrorData{}
-	mi := &file_quality_proto_msgTypes[20]
+	mi := &file_quality_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1471,7 +1587,7 @@ func (x *ErrorData) String() string {
 func (*ErrorData) ProtoMessage() {}
 
 func (x *ErrorData) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[20]
+	mi := &file_quality_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1484,7 +1600,7 @@ func (x *ErrorData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ErrorData.ProtoReflect.Descriptor instead.
 func (*ErrorData) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{20}
+	return file_quality_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ErrorData) GetRuleId() int64 {
@@ -1532,7 +1648,7 @@ type ErrorDataListReply struct {
 
 func (x *ErrorDataListReply) Reset() {
 	*x = ErrorDataListReply{}
-	mi := &file_quality_proto_msgTypes[21]
+	mi := &file_quality_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1544,7 +1660,7 @@ func (x *ErrorDataListReply) String() string {
 func (*ErrorDataListReply) ProtoMessage() {}
 
 func (x *ErrorDataListReply) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[21]
+	mi := &file_quality_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1557,7 +1673,7 @@ func (x *ErrorDataListReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ErrorDataListReply.ProtoReflect.Descriptor instead.
 func (*ErrorDataListReply) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{21}
+	return file_quality_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ErrorDataListReply) GetList() []*ErrorData {
@@ -1586,7 +1702,7 @@ type ErrorDataListReq struct {
 
 func (x *ErrorDataListReq) Reset() {
 	*x = ErrorDataListReq{}
-	mi := &file_quality_proto_msgTypes[22]
+	mi := &file_quality_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1598,7 +1714,7 @@ func (x *ErrorDataListReq) String() string {
 func (*ErrorDataListReq) ProtoMessage() {}
 
 func (x *ErrorDataListReq) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[22]
+	mi := &file_quality_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1611,7 +1727,7 @@ func (x *ErrorDataListReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ErrorDataListReq.ProtoReflect.Descriptor instead.
 func (*ErrorDataListReq) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{22}
+	return file_quality_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ErrorDataListReq) GetJobId() int64 {
@@ -1660,7 +1776,7 @@ type TableProfile struct {
 
 func (x *TableProfile) Reset() {
 	*x = TableProfile{}
-	mi := &file_quality_proto_msgTypes[23]
+	mi := &file_quality_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1672,7 +1788,7 @@ func (x *TableProfile) String() string {
 func (*TableProfile) ProtoMessage() {}
 
 func (x *TableProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[23]
+	mi := &file_quality_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1685,7 +1801,7 @@ func (x *TableProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TableProfile.ProtoReflect.Descriptor instead.
 func (*TableProfile) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{23}
+	return file_quality_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *TableProfile) GetId() int64 {
@@ -1771,7 +1887,7 @@ type ProfileTableReq struct {
 
 func (x *ProfileTableReq) Reset() {
 	*x = ProfileTableReq{}
-	mi := &file_quality_proto_msgTypes[24]
+	mi := &file_quality_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1783,7 +1899,7 @@ func (x *ProfileTableReq) String() string {
 func (*ProfileTableReq) ProtoMessage() {}
 
 func (x *ProfileTableReq) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[24]
+	mi := &file_quality_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1796,7 +1912,7 @@ func (x *ProfileTableReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProfileTableReq.ProtoReflect.Descriptor instead.
 func (*ProfileTableReq) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{24}
+	return file_quality_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ProfileTableReq) GetDatasourceId() int64 {
@@ -1843,7 +1959,7 @@ type ProfileReply struct {
 
 func (x *ProfileReply) Reset() {
 	*x = ProfileReply{}
-	mi := &file_quality_proto_msgTypes[25]
+	mi := &file_quality_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1855,7 +1971,7 @@ func (x *ProfileReply) String() string {
 func (*ProfileReply) ProtoMessage() {}
 
 func (x *ProfileReply) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[25]
+	mi := &file_quality_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1868,7 +1984,7 @@ func (x *ProfileReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProfileReply.ProtoReflect.Descriptor instead.
 func (*ProfileReply) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{25}
+	return file_quality_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ProfileReply) GetProfile() *TableProfile {
@@ -1888,7 +2004,7 @@ type ProfileListReply struct {
 
 func (x *ProfileListReply) Reset() {
 	*x = ProfileListReply{}
-	mi := &file_quality_proto_msgTypes[26]
+	mi := &file_quality_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1900,7 +2016,7 @@ func (x *ProfileListReply) String() string {
 func (*ProfileListReply) ProtoMessage() {}
 
 func (x *ProfileListReply) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[26]
+	mi := &file_quality_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1913,7 +2029,7 @@ func (x *ProfileListReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProfileListReply.ProtoReflect.Descriptor instead.
 func (*ProfileListReply) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{26}
+	return file_quality_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ProfileListReply) GetList() []*TableProfile {
@@ -1943,7 +2059,7 @@ type ProfileListReq struct {
 
 func (x *ProfileListReq) Reset() {
 	*x = ProfileListReq{}
-	mi := &file_quality_proto_msgTypes[27]
+	mi := &file_quality_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1955,7 +2071,7 @@ func (x *ProfileListReq) String() string {
 func (*ProfileListReq) ProtoMessage() {}
 
 func (x *ProfileListReq) ProtoReflect() protoreflect.Message {
-	mi := &file_quality_proto_msgTypes[27]
+	mi := &file_quality_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1968,7 +2084,7 @@ func (x *ProfileListReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProfileListReq.ProtoReflect.Descriptor instead.
 func (*ProfileListReq) Descriptor() ([]byte, []int) {
-	return file_quality_proto_rawDescGZIP(), []int{27}
+	return file_quality_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ProfileListReq) GetBeid() int64 {
@@ -2038,7 +2154,20 @@ const file_quality_proto_rawDesc = "" +
 	"paramsJson\x12%\n" +
 	"\x0ethreshold_json\x18\x06 \x01(\tR\rthresholdJson\x12\x14\n" +
 	"\x05owner\x18\a \x01(\tR\x05owner\x12\x12\n" +
-	"\x04beid\x18\b \x01(\x03R\x04beid\"+\n" +
+	"\x04beid\x18\b \x01(\x03R\x04beid\"\xa2\x02\n" +
+	"\rUpdateRuleReq\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1b\n" +
+	"\trule_type\x18\x03 \x01(\tR\bruleType\x12!\n" +
+	"\ftarget_table\x18\x04 \x01(\tR\vtargetTable\x12#\n" +
+	"\rtarget_column\x18\x05 \x01(\tR\ftargetColumn\x12\x1f\n" +
+	"\vparams_json\x18\x06 \x01(\tR\n" +
+	"paramsJson\x12%\n" +
+	"\x0ethreshold_json\x18\a \x01(\tR\rthresholdJson\x12\x16\n" +
+	"\x06status\x18\b \x01(\x05R\x06status\x12\x14\n" +
+	"\x05owner\x18\t \x01(\tR\x05owner\x12\x12\n" +
+	"\x04beid\x18\n" +
+	" \x01(\x03R\x04beid\"+\n" +
 	"\x05IdReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04beid\x18\x02 \x01(\x03R\x04beid\"f\n" +
@@ -2178,14 +2307,17 @@ const file_quality_proto_rawDesc = "" +
 	"\n" +
 	"table_name\x18\x03 \x01(\tR\ttableName\x12\x12\n" +
 	"\x04page\x18\x04 \x01(\x03R\x04page\x12\x12\n" +
-	"\x04size\x18\x05 \x01(\x03R\x04size2\xe9\x06\n" +
+	"\x04size\x18\x05 \x01(\x03R\x04size2\xd0\a\n" +
 	"\aQuality\x128\n" +
 	"\n" +
-	"CreateRule\x12\x16.quality.CreateRuleReq\x1a\x12.quality.RuleReply\x12,\n" +
+	"CreateRule\x12\x16.quality.CreateRuleReq\x1a\x12.quality.RuleReply\x128\n" +
+	"\n" +
+	"UpdateRule\x12\x16.quality.UpdateRuleReq\x1a\x12.quality.RuleReply\x12,\n" +
 	"\n" +
 	"DeleteRule\x12\x0e.quality.IdReq\x1a\x0e.quality.IdReq\x129\n" +
 	"\tListRules\x12\x14.quality.RuleListReq\x1a\x16.quality.RuleListReply\x125\n" +
-	"\tCreateJob\x12\x15.quality.CreateJobReq\x1a\x11.quality.JobReply\x126\n" +
+	"\tCreateJob\x12\x15.quality.CreateJobReq\x1a\x11.quality.JobReply\x12+\n" +
+	"\tDeleteJob\x12\x0e.quality.IdReq\x1a\x0e.quality.IdReq\x126\n" +
 	"\bListJobs\x12\x13.quality.JobListReq\x1a\x15.quality.JobListReply\x12.\n" +
 	"\x06RunJob\x12\x0e.quality.IdReq\x1a\x14.quality.RunJobReply\x12?\n" +
 	"\vListResults\x12\x16.quality.ResultListReq\x1a\x18.quality.ResultListReply\x12G\n" +
@@ -2209,77 +2341,82 @@ func file_quality_proto_rawDescGZIP() []byte {
 	return file_quality_proto_rawDescData
 }
 
-var file_quality_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
+var file_quality_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_quality_proto_goTypes = []any{
 	(*QualityRule)(nil),           // 0: quality.QualityRule
 	(*RuleReply)(nil),             // 1: quality.RuleReply
 	(*RuleListReply)(nil),         // 2: quality.RuleListReply
 	(*CreateRuleReq)(nil),         // 3: quality.CreateRuleReq
-	(*IdReq)(nil),                 // 4: quality.IdReq
-	(*RuleListReq)(nil),           // 5: quality.RuleListReq
-	(*CreateJobReq)(nil),          // 6: quality.CreateJobReq
-	(*QualityJob)(nil),            // 7: quality.QualityJob
-	(*JobReply)(nil),              // 8: quality.JobReply
-	(*JobListReply)(nil),          // 9: quality.JobListReply
-	(*JobListReq)(nil),            // 10: quality.JobListReq
-	(*QualityResult)(nil),         // 11: quality.QualityResult
-	(*RunJobReply)(nil),           // 12: quality.RunJobReply
-	(*ResultListReply)(nil),       // 13: quality.ResultListReply
-	(*ResultListReq)(nil),         // 14: quality.ResultListReq
-	(*AlertChannel)(nil),          // 15: quality.AlertChannel
-	(*SaveAlertChannelReq)(nil),   // 16: quality.SaveAlertChannelReq
-	(*AlertChannelListReply)(nil), // 17: quality.AlertChannelListReply
-	(*AlertChannelListReq)(nil),   // 18: quality.AlertChannelListReq
-	(*TestAlertReply)(nil),        // 19: quality.TestAlertReply
-	(*ErrorData)(nil),             // 20: quality.ErrorData
-	(*ErrorDataListReply)(nil),    // 21: quality.ErrorDataListReply
-	(*ErrorDataListReq)(nil),      // 22: quality.ErrorDataListReq
-	(*TableProfile)(nil),          // 23: quality.TableProfile
-	(*ProfileTableReq)(nil),       // 24: quality.ProfileTableReq
-	(*ProfileReply)(nil),          // 25: quality.ProfileReply
-	(*ProfileListReply)(nil),      // 26: quality.ProfileListReply
-	(*ProfileListReq)(nil),        // 27: quality.ProfileListReq
+	(*UpdateRuleReq)(nil),         // 4: quality.UpdateRuleReq
+	(*IdReq)(nil),                 // 5: quality.IdReq
+	(*RuleListReq)(nil),           // 6: quality.RuleListReq
+	(*CreateJobReq)(nil),          // 7: quality.CreateJobReq
+	(*QualityJob)(nil),            // 8: quality.QualityJob
+	(*JobReply)(nil),              // 9: quality.JobReply
+	(*JobListReply)(nil),          // 10: quality.JobListReply
+	(*JobListReq)(nil),            // 11: quality.JobListReq
+	(*QualityResult)(nil),         // 12: quality.QualityResult
+	(*RunJobReply)(nil),           // 13: quality.RunJobReply
+	(*ResultListReply)(nil),       // 14: quality.ResultListReply
+	(*ResultListReq)(nil),         // 15: quality.ResultListReq
+	(*AlertChannel)(nil),          // 16: quality.AlertChannel
+	(*SaveAlertChannelReq)(nil),   // 17: quality.SaveAlertChannelReq
+	(*AlertChannelListReply)(nil), // 18: quality.AlertChannelListReply
+	(*AlertChannelListReq)(nil),   // 19: quality.AlertChannelListReq
+	(*TestAlertReply)(nil),        // 20: quality.TestAlertReply
+	(*ErrorData)(nil),             // 21: quality.ErrorData
+	(*ErrorDataListReply)(nil),    // 22: quality.ErrorDataListReply
+	(*ErrorDataListReq)(nil),      // 23: quality.ErrorDataListReq
+	(*TableProfile)(nil),          // 24: quality.TableProfile
+	(*ProfileTableReq)(nil),       // 25: quality.ProfileTableReq
+	(*ProfileReply)(nil),          // 26: quality.ProfileReply
+	(*ProfileListReply)(nil),      // 27: quality.ProfileListReply
+	(*ProfileListReq)(nil),        // 28: quality.ProfileListReq
 }
 var file_quality_proto_depIdxs = []int32{
 	0,  // 0: quality.RuleReply.rule:type_name -> quality.QualityRule
 	0,  // 1: quality.RuleListReply.list:type_name -> quality.QualityRule
-	7,  // 2: quality.JobReply.job:type_name -> quality.QualityJob
-	7,  // 3: quality.JobListReply.list:type_name -> quality.QualityJob
-	11, // 4: quality.ResultListReply.list:type_name -> quality.QualityResult
-	15, // 5: quality.AlertChannelListReply.list:type_name -> quality.AlertChannel
-	20, // 6: quality.ErrorDataListReply.list:type_name -> quality.ErrorData
-	23, // 7: quality.ProfileReply.profile:type_name -> quality.TableProfile
-	23, // 8: quality.ProfileListReply.list:type_name -> quality.TableProfile
+	8,  // 2: quality.JobReply.job:type_name -> quality.QualityJob
+	8,  // 3: quality.JobListReply.list:type_name -> quality.QualityJob
+	12, // 4: quality.ResultListReply.list:type_name -> quality.QualityResult
+	16, // 5: quality.AlertChannelListReply.list:type_name -> quality.AlertChannel
+	21, // 6: quality.ErrorDataListReply.list:type_name -> quality.ErrorData
+	24, // 7: quality.ProfileReply.profile:type_name -> quality.TableProfile
+	24, // 8: quality.ProfileListReply.list:type_name -> quality.TableProfile
 	3,  // 9: quality.Quality.CreateRule:input_type -> quality.CreateRuleReq
-	4,  // 10: quality.Quality.DeleteRule:input_type -> quality.IdReq
-	5,  // 11: quality.Quality.ListRules:input_type -> quality.RuleListReq
-	6,  // 12: quality.Quality.CreateJob:input_type -> quality.CreateJobReq
-	10, // 13: quality.Quality.ListJobs:input_type -> quality.JobListReq
-	4,  // 14: quality.Quality.RunJob:input_type -> quality.IdReq
-	14, // 15: quality.Quality.ListResults:input_type -> quality.ResultListReq
-	16, // 16: quality.Quality.SaveAlertChannel:input_type -> quality.SaveAlertChannelReq
-	4,  // 17: quality.Quality.DeleteAlertChannel:input_type -> quality.IdReq
-	18, // 18: quality.Quality.ListAlertChannels:input_type -> quality.AlertChannelListReq
-	4,  // 19: quality.Quality.TestAlertChannel:input_type -> quality.IdReq
-	22, // 20: quality.Quality.ListErrorData:input_type -> quality.ErrorDataListReq
-	24, // 21: quality.Quality.ProfileTable:input_type -> quality.ProfileTableReq
-	27, // 22: quality.Quality.ListProfiles:input_type -> quality.ProfileListReq
-	1,  // 23: quality.Quality.CreateRule:output_type -> quality.RuleReply
-	4,  // 24: quality.Quality.DeleteRule:output_type -> quality.IdReq
-	2,  // 25: quality.Quality.ListRules:output_type -> quality.RuleListReply
-	8,  // 26: quality.Quality.CreateJob:output_type -> quality.JobReply
-	9,  // 27: quality.Quality.ListJobs:output_type -> quality.JobListReply
-	12, // 28: quality.Quality.RunJob:output_type -> quality.RunJobReply
-	13, // 29: quality.Quality.ListResults:output_type -> quality.ResultListReply
-	15, // 30: quality.Quality.SaveAlertChannel:output_type -> quality.AlertChannel
-	4,  // 31: quality.Quality.DeleteAlertChannel:output_type -> quality.IdReq
-	17, // 32: quality.Quality.ListAlertChannels:output_type -> quality.AlertChannelListReply
-	19, // 33: quality.Quality.TestAlertChannel:output_type -> quality.TestAlertReply
-	21, // 34: quality.Quality.ListErrorData:output_type -> quality.ErrorDataListReply
-	25, // 35: quality.Quality.ProfileTable:output_type -> quality.ProfileReply
-	26, // 36: quality.Quality.ListProfiles:output_type -> quality.ProfileListReply
-	23, // [23:37] is the sub-list for method output_type
-	9,  // [9:23] is the sub-list for method input_type
+	4,  // 10: quality.Quality.UpdateRule:input_type -> quality.UpdateRuleReq
+	5,  // 11: quality.Quality.DeleteRule:input_type -> quality.IdReq
+	6,  // 12: quality.Quality.ListRules:input_type -> quality.RuleListReq
+	7,  // 13: quality.Quality.CreateJob:input_type -> quality.CreateJobReq
+	5,  // 14: quality.Quality.DeleteJob:input_type -> quality.IdReq
+	11, // 15: quality.Quality.ListJobs:input_type -> quality.JobListReq
+	5,  // 16: quality.Quality.RunJob:input_type -> quality.IdReq
+	15, // 17: quality.Quality.ListResults:input_type -> quality.ResultListReq
+	17, // 18: quality.Quality.SaveAlertChannel:input_type -> quality.SaveAlertChannelReq
+	5,  // 19: quality.Quality.DeleteAlertChannel:input_type -> quality.IdReq
+	19, // 20: quality.Quality.ListAlertChannels:input_type -> quality.AlertChannelListReq
+	5,  // 21: quality.Quality.TestAlertChannel:input_type -> quality.IdReq
+	23, // 22: quality.Quality.ListErrorData:input_type -> quality.ErrorDataListReq
+	25, // 23: quality.Quality.ProfileTable:input_type -> quality.ProfileTableReq
+	28, // 24: quality.Quality.ListProfiles:input_type -> quality.ProfileListReq
+	1,  // 25: quality.Quality.CreateRule:output_type -> quality.RuleReply
+	1,  // 26: quality.Quality.UpdateRule:output_type -> quality.RuleReply
+	5,  // 27: quality.Quality.DeleteRule:output_type -> quality.IdReq
+	2,  // 28: quality.Quality.ListRules:output_type -> quality.RuleListReply
+	9,  // 29: quality.Quality.CreateJob:output_type -> quality.JobReply
+	5,  // 30: quality.Quality.DeleteJob:output_type -> quality.IdReq
+	10, // 31: quality.Quality.ListJobs:output_type -> quality.JobListReply
+	13, // 32: quality.Quality.RunJob:output_type -> quality.RunJobReply
+	14, // 33: quality.Quality.ListResults:output_type -> quality.ResultListReply
+	16, // 34: quality.Quality.SaveAlertChannel:output_type -> quality.AlertChannel
+	5,  // 35: quality.Quality.DeleteAlertChannel:output_type -> quality.IdReq
+	18, // 36: quality.Quality.ListAlertChannels:output_type -> quality.AlertChannelListReply
+	20, // 37: quality.Quality.TestAlertChannel:output_type -> quality.TestAlertReply
+	22, // 38: quality.Quality.ListErrorData:output_type -> quality.ErrorDataListReply
+	26, // 39: quality.Quality.ProfileTable:output_type -> quality.ProfileReply
+	27, // 40: quality.Quality.ListProfiles:output_type -> quality.ProfileListReply
+	25, // [25:41] is the sub-list for method output_type
+	9,  // [9:25] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
 	9,  // [9:9] is the sub-list for extension extendee
 	0,  // [0:9] is the sub-list for field type_name
@@ -2296,7 +2433,7 @@ func file_quality_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_quality_proto_rawDesc), len(file_quality_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   28,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

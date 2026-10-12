@@ -64,3 +64,27 @@ func (s *CatalogServer) ListApplies(ctx context.Context, in *catalog.ApplyListRe
 	l := logic.NewListAppliesLogic(ctx, s.svcCtx)
 	return l.ListApplies(in)
 }
+
+// 更新分类（改名/挂父）
+func (s *CatalogServer) UpdateCategory(ctx context.Context, in *catalog.UpdateCategoryReq) (*catalog.CategoryReply, error) {
+	l := logic.NewUpdateCategoryLogic(ctx, s.svcCtx)
+	return l.UpdateCategory(in)
+}
+
+// 删除分类（软删；有子分类或挂有资产时拒绝）
+func (s *CatalogServer) DeleteCategory(ctx context.Context, in *catalog.IdReq) (*catalog.IdReq, error) {
+	l := logic.NewDeleteCategoryLogic(ctx, s.svcCtx)
+	return l.DeleteCategory(in)
+}
+
+// 删除资产
+func (s *CatalogServer) DeleteAsset(ctx context.Context, in *catalog.IdReq) (*catalog.IdReq, error) {
+	l := logic.NewDeleteAssetLogic(ctx, s.svcCtx)
+	return l.DeleteAsset(in)
+}
+
+// 移动资产（切换分类，category_id=0 表示移出分类）
+func (s *CatalogServer) MoveAsset(ctx context.Context, in *catalog.MoveAssetReq) (*catalog.AssetReply, error) {
+	l := logic.NewMoveAssetLogic(ctx, s.svcCtx)
+	return l.MoveAsset(in)
+}

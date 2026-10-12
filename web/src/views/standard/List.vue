@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// 组件 name 与动态路由 name 一致（keep-alive include 匹配用）
+defineOptions({ name: 'StandardStandard' })
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'

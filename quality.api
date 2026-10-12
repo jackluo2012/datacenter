@@ -24,6 +24,19 @@ type CreateQualityRuleReq {
 	Beid          int64  `json:"beid,optional"`
 }
 
+type UpdateQualityRuleReq {
+	Id            int64  `json:"id"`
+	Name          string `json:"name"`
+	RuleType      string `json:"rule_type"`
+	TargetTable   string `json:"target_table"`
+	TargetColumn  string `json:"target_column,optional"`
+	ParamsJson    string `json:"params_json,optional"`
+	ThresholdJson string `json:"threshold_json,optional"`
+	Status        int32  `json:"status"` //1.启用 0.停用（全量更新契约，必传）
+	Owner         string `json:"owner,optional"` //空则保留原负责人
+	Beid          int64  `json:"beid,optional"`
+}
+
 type QualityIdReq {
 	Id   int64 `json:"id,optional" form:"id,optional"`
 	Beid int64 `json:"beid,optional" form:"beid,optional"`
@@ -108,6 +121,11 @@ service datacenter-api {
 	@handler createQualityRule
 	post /quality/rule/create (CreateQualityRuleReq) returns (QualityRule)
 	@doc(
+		summary: "更新质量规则"
+	)
+	@handler updateQualityRule
+	post /quality/rule/update (UpdateQualityRuleReq) returns (QualityRule)
+	@doc(
 		summary: "删除质量规则"
 	)
 	@handler deleteQualityRule
@@ -122,6 +140,11 @@ service datacenter-api {
 	)
 	@handler createQualityJob
 	post /quality/job/create (CreateQualityJobReq) returns (QualityJob)
+	@doc(
+		summary: "删除质量任务"
+	)
+	@handler deleteQualityJob
+	post /quality/job/delete (QualityIdReq)
 	@doc(
 		summary: "质量任务列表"
 	)

@@ -50,6 +50,8 @@ type (
 		Delete(id, beid int64) error
 		// FindList 资产列表：beid 必带，categoryId>0 过滤分类，keyword 模糊匹配 name/comment；返回列表+总数
 		FindList(beid, categoryId int64, keyword string, page, size int64) ([]*Asset, int64, error)
+		// CountByCategory 统计分类下的资产数（删除分类前引用校验用）
+		CountByCategory(categoryId, beid int64) (int64, error)
 	}
 
 	defaultAssetModel struct {
@@ -156,4 +158,12 @@ func (m *defaultAssetModel) FindList(beid, categoryId int64, keyword string, pag
 		return nil, 0, err
 	}
 	return resp, total, nil
+}
+
+// CountByCategory 统计分类下的资产数（不做分页），删除分类前判断是否挂有资产
+func (m *defaultAssetModel) CountByCategory(categoryId, beid int64) (int64, error) {
+	query := fmt.Sprintf("select count(*) from %s where `category_id` = ? and `beid` = ?", m.table)
+	var n int64
+	err := m.conn.QueryRow(&n, query, categoryId, beid)
+	return n, err
 }

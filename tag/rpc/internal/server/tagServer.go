@@ -94,3 +94,15 @@ func (s *TagServer) ListGroupMembers(ctx context.Context, in *tag.GroupMembersRe
 	l := logic.NewListGroupMembersLogic(ctx, s.svcCtx)
 	return l.ListGroupMembers(in)
 }
+
+// 删除标签对象（对象下仍有标签定义或人群时拒绝）
+func (s *TagServer) DeleteObject(ctx context.Context, in *tag.IdReq) (*tag.IdReq, error) {
+	l := logic.NewDeleteObjectLogic(ctx, s.svcCtx)
+	return l.DeleteObject(in)
+}
+
+// 更新标签定义（全量更新）
+func (s *TagServer) UpdateTag(ctx context.Context, in *tag.UpdateTagReq) (*tag.TagDefReply, error) {
+	l := logic.NewUpdateTagLogic(ctx, s.svcCtx)
+	return l.UpdateTag(in)
+}

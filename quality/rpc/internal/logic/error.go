@@ -18,6 +18,8 @@ var (
 	ErrRuleNotFound = errors.New("规则不存在")
 	// ErrJobNameRequired 任务名缺失
 	ErrJobNameRequired = errors.New("任务名不能为空")
+	// ErrJobNotFound 任务不存在（含跨租户不可见）
+	ErrJobNotFound = errors.New("任务不存在")
 	// ErrDatasourceRequired 数据源缺失
 	ErrDatasourceRequired = errors.New("datasource_id 不能为空")
 	// ErrEmptyRuleIds 任务未配置规则

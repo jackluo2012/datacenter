@@ -102,3 +102,15 @@ func (s *QualityServer) ListProfiles(ctx context.Context, in *quality.ProfileLis
 	l := logic.NewListProfilesLogic(ctx, s.svcCtx)
 	return l.ListProfiles(in)
 }
+
+// 更新规则（全量更新）
+func (s *QualityServer) UpdateRule(ctx context.Context, in *quality.UpdateRuleReq) (*quality.RuleReply, error) {
+	l := logic.NewUpdateRuleLogic(ctx, s.svcCtx)
+	return l.UpdateRule(in)
+}
+
+// 删除任务（结果历史不级联清理，供问题追溯）
+func (s *QualityServer) DeleteJob(ctx context.Context, in *quality.IdReq) (*quality.IdReq, error) {
+	l := logic.NewDeleteJobLogic(ctx, s.svcCtx)
+	return l.DeleteJob(in)
+}

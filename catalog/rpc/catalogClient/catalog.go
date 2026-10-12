@@ -27,8 +27,10 @@ type (
 	CategoryListReply = catalog.CategoryListReply
 	CategoryReply     = catalog.CategoryReply
 	IdReq             = catalog.IdReq
+	MoveAssetReq      = catalog.MoveAssetReq
 	ReviewApplyReq    = catalog.ReviewApplyReq
 	TagAssetReq       = catalog.TagAssetReq
+	UpdateCategoryReq = catalog.UpdateCategoryReq
 
 	Catalog interface {
 		// 创建目录分类
@@ -45,6 +47,14 @@ type (
 		ReviewApply(ctx context.Context, in *ReviewApplyReq, opts ...grpc.CallOption) (*ApplyReply, error)
 		// 申请列表
 		ListApplies(ctx context.Context, in *ApplyListReq, opts ...grpc.CallOption) (*ApplyListReply, error)
+		// 更新分类（改名/挂父）
+		UpdateCategory(ctx context.Context, in *UpdateCategoryReq, opts ...grpc.CallOption) (*CategoryReply, error)
+		// 删除分类（软删；有子分类或挂有资产时拒绝）
+		DeleteCategory(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
+		// 删除资产
+		DeleteAsset(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error)
+		// 移动资产（切换分类，category_id=0 表示移出分类）
+		MoveAsset(ctx context.Context, in *MoveAssetReq, opts ...grpc.CallOption) (*AssetReply, error)
 	}
 
 	defaultCatalog struct {
@@ -98,4 +108,28 @@ func (m *defaultCatalog) ReviewApply(ctx context.Context, in *ReviewApplyReq, op
 func (m *defaultCatalog) ListApplies(ctx context.Context, in *ApplyListReq, opts ...grpc.CallOption) (*ApplyListReply, error) {
 	client := catalog.NewCatalogClient(m.cli.Conn())
 	return client.ListApplies(ctx, in, opts...)
+}
+
+// 更新分类（改名/挂父）
+func (m *defaultCatalog) UpdateCategory(ctx context.Context, in *UpdateCategoryReq, opts ...grpc.CallOption) (*CategoryReply, error) {
+	client := catalog.NewCatalogClient(m.cli.Conn())
+	return client.UpdateCategory(ctx, in, opts...)
+}
+
+// 删除分类（软删；有子分类或挂有资产时拒绝）
+func (m *defaultCatalog) DeleteCategory(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	client := catalog.NewCatalogClient(m.cli.Conn())
+	return client.DeleteCategory(ctx, in, opts...)
+}
+
+// 删除资产
+func (m *defaultCatalog) DeleteAsset(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*IdReq, error) {
+	client := catalog.NewCatalogClient(m.cli.Conn())
+	return client.DeleteAsset(ctx, in, opts...)
+}
+
+// 移动资产（切换分类，category_id=0 表示移出分类）
+func (m *defaultCatalog) MoveAsset(ctx context.Context, in *MoveAssetReq, opts ...grpc.CallOption) (*AssetReply, error) {
+	client := catalog.NewCatalogClient(m.cli.Conn())
+	return client.MoveAsset(ctx, in, opts...)
 }

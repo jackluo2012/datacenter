@@ -61,7 +61,10 @@ message AssetApply {
   int64  created_at = 8;
 }
 message ApplyReply { AssetApply apply = 1; }
-message ApplyListReply { repeated AssetApply list = 1; }
+message ApplyListReply {
+  repeated AssetApply list = 1;
+  int64 total = 2;
+}
 
 message ApplyAssetReq {
   int64  asset_id  = 1;
@@ -97,6 +100,26 @@ service Catalog {
   rpc ReviewApply(ReviewApplyReq) returns (ApplyReply);
   //申请列表
   rpc ListApplies(ApplyListReq) returns (ApplyListReply);
+  //更新分类（改名/挂父）
+  rpc UpdateCategory(UpdateCategoryReq) returns (CategoryReply);
+  //删除分类（软删；有子分类或挂有资产时拒绝）
+  rpc DeleteCategory(IdReq) returns (IdReq);
+  //删除资产
+  rpc DeleteAsset(IdReq) returns (IdReq);
+  //移动资产（切换分类，category_id=0 表示移出分类）
+  rpc MoveAsset(MoveAssetReq) returns (AssetReply);
+}
+
+message UpdateCategoryReq {
+  int64  id        = 1;
+  int64  parent_id = 2;
+  string name      = 3;
+  int64  beid      = 4;
+}
+message MoveAssetReq {
+  int64 id          = 1; //资产id
+  int64 category_id = 2; //目标分类id，0=移出分类
+  int64 beid        = 3;
 }
 
 message IdReq { int64 id = 1; int64 beid = 2; }

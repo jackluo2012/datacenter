@@ -720,6 +720,7 @@ func (x *ApplyReply) GetApply() *AssetApply {
 type ApplyListReply struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	List          []*AssetApply          `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -759,6 +760,13 @@ func (x *ApplyListReply) GetList() []*AssetApply {
 		return x.List
 	}
 	return nil
+}
+
+func (x *ApplyListReply) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
 }
 
 type ApplyAssetReq struct {
@@ -965,6 +973,134 @@ func (x *ApplyListReq) GetSize() int64 {
 	return 0
 }
 
+type UpdateCategoryReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ParentId      int64                  `protobuf:"varint,2,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Beid          int64                  `protobuf:"varint,4,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCategoryReq) Reset() {
+	*x = UpdateCategoryReq{}
+	mi := &file_catalog_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCategoryReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCategoryReq) ProtoMessage() {}
+
+func (x *UpdateCategoryReq) ProtoReflect() protoreflect.Message {
+	mi := &file_catalog_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCategoryReq.ProtoReflect.Descriptor instead.
+func (*UpdateCategoryReq) Descriptor() ([]byte, []int) {
+	return file_catalog_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *UpdateCategoryReq) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UpdateCategoryReq) GetParentId() int64 {
+	if x != nil {
+		return x.ParentId
+	}
+	return 0
+}
+
+func (x *UpdateCategoryReq) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *UpdateCategoryReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
+type MoveAssetReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                                   //资产id
+	CategoryId    int64                  `protobuf:"varint,2,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"` //目标分类id，0=移出分类
+	Beid          int64                  `protobuf:"varint,3,opt,name=beid,proto3" json:"beid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MoveAssetReq) Reset() {
+	*x = MoveAssetReq{}
+	mi := &file_catalog_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MoveAssetReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MoveAssetReq) ProtoMessage() {}
+
+func (x *MoveAssetReq) ProtoReflect() protoreflect.Message {
+	mi := &file_catalog_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MoveAssetReq.ProtoReflect.Descriptor instead.
+func (*MoveAssetReq) Descriptor() ([]byte, []int) {
+	return file_catalog_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *MoveAssetReq) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *MoveAssetReq) GetCategoryId() int64 {
+	if x != nil {
+		return x.CategoryId
+	}
+	return 0
+}
+
+func (x *MoveAssetReq) GetBeid() int64 {
+	if x != nil {
+		return x.Beid
+	}
+	return 0
+}
+
 type IdReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -975,7 +1111,7 @@ type IdReq struct {
 
 func (x *IdReq) Reset() {
 	*x = IdReq{}
-	mi := &file_catalog_proto_msgTypes[14]
+	mi := &file_catalog_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -987,7 +1123,7 @@ func (x *IdReq) String() string {
 func (*IdReq) ProtoMessage() {}
 
 func (x *IdReq) ProtoReflect() protoreflect.Message {
-	mi := &file_catalog_proto_msgTypes[14]
+	mi := &file_catalog_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1000,7 +1136,7 @@ func (x *IdReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdReq.ProtoReflect.Descriptor instead.
 func (*IdReq) Descriptor() ([]byte, []int) {
-	return file_catalog_proto_rawDescGZIP(), []int{14}
+	return file_catalog_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *IdReq) GetId() int64 {
@@ -1087,9 +1223,10 @@ const file_catalog_proto_rawDesc = "" +
 	"created_at\x18\b \x01(\x03R\tcreatedAt\"7\n" +
 	"\n" +
 	"ApplyReply\x12)\n" +
-	"\x05apply\x18\x01 \x01(\v2\x13.catalog.AssetApplyR\x05apply\"9\n" +
+	"\x05apply\x18\x01 \x01(\v2\x13.catalog.AssetApplyR\x05apply\"O\n" +
 	"\x0eApplyListReply\x12'\n" +
-	"\x04list\x18\x01 \x03(\v2\x13.catalog.AssetApplyR\x04list\"t\n" +
+	"\x04list\x18\x01 \x03(\v2\x13.catalog.AssetApplyR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"t\n" +
 	"\rApplyAssetReq\x12\x19\n" +
 	"\basset_id\x18\x01 \x01(\x03R\aassetId\x12\x16\n" +
 	"\x06reason\x18\x02 \x01(\tR\x06reason\x12\x1c\n" +
@@ -1104,10 +1241,20 @@ const file_catalog_proto_rawDesc = "" +
 	"\x04beid\x18\x01 \x01(\x03R\x04beid\x12\x16\n" +
 	"\x06status\x18\x02 \x01(\tR\x06status\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x03R\x04page\x12\x12\n" +
-	"\x04size\x18\x04 \x01(\x03R\x04size\"+\n" +
+	"\x04size\x18\x04 \x01(\x03R\x04size\"h\n" +
+	"\x11UpdateCategoryReq\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1b\n" +
+	"\tparent_id\x18\x02 \x01(\x03R\bparentId\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x12\n" +
+	"\x04beid\x18\x04 \x01(\x03R\x04beid\"S\n" +
+	"\fMoveAssetReq\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1f\n" +
+	"\vcategory_id\x18\x02 \x01(\x03R\n" +
+	"categoryId\x12\x12\n" +
+	"\x04beid\x18\x03 \x01(\x03R\x04beid\"+\n" +
 	"\x05IdReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
-	"\x04beid\x18\x02 \x01(\x03R\x04beid2\xb5\x03\n" +
+	"\x04beid\x18\x02 \x01(\x03R\x04beid2\x95\x05\n" +
 	"\aCatalog\x12@\n" +
 	"\x0eCreateCategory\x12\x16.catalog.AssetCategory\x1a\x16.catalog.CategoryReply\x12<\n" +
 	"\x0eListCategories\x12\x0e.catalog.IdReq\x1a\x1a.catalog.CategoryListReply\x125\n" +
@@ -1117,7 +1264,11 @@ const file_catalog_proto_rawDesc = "" +
 	"\n" +
 	"ApplyAsset\x12\x16.catalog.ApplyAssetReq\x1a\x13.catalog.ApplyReply\x12;\n" +
 	"\vReviewApply\x12\x17.catalog.ReviewApplyReq\x1a\x13.catalog.ApplyReply\x12=\n" +
-	"\vListApplies\x12\x15.catalog.ApplyListReq\x1a\x17.catalog.ApplyListReplyB\vZ\t./catalogb\x06proto3"
+	"\vListApplies\x12\x15.catalog.ApplyListReq\x1a\x17.catalog.ApplyListReply\x12D\n" +
+	"\x0eUpdateCategory\x12\x1a.catalog.UpdateCategoryReq\x1a\x16.catalog.CategoryReply\x120\n" +
+	"\x0eDeleteCategory\x12\x0e.catalog.IdReq\x1a\x0e.catalog.IdReq\x12-\n" +
+	"\vDeleteAsset\x12\x0e.catalog.IdReq\x1a\x0e.catalog.IdReq\x127\n" +
+	"\tMoveAsset\x12\x15.catalog.MoveAssetReq\x1a\x13.catalog.AssetReplyB\vZ\t./catalogb\x06proto3"
 
 var (
 	file_catalog_proto_rawDescOnce sync.Once
@@ -1131,7 +1282,7 @@ func file_catalog_proto_rawDescGZIP() []byte {
 	return file_catalog_proto_rawDescData
 }
 
-var file_catalog_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_catalog_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_catalog_proto_goTypes = []any{
 	(*AssetCategory)(nil),     // 0: catalog.AssetCategory
 	(*CategoryReply)(nil),     // 1: catalog.CategoryReply
@@ -1147,7 +1298,9 @@ var file_catalog_proto_goTypes = []any{
 	(*ApplyAssetReq)(nil),     // 11: catalog.ApplyAssetReq
 	(*ReviewApplyReq)(nil),    // 12: catalog.ReviewApplyReq
 	(*ApplyListReq)(nil),      // 13: catalog.ApplyListReq
-	(*IdReq)(nil),             // 14: catalog.IdReq
+	(*UpdateCategoryReq)(nil), // 14: catalog.UpdateCategoryReq
+	(*MoveAssetReq)(nil),      // 15: catalog.MoveAssetReq
+	(*IdReq)(nil),             // 16: catalog.IdReq
 }
 var file_catalog_proto_depIdxs = []int32{
 	0,  // 0: catalog.CategoryReply.category:type_name -> catalog.AssetCategory
@@ -1157,21 +1310,29 @@ var file_catalog_proto_depIdxs = []int32{
 	8,  // 4: catalog.ApplyReply.apply:type_name -> catalog.AssetApply
 	8,  // 5: catalog.ApplyListReply.list:type_name -> catalog.AssetApply
 	0,  // 6: catalog.Catalog.CreateCategory:input_type -> catalog.AssetCategory
-	14, // 7: catalog.Catalog.ListCategories:input_type -> catalog.IdReq
+	16, // 7: catalog.Catalog.ListCategories:input_type -> catalog.IdReq
 	6,  // 8: catalog.Catalog.TagAsset:input_type -> catalog.TagAssetReq
 	7,  // 9: catalog.Catalog.ListAssets:input_type -> catalog.AssetListReq
 	11, // 10: catalog.Catalog.ApplyAsset:input_type -> catalog.ApplyAssetReq
 	12, // 11: catalog.Catalog.ReviewApply:input_type -> catalog.ReviewApplyReq
 	13, // 12: catalog.Catalog.ListApplies:input_type -> catalog.ApplyListReq
-	1,  // 13: catalog.Catalog.CreateCategory:output_type -> catalog.CategoryReply
-	2,  // 14: catalog.Catalog.ListCategories:output_type -> catalog.CategoryListReply
-	4,  // 15: catalog.Catalog.TagAsset:output_type -> catalog.AssetReply
-	5,  // 16: catalog.Catalog.ListAssets:output_type -> catalog.AssetListReply
-	9,  // 17: catalog.Catalog.ApplyAsset:output_type -> catalog.ApplyReply
-	9,  // 18: catalog.Catalog.ReviewApply:output_type -> catalog.ApplyReply
-	10, // 19: catalog.Catalog.ListApplies:output_type -> catalog.ApplyListReply
-	13, // [13:20] is the sub-list for method output_type
-	6,  // [6:13] is the sub-list for method input_type
+	14, // 13: catalog.Catalog.UpdateCategory:input_type -> catalog.UpdateCategoryReq
+	16, // 14: catalog.Catalog.DeleteCategory:input_type -> catalog.IdReq
+	16, // 15: catalog.Catalog.DeleteAsset:input_type -> catalog.IdReq
+	15, // 16: catalog.Catalog.MoveAsset:input_type -> catalog.MoveAssetReq
+	1,  // 17: catalog.Catalog.CreateCategory:output_type -> catalog.CategoryReply
+	2,  // 18: catalog.Catalog.ListCategories:output_type -> catalog.CategoryListReply
+	4,  // 19: catalog.Catalog.TagAsset:output_type -> catalog.AssetReply
+	5,  // 20: catalog.Catalog.ListAssets:output_type -> catalog.AssetListReply
+	9,  // 21: catalog.Catalog.ApplyAsset:output_type -> catalog.ApplyReply
+	9,  // 22: catalog.Catalog.ReviewApply:output_type -> catalog.ApplyReply
+	10, // 23: catalog.Catalog.ListApplies:output_type -> catalog.ApplyListReply
+	1,  // 24: catalog.Catalog.UpdateCategory:output_type -> catalog.CategoryReply
+	16, // 25: catalog.Catalog.DeleteCategory:output_type -> catalog.IdReq
+	16, // 26: catalog.Catalog.DeleteAsset:output_type -> catalog.IdReq
+	4,  // 27: catalog.Catalog.MoveAsset:output_type -> catalog.AssetReply
+	17, // [17:28] is the sub-list for method output_type
+	6,  // [6:17] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name
 	6,  // [6:6] is the sub-list for extension extendee
 	0,  // [0:6] is the sub-list for field type_name
@@ -1188,7 +1349,7 @@ func file_catalog_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_catalog_proto_rawDesc), len(file_catalog_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

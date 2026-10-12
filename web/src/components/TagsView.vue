@@ -27,6 +27,18 @@ function toLastView(views: TagView[]) {
   else router.push('/')
 }
 
+/**
+ * 刷新当前页：从 tagsView store 定位当前 path 对应的标签（TagsView 仅在 MainLayout
+ * 内渲染，正常恒命中）。keep-alive 已缓存实例且 router-view 未绑定 key，SPA 内无法
+ * 强制重挂组件 → 选最小侵入方案 = 整页重载（hash 路由 URL 不变，token 存 localStorage 不丢）
+ */
+function refreshCurrent() {
+  closeCtx()
+  const cur = store.visitedViews.find((v) => v.path === route.path)
+  if (!cur) return
+  window.location.reload()
+}
+
 /* ===== 右键菜单（可选能力）：关闭 / 关闭其他 / 关闭全部 ===== */
 const ctx = reactive({ visible: false, left: 0, top: 0, selected: null as TagView | null })
 
@@ -79,12 +91,18 @@ onBeforeUnmount(() => document.removeEventListener('click', hideOnGlobalClick))
       </router-link>
     </div>
 
+    <!-- 刷新当前页 -->
+    <el-tooltip content="刷新当前" placement="top">
+      <el-icon class="refresh-btn" :size="14" @click="refreshCurrent"><RefreshRight /></el-icon>
+    </el-tooltip>
+
     <teleport to="body">
       <ul
         v-if="ctx.visible"
         class="ctx-menu"
         :style="{ left: `${ctx.left}px`, top: `${ctx.top}px` }"
       >
+        <li @click="refreshCurrent">刷新当前</li>
         <li v-if="ctx.selected && !ctx.selected.affix" @click="closeTag(ctx.selected); closeCtx()">
           关闭当前
         </li>
@@ -116,6 +134,19 @@ onBeforeUnmount(() => document.removeEventListener('click', hideOnGlobalClick))
 }
 .tags-scroll::-webkit-scrollbar {
   height: 4px;
+}
+.refresh-btn {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 3px;
+  border-radius: 3px;
+  color: #606266;
+  cursor: pointer;
+  outline: none;
+}
+.refresh-btn:hover {
+  background: #ecf5ff;
+  color: #409eff;
 }
 .tag {
   display: inline-flex;

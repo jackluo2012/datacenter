@@ -46,6 +46,8 @@ type (
 		UpdateRunStatus(ctx context.Context, id, beid, estCount int64, materializedTable string) error
 		// Delete 删除人群定义（仅删定义行，人群物化表留档不删）
 		Delete(ctx context.Context, id, beid int64) error
+		// CountByObject 统计引用该对象的人群数（删除对象前引用校验用）
+		CountByObject(ctx context.Context, objectId, beid int64) (int64, error)
 	}
 
 	defaultGroupModel struct {
@@ -141,4 +143,17 @@ func (m *defaultGroupModel) Delete(ctx context.Context, id, beid int64) error {
 	query := fmt.Sprintf("delete from %s where `id` = ? and `beid` = ?", m.table)
 	_, err := m.conn.ExecCtx(ctx, query, id, beid)
 	return err
+}
+
+// CountByObject 统计引用该对象的人群数，>0 表示对象仍被人群引用不可删
+func (m *defaultGroupModel) CountByObject(ctx context.Context, objectId, beid int64) (int64, error) {
+	query := fmt.Sprintf("select count(*) from %s where `object_id` = ?", m.table)
+	args := []any{objectId}
+	if beid > 0 {
+		query += " and `beid` = ?"
+		args = append(args, beid)
+	}
+	var n int64
+	err := m.conn.QueryRowCtx(ctx, &n, query, args...)
+	return n, err
 }

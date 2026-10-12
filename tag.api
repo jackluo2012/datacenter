@@ -91,6 +91,7 @@ type TagDef {
 	RefreshCron string `json:"refresh_cron,optional"`
 	Status     int32  `json:"status,optional"`
 	Beid       int64  `json:"beid,optional"`
+	ObjectName string `json:"object_name,optional"` //所属对象名（列表回显）
 }
 
 type CreateTagDefReq {
@@ -101,6 +102,18 @@ type CreateTagDefReq {
 	RuleSql    string `json:"rule_sql,optional"`
 	RefreshCron string `json:"refresh_cron,optional"`
 	Beid       int64  `json:"beid,optional"`
+}
+
+type UpdateTagDefReq {
+	Id          int64  `json:"id"`
+	ObjectId    int64  `json:"object_id"`
+	TagKey      string `json:"tag_key"`
+	TagName     string `json:"tag_name"`
+	TagType     string `json:"tag_type"`
+	RuleSql     string `json:"rule_sql,optional"`
+	RefreshCron string `json:"refresh_cron,optional"`
+	Status      int32  `json:"status"` //1.启用 0.停用（全量更新契约，必传）
+	Beid        int64  `json:"beid,optional"`
 }
 
 type TagDefIdReq {
@@ -163,6 +176,11 @@ service datacenter-api {
 	@handler tagObjectList
 	get /tag/object/list (TagObjectListReq) returns (TagObjectListResp)
 	@doc(
+		summary: "删除标签对象（对象下仍有标签定义或人群时拒绝）"
+	)
+	@handler deleteTagObject
+	post /tag/object/delete (TagDefIdReq)
+	@doc(
 		summary: "创建标签定义"
 	)
 	@handler createTagDef
@@ -172,6 +190,11 @@ service datacenter-api {
 	)
 	@handler tagDefList
 	get /tag/def/list (TagDefListReq) returns (TagDefListResp)
+	@doc(
+		summary: "更新标签定义"
+	)
+	@handler updateTagDef
+	post /tag/def/update (UpdateTagDefReq) returns (TagDef)
 	@doc(
 		summary: "删除标签定义"
 	)
