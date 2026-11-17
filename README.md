@@ -72,8 +72,104 @@ syslog查询、syslog实时查看、登录日志、审计日志
 
 ### 详细介绍 [我是如何用go-zero实现一个中台系统的](https://www.cnblogs.com/jackluo/p/14148518.html)
 
-## 架构图
-![中台系统](https://img2020.cnblogs.com/blog/203395/202012/203395-20201217094615171-335437652.jpg "中台架构")
+## 架构
+
+> 2026-11 重绘：反映当前 17 个服务的真实代码结构（旧版 2020 架构图见 git 历史）
+
+```mermaid
+flowchart TB
+    subgraph CLIENTS["客户端"]
+        direction LR
+        FE["Vue3 控制台<br/>19 组页面 :5173"]
+        BS["数据可视化大屏<br/>/bigscreen 免登录"]
+        APP["第三方应用<br/>HMAC 签名调用"]
+        DE["DataEase BI<br/>viz profile 外挂"]
+    end
+
+    subgraph GW["datacenter-api 网关 :8887"]
+        direction LR
+        AUDIT["审计切面<br/>POST/PUT/DELETE 自动落库<br/>密码字段脱敏"]
+        JWT["JWT 鉴权<br/>双账号体系"]
+        RBACM["RBAC 动态菜单<br/>getRouters/v-perm"]
+        STATIC["静态托管 /static"]
+    end
+
+    subgraph SVCS["16 个 go-zero RPC 服务（etcd 服务发现）"]
+        direction TB
+        subgraph INGEST["数据接入"]
+            direction LR
+            DS["datasource :8085<br/>数据源登记/探活<br/>凭证 AES-GCM"]
+            META["metadata :8086<br/>采集/血缘/版本对比<br/>中文注释检索"]
+            JOB["job :8092<br/>同步引擎(分批事务)<br/>DolphinScheduler 管控"]
+            IDE["ide :8093<br/>SQL IDE(SELECT 闸门)"]
+        end
+        subgraph GOV["数据治理"]
+            direction LR
+            QUALITY["quality :8089<br/>6 规则/告警(钉钉飞书)<br/>错误下钻/健康分"]
+            STD["standard :8095<br/>词根/字典/数据元<br/>标准模型/核对"]
+            SEC["security :8099<br/>分级/脱敏 4 算法<br/>授权矩阵"]
+            MDM["mdm :8096<br/>主数据/号段编码<br/>真实分发"]
+            OPS["ops :8097<br/>归档/登录/审计日志"]
+        end
+        subgraph SERVE["数据服务与资产"]
+            direction LR
+            DSVC["datasvc :8087<br/>OneService 执行链<br/>签名/限流/授权/缓存/脱敏"]
+            CAT["catalog :8088<br/>资产目录/申请审批"]
+            MET["metric :8090<br/>原子/派生指标"]
+            TAG["tag :8091<br/>打标/画像/圈群"]
+            THEME["theme :8098<br/>数仓建模/物化视图"]
+            AIC["ai :8094<br/>ChatBI 语义检索<br/>+AskAndRun 执行"]
+        end
+        subgraph PLAT["平台"]
+            direction LR
+            SYS["sys :8100<br/>RBAC 用户/角色/菜单<br/>bcrypt/动态路由"]
+            SRCH["search :8083<br/>ES 文章检索"]
+            USER["user :8080<br/>C 端用户/微信登录"]
+            COMMON["common :8081<br/>应用配置"]
+            VOTES["votes :8082<br/>投票"]
+            QUESTIONS["questions :8084<br/>抽奖问答"]
+        end
+    end
+
+    subgraph INFRA["存储与中间件"]
+        direction LR
+        MYSQL[("MySQL 8.4<br/>67 表(utf8mb4)")]
+        REDIS[("Redis 8<br/>缓存/分布式锁")]
+        ETCD[("etcd 3.5<br/>服务发现")]
+        ESS[("Elasticsearch 7.17<br/>文章索引")]
+    end
+
+    subgraph EXTERNAL["外挂（不自研）"]
+        direction LR
+        DOLPH["DolphinScheduler<br/>大规模调度(可选)"]
+        DEE["DataEase<br/>BI 可视化(viz profile)"]
+    end
+
+    subgraph SCHEDPROC["调度引擎 cmd/scheduler"]
+        CRON["30s tick 扫表<br/>quality/ops/theme cron 到期<br/>→ etcd 发现 rpc 执行"]
+    end
+
+    FE --> GW
+    BS -.->|"免登录"| FE
+    APP --> GW
+    DE --> GW
+    GW --> SVCS
+    AUDIT -.->|"WriteAuditLog"| OPS
+    SCHEDPROC -->|"RunJob/RunArchive/Refresh"| QUALITY & OPS & THEME
+    SP -.->|"HMAC 签名转发"| DSVC
+    SVCS --> INFRA
+    DSVC --> DEE
+    JOB -.->|"大规模可选"| DOLPH
+```
+
+**分层说明**
+
+| 层 | 职责 | 关键机制 |
+|---|---|---|
+| 客户端 | Vue3 控制台（JWT+RBAC 动态菜单+v-perm）、免登录大屏、第三方 HMAC 调用、DataEase 旁挂 | — |
+| 网关 | 统一入口 :8887，审计切面（写操作自动落库）、JWT 双账号体系（管理台 sys_user / C 端 base_member）、RBAC 动态菜单、静态托管 | — |
+| 服务层 | 16 个 go-zero RPC，etcd 服务发现，beid 多租户贯穿；内置同步引擎与调度进程让中小规模无需外部调度器 | OneService 签名→限流→授权→缓存→脱敏执行链 |
+| 外挂 | 大规模调度交 DolphinScheduler、BI 交 DataEase——不自研，平台做管控与数据供给 | — |
 
 ### 已完成的功能列表
 - [x] 微信公众号登陆
